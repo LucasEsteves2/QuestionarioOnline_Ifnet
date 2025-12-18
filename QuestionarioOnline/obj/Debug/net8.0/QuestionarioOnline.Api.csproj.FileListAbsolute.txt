@@ -93,3 +93,4 @@ C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline\bin\Debug\
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline\bin\Debug\net8.0\FluentValidation.DependencyInjectionExtensions.dll
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline\obj\Debug\net8.0\QuestionarioOnline.Api.sourcelink.json

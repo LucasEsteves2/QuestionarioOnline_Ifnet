@@ -7,7 +7,7 @@ using QuestionarioOnline.Domain.Entities;
 using QuestionarioOnline.Domain.Interfaces;
 using System.Text.Json;
 
-namespace QuestionarioOnline.Workers.Function;
+namespace QuestionarioOnline.Workers.Function.Functions;
 
 public class ProcessarRespostaFunction
 {

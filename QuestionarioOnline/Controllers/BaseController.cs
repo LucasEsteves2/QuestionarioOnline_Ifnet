@@ -1,4 +1,3 @@
-using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using QuestionarioOnline.Api.Extensions;
 using QuestionarioOnline.Api.Responses;
@@ -9,20 +8,6 @@ namespace QuestionarioOnline.Api.Controllers;
 [ApiController]
 public abstract class BaseController : ControllerBase
 {
-    protected Guid ObterUsuarioIdDoToken()
-    {
-        return User.ObterUsuarioId();
-    }
-
-    protected string ObterEmailDoToken()
-    {
-        return User.ObterEmail();
-    }
-
-    protected string ObterNomeDoToken()
-    {
-        return User.ObterNome();
-    }
 
     protected ActionResult<ApiResponse<T>> OkResponse<T>(T data, string? message = null)
     {
@@ -64,10 +49,10 @@ public abstract class BaseController : ControllerBase
     {
         if (message.Contains("não encontrado", StringComparison.OrdinalIgnoreCase))
             return NotFound(ApiResponse<object>.NotFound(message));
-        
+
         if (message.Contains("não autorizado", StringComparison.OrdinalIgnoreCase))
             return StatusCode(StatusCodes.Status403Forbidden, ApiResponse<object>.Fail(message, statusCode: 403));
-        
+
         return BadRequest(ApiResponse<object>.Fail(message));
     }
 
@@ -101,4 +86,10 @@ public abstract class BaseController : ControllerBase
 
         return FailResponse(result);
     }
+
+    protected Guid ObterUsuarioIdDoToken()
+    {
+        return User.ObterUsuarioId();
+    }
+
 }

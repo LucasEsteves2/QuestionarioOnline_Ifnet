@@ -9,7 +9,6 @@ public interface IQuestionarioService
     Task<Result<QuestionarioDto>> CriarQuestionarioAsync(CriarQuestionarioRequest request, Guid usuarioInternoId, CancellationToken cancellationToken = default);
     Task<Result<QuestionarioDto>> EncerrarQuestionarioAsync(Guid questionarioId, Guid usuarioInternoId, CancellationToken cancellationToken = default);
     Task<Result> DeletarQuestionarioAsync(Guid questionarioId, Guid usuarioInternoId, CancellationToken cancellationToken = default);
-    Task<QuestionarioPublicoDto?> ObterQuestionarioPublicoAsync(Guid questionarioId, CancellationToken cancellationToken = default);
     Task<QuestionarioDto?> ObterQuestionarioPorIdAsync(Guid questionarioId, Guid usuarioInternoId, CancellationToken cancellationToken = default);
     Task<IEnumerable<QuestionarioListaDto>> ListarQuestionariosPorUsuarioAsync(Guid usuarioInternoId, CancellationToken cancellationToken = default);
     Task<Result<ResultadoQuestionarioDto>> ObterResultadosAsync(Guid questionarioId, Guid usuarioInternoId, CancellationToken cancellationToken = default);

@@ -18,10 +18,7 @@ public class RespostaController : BaseController
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(ApiResponse<RespostaRegistradaDto>), StatusCodes.Status202Accepted)]
-    [ProducesResponseType(typeof(ApiResponse<RespostaRegistradaDto>), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<RespostaRegistradaDto>>> Registrar(
-        [FromBody] RegistrarRespostaApiRequest request)
+    public async Task<ActionResult<ApiResponse<RespostaRegistradaDto>>> Registrar([FromBody] RegistrarRespostaApiRequest request)
     {
         var applicationRequest = MapearParaApplicationRequest(request);
 

@@ -4,7 +4,6 @@ using QuestionarioOnline.Api.Responses;
 using QuestionarioOnline.Application.DTOs.Requests;
 using QuestionarioOnline.Application.DTOs.Responses;
 using QuestionarioOnline.Application.Interfaces;
-using System.Security.Claims;
 
 namespace QuestionarioOnline.Api.Controllers;
 
@@ -20,8 +19,6 @@ public class QuestionarioController : BaseController
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ApiResponse<QuestionarioDto>>> Criar([FromBody] CriarQuestionarioRequest request, CancellationToken cancellationToken)
     {
         var usuarioId = ObterUsuarioIdDoToken();
@@ -34,10 +31,6 @@ public class QuestionarioController : BaseController
     }
 
     [HttpPatch("{id}/status")]
-    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<QuestionarioDto>>> Encerrar(Guid id, CancellationToken cancellationToken)
     {
         var usuarioId = ObterUsuarioIdDoToken();
@@ -46,14 +39,11 @@ public class QuestionarioController : BaseController
     }
 
     [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Deletar(Guid id, CancellationToken cancellationToken)
     {
         var usuarioId = ObterUsuarioIdDoToken();
         var result = await _questionarioService.DeletarQuestionarioAsync(id, usuarioId, cancellationToken);
-        
+
         if (result.IsFailure)
             return FailResponseNoContent(result.Error);
 
@@ -61,13 +51,11 @@ public class QuestionarioController : BaseController
     }
 
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<QuestionarioDto>>> ObterPorId(Guid id, CancellationToken cancellationToken)
     {
         var usuarioId = ObterUsuarioIdDoToken();
         var questionario = await _questionarioService.ObterQuestionarioPorIdAsync(id, usuarioId, cancellationToken);
-        
+
         if (questionario is null)
             return NotFoundResponse<QuestionarioDto>();
 
@@ -75,7 +63,6 @@ public class QuestionarioController : BaseController
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(ApiResponse<IEnumerable<QuestionarioListaDto>>), StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<IEnumerable<QuestionarioListaDto>>>> Listar(CancellationToken cancellationToken)
     {
         var usuarioId = ObterUsuarioIdDoToken();
@@ -85,14 +72,11 @@ public class QuestionarioController : BaseController
 
     [HttpGet("{id}/resultados")]
     [Authorize(Roles = "Admin,Analista,Visualizador")]
-    [ProducesResponseType(typeof(ApiResponse<ResultadoQuestionarioDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<ResultadoQuestionarioDto>), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ApiResponse<ResultadoQuestionarioDto>), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<ApiResponse<ResultadoQuestionarioDto>>> ObterResultados(Guid id, CancellationToken cancellationToken)
     {
         var usuarioId = ObterUsuarioIdDoToken();
         var result = await _questionarioService.ObterResultadosAsync(id, usuarioId, cancellationToken);
-        
+
         if (result.IsFailure)
             return NotFoundOrForbiddenResponse<ResultadoQuestionarioDto>(result.Error);
 

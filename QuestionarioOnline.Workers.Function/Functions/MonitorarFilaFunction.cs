@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using QuestionarioOnline.Domain.Constants;
 using QuestionarioOnline.Infrastructure.Messaging;
 
-namespace QuestionarioOnline.Workers.Function;
+namespace QuestionarioOnline.Workers.Function.Functions;
 
 /// <summary>
 /// Função agendada para monitorar saúde das filas e reprocessar Dead Letter Queue

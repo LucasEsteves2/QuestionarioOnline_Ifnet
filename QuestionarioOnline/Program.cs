@@ -9,10 +9,10 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-var storageConnectionString = builder.Configuration.GetConnectionString("AzureWebJobsStorage") 
+var storageConnectionString = builder.Configuration.GetConnectionString("AzureWebJobsStorage")
     ?? throw new InvalidOperationException("Connection string 'AzureWebJobsStorage' not found.");
 
 builder.Services.AddQuestionarioOnlineServices(connectionString, storageConnectionString);
@@ -69,7 +69,7 @@ builder.Services.AddSwaggerGen(c =>
             Email = "lucas.esteves@infnet.edu.br",
             Url = new Uri("https://github.com/seu-usuario/questionario-online")
         },
-      
+
     });
 
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme

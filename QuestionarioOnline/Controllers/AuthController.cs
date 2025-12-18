@@ -19,10 +19,7 @@ public class AuthController : BaseController
     }
 
     [HttpPost("register")]
-    [ProducesResponseType(typeof(ApiResponse<UsuarioRegistradoDto>), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ApiResponse<UsuarioRegistradoDto>), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<UsuarioRegistradoDto>>> Register(
-        [FromBody] RegistrarUsuarioRequest request)
+    public async Task<ActionResult<ApiResponse<UsuarioRegistradoDto>>> Register([FromBody] RegistrarUsuarioRequest request)
     {
         var result = await _authService.RegistrarAsync(request);
 
@@ -34,11 +31,7 @@ public class AuthController : BaseController
     }
 
     [HttpPost("login")]
-    [ProducesResponseType(typeof(ApiResponse<LoginResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<LoginResponse>), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ApiResponse<LoginResponse>), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<LoginResponse>>> Login(
-        [FromBody] LoginRequest request)
+    public async Task<ActionResult<ApiResponse<LoginResponse>>> Login([FromBody] LoginRequest request)
     {
         var result = await _authService.LoginAsync(request);
 

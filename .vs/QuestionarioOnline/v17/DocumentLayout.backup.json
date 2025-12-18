@@ -187,6 +187,10 @@
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lucas Dev\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\875087670\\JwtSettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\JWT_TOKEN_SERVICE_REORGANIZATION.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:docs\\JWT_TOKEN_SERVICE_REORGANIZATION.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
     }
   ],
   "DocumentGroupContainers": [
@@ -196,7 +200,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
@@ -210,6 +214,19 @@
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
               "WhenOpened": "2025-12-16T16:47:31.166Z",
               "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 47,
+              "Title": "JWT_TOKEN_SERVICE_REORGANIZATION.md",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\JWT_TOKEN_SERVICE_REORGANIZATION.md",
+              "RelativeDocumentMoniker": "docs\\JWT_TOKEN_SERVICE_REORGANIZATION.md",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\JWT_TOKEN_SERVICE_REORGANIZATION.md",
+              "RelativeToolTip": "docs\\JWT_TOKEN_SERVICE_REORGANIZATION.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAANUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-12-18T12:28:58.704Z",
               "EditorCaption": ""
             },
             {
@@ -327,7 +344,7 @@
               "RelativeDocumentMoniker": "QuestionarioOnline\\Program.cs",
               "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Program.cs",
               "RelativeToolTip": "QuestionarioOnline\\Program.cs",
-              "ViewState": "AgIAAIMAAAAAAAAAAABRwIYAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAIIAAAAAAAAAAEBVwIYAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-18T11:59:19.559Z",
               "EditorCaption": ""
@@ -799,8 +816,8 @@
               "Title": "QuestionarioOnline.Api.csproj",
               "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\QuestionarioOnline.Api.csproj",
               "RelativeDocumentMoniker": "QuestionarioOnline\\QuestionarioOnline.Api.csproj",
-              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\QuestionarioOnline.Api.csproj*",
-              "RelativeToolTip": "QuestionarioOnline\\QuestionarioOnline.Api.csproj*",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\QuestionarioOnline.Api.csproj",
+              "RelativeToolTip": "QuestionarioOnline\\QuestionarioOnline.Api.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAIBJwBkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2025-12-17T12:43:54.058Z",

@@ -14,10 +14,7 @@ public class QuestionarioService : IQuestionarioService
     private readonly IRespostaRepository _respostaRepository;
     private readonly CriarQuestionarioRequestValidator _validator;
 
-    public QuestionarioService(
-        IQuestionarioRepository questionarioRepository, 
-        IRespostaRepository respostaRepository,
-        CriarQuestionarioRequestValidator validator)
+    public QuestionarioService(IQuestionarioRepository questionarioRepository, IRespostaRepository respostaRepository, CriarQuestionarioRequestValidator validator)
     {
         _questionarioRepository = questionarioRepository;
         _respostaRepository = respostaRepository;
@@ -26,9 +23,8 @@ public class QuestionarioService : IQuestionarioService
 
     public async Task<Result<QuestionarioDto>> CriarQuestionarioAsync(CriarQuestionarioRequest request, Guid usuarioId, CancellationToken cancellationToken = default)
     {
-        // Validar request
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
-        
+
         if (!validationResult.IsValid)
         {
             var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
@@ -52,10 +48,7 @@ public class QuestionarioService : IQuestionarioService
         return Result.Success(MapearParaDto(questionario));
     }
 
-    public async Task<Result<QuestionarioDto>> EncerrarQuestionarioAsync(
-        Guid questionarioId,
-        Guid usuarioId,
-        CancellationToken cancellationToken = default)
+    public async Task<Result<QuestionarioDto>> EncerrarQuestionarioAsync(Guid questionarioId, Guid usuarioId, CancellationToken cancellationToken = default)
     {
         var questionario = await _questionarioRepository.ObterPorIdComPerguntasAsync(questionarioId, cancellationToken);
 
@@ -75,10 +68,7 @@ public class QuestionarioService : IQuestionarioService
         return Result.Success(MapearParaDto(questionario));
     }
 
-    public async Task<Result> DeletarQuestionarioAsync(
-        Guid questionarioId,
-        Guid usuarioId,
-        CancellationToken cancellationToken = default)
+    public async Task<Result> DeletarQuestionarioAsync(Guid questionarioId, Guid usuarioId, CancellationToken cancellationToken = default)
     {
         var questionario = await _questionarioRepository.ObterPorIdComPerguntasAsync(questionarioId, cancellationToken);
 
@@ -88,7 +78,6 @@ public class QuestionarioService : IQuestionarioService
         if (questionario.UsuarioId != usuarioId)
             return Result.Failure("Usuário não autorizado a deletar este questionário");
 
-        // Verificar se já tem respostas
         var totalRespostas = await _respostaRepository.ContarRespostasPorQuestionarioAsync(questionarioId, cancellationToken);
 
         if (totalRespostas > 0)
@@ -99,33 +88,8 @@ public class QuestionarioService : IQuestionarioService
         return Result.Success();
     }
 
-    public async Task<QuestionarioPublicoDto?> ObterQuestionarioPublicoAsync(
-        Guid questionarioId,
-        CancellationToken cancellationToken = default)
-    {
-        var questionario = await _questionarioRepository.ObterPorIdComPerguntasAsync(questionarioId, cancellationToken);
 
-        if (questionario is null || !questionario.PodeReceberRespostas())
-            return null;
-
-        return new QuestionarioPublicoDto(
-            questionario.Id,
-            questionario.Titulo,
-            questionario.Descricao,
-            questionario.Perguntas.Select(p => new PerguntaDto(
-                p.Id,
-                p.Texto,
-                p.Ordem,
-                p.Obrigatoria,
-                p.Opcoes.Select(o => new OpcaoDto(o.Id, o.Texto, o.Ordem)).ToList()
-            )).ToList()
-        );
-    }
-
-    public async Task<QuestionarioDto?> ObterQuestionarioPorIdAsync(
-        Guid questionarioId,
-        Guid usuarioId,
-        CancellationToken cancellationToken = default)
+    public async Task<QuestionarioDto?> ObterQuestionarioPorIdAsync(Guid questionarioId, Guid usuarioId, CancellationToken cancellationToken = default)
     {
         var questionario = await _questionarioRepository.ObterPorIdComPerguntasAsync(questionarioId, cancellationToken);
 
@@ -138,9 +102,7 @@ public class QuestionarioService : IQuestionarioService
         return MapearParaDto(questionario);
     }
 
-    public async Task<IEnumerable<QuestionarioListaDto>> ListarQuestionariosPorUsuarioAsync(
-        Guid usuarioId,
-        CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<QuestionarioListaDto>> ListarQuestionariosPorUsuarioAsync(Guid usuarioId, CancellationToken cancellationToken = default)
     {
         var questionarios = await _questionarioRepository.ObterTodosPorUsuarioAsync(usuarioId, cancellationToken);
 
@@ -154,10 +116,7 @@ public class QuestionarioService : IQuestionarioService
         ));
     }
 
-    public async Task<Result<ResultadoQuestionarioDto>> ObterResultadosAsync(
-        Guid questionarioId,
-        Guid usuarioId,
-        CancellationToken cancellationToken = default)
+    public async Task<Result<ResultadoQuestionarioDto>> ObterResultadosAsync(Guid questionarioId, Guid usuarioId, CancellationToken cancellationToken = default)
     {
         var questionario = await _questionarioRepository.ObterPorIdComPerguntasAsync(questionarioId, cancellationToken);
 
@@ -181,19 +140,12 @@ public class QuestionarioService : IQuestionarioService
                     ? (totalVotos * 100.0) / totalRespostas
                     : 0;
 
-                return new ResultadoOpcaoDto(
-                    opcao.Id,
-                    opcao.Texto,
-                    totalVotos,
-                    percentual
-                );
+                return new ResultadoOpcaoDto(opcao.Id, opcao.Texto, totalVotos, percentual);
+
             }).ToList();
 
-            return new ResultadoPerguntaDto(
-                pergunta.Id,
-                pergunta.Texto,
-                resultadoOpcoes
-            );
+            return new ResultadoPerguntaDto(pergunta.Id, pergunta.Texto, resultadoOpcoes);
+
         }).ToList();
 
         var resultado = new ResultadoQuestionarioDto(
@@ -217,13 +169,13 @@ public class QuestionarioService : IQuestionarioService
             questionario.PeriodoColeta.DataFim,
             questionario.DataCriacao,
             questionario.DataEncerramento,
-            questionario.Perguntas.Select(p => new PerguntaDto(
+            [.. questionario.Perguntas.Select(p => new PerguntaDto(
                 p.Id,
                 p.Texto,
                 p.Ordem,
                 p.Obrigatoria,
                 p.Opcoes.Select(o => new OpcaoDto(o.Id, o.Texto, o.Ordem)).ToList()
-            )).ToList()
+            ))]
         );
     }
 }

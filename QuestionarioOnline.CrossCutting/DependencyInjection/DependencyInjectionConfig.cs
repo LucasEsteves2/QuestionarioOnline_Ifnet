@@ -23,12 +23,10 @@ public static class DependencyInjectionConfig
         services.AddDbContext<QuestionarioOnlineDbContext>(options =>
             options.UseSqlServer(connectionString));
 
-        // Repositories
         services.AddScoped<IQuestionarioRepository, QuestionarioRepository>();
         services.AddScoped<IRespostaRepository, RespostaRepository>();
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
-        // Messaging
         services.AddSingleton<IMessageQueue>(sp =>
         {
             var logger = sp.GetService<ILogger<AzureQueueStorageAdapter>>();
@@ -50,12 +48,10 @@ public static class DependencyInjectionConfig
         services.AddSingleton<IQueueHealthMonitor>(sp => 
             new QueueHealthMonitor(storageConnectionString));
 
-        // Application Services
         services.AddScoped<IQuestionarioService, QuestionarioService>();
         services.AddScoped<IRespostaService, RespostaService>();
         services.AddScoped<IAuthService, Application.Services.AuthService>();
 
-        // Validators
         services.AddValidatorsFromAssembly(Assembly.Load("QuestionarioOnline.Application"));
 
         return services;

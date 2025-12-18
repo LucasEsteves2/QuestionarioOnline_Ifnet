@@ -14,10 +14,7 @@ public class RespostaService : IRespostaService
     private readonly IQuestionarioRepository _questionarioRepository;
     private readonly RegistrarRespostaRequestValidator _validator;
 
-    public RespostaService(
-        IMessageQueue messageQueue,
-        IQuestionarioRepository questionarioRepository,
-        RegistrarRespostaRequestValidator validator)
+    public RespostaService(IMessageQueue messageQueue, IQuestionarioRepository questionarioRepository, RegistrarRespostaRequestValidator validator)
     {
         _messageQueue = messageQueue;
         _questionarioRepository = questionarioRepository;
@@ -27,7 +24,7 @@ public class RespostaService : IRespostaService
     public async Task<Result<RespostaRegistradaDto>> RegistrarRespostaAsync(RegistrarRespostaRequest request)
     {
         var validationResult = await _validator.ValidateAsync(request);
-        
+
         if (!validationResult.IsValid)
         {
             var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
@@ -52,11 +49,7 @@ public class RespostaService : IRespostaService
 
         await _messageQueue.SendAsync(QueueConstants.RespostasQueueName, mensagem, CancellationToken.None);
 
-        var resposta = new RespostaRegistradaDto(
-            Guid.NewGuid(),
-            request.QuestionarioId,
-            DateTime.UtcNow
-        );
+        var resposta = new RespostaRegistradaDto(Guid.NewGuid(), request.QuestionarioId, DateTime.UtcNow);
 
         return Result.Success(resposta);
     }
