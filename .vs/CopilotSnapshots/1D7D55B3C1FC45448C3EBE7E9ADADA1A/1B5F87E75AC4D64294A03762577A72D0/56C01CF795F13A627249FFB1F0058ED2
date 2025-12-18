@@ -1,0 +1,10 @@
+﻿using QuestionarioOnline.Application.DTOs;
+
+namespace QuestionarioOnline.Application.Interfaces;
+
+public interface IUsuarioInternoService
+{
+    Task<UsuarioInternoDto> CriarUsuarioAsync(CriarUsuarioInternoRequest request, CancellationToken cancellationToken = default);
+    Task<AutenticacaoResultDto> AutenticarAsync(AutenticarUsuarioRequest request, CancellationToken cancellationToken = default);
+    Task<UsuarioInternoDto?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
+}

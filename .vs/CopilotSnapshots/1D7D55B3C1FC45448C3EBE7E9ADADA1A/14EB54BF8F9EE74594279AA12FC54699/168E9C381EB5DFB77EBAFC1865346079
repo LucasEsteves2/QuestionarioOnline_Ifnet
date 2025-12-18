@@ -1,0 +1,112 @@
+﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Mvc;
+using QuestionarioOnline.Api.Extensions;
+using QuestionarioOnline.Api.Responses;
+using QuestionarioOnline.Domain.ValueObjects;
+
+namespace QuestionarioOnline.Api.Controllers;
+
+/// <summary>
+/// Base Controller com métodos helper para responses padronizados
+/// Todos os controllers devem herdar desta classe
+/// </summary>
+[ApiController]
+public abstract class BaseController : ControllerBase
+{
+    /// <summary>
+    /// Retorna 200 OK com dados
+    /// </summary>
+    protected ActionResult<ApiResponse<T>> OkResponse<T>(T data, string? message = null)
+    {
+        var response = ApiResponse<T>.Success(data, message);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Retorna 201 Created com dados
+    /// </summary>
+    protected ActionResult<ApiResponse<T>> CreatedResponse<T>(string actionName, object routeValues, T data, string? message = null)
+    {
+        var response = ApiResponse<T>.Success(data, message, statusCode: 201);
+        return CreatedAtAction(actionName, routeValues, response);
+    }
+
+    /// <summary>
+    /// Retorna 202 Accepted com dados
+    /// </summary>
+    protected ActionResult<ApiResponse<T>> AcceptedResponse<T>(T data, string? message = null)
+    {
+        var response = ApiResponse<T>.Success(data, message, statusCode: 202);
+        return Accepted(response);
+    }
+
+    /// <summary>
+    /// Retorna 400 Bad Request com erros de validação do FluentValidation
+    /// </summary>
+    protected ActionResult<ApiResponse<T>> ValidationErrorResponse<T>(ValidationResult validationResult, string? message = null)
+    {
+        var response = ApiResponse<T>.ValidationError(
+            validationResult.ToErrorDictionary(),
+            message ?? "Erro de validação"
+        );
+        return BadRequest(response);
+    }
+
+    /// <summary>
+    /// Retorna 400 Bad Request com erro de negócio (Result Pattern)
+    /// </summary>
+    protected ActionResult<ApiResponse<T>> FailResponse<T>(Result<T> result)
+    {
+        var response = ApiResponse<T>.Fail(result.Error);
+        return BadRequest(response);
+    }
+
+    /// <summary>
+    /// Retorna 400 Bad Request com mensagem customizada
+    /// </summary>
+    protected ActionResult<ApiResponse<T>> FailResponse<T>(string message)
+    {
+        var response = ApiResponse<T>.Fail(message);
+        return BadRequest(response);
+    }
+
+    /// <summary>
+    /// Retorna 404 Not Found
+    /// </summary>
+    protected ActionResult<ApiResponse<T>> NotFoundResponse<T>(string? message = null)
+    {
+        var response = ApiResponse<T>.NotFound(message);
+        return NotFound(response);
+    }
+
+    /// <summary>
+    /// Retorna 401 Unauthorized
+    /// </summary>
+    protected ActionResult<ApiResponse<T>> UnauthorizedResponse<T>(string? message = null)
+    {
+        var response = ApiResponse<T>.Fail(message ?? "Não autorizado", statusCode: 401);
+        return Unauthorized(response);
+    }
+
+    /// <summary>
+    /// Retorna 500 Internal Server Error
+    /// </summary>
+    protected ActionResult<ApiResponse<T>> ErrorResponse<T>(string message)
+    {
+        var response = ApiResponse<T>.Error(message);
+        return StatusCode(500, response);
+    }
+
+    /// <summary>
+    /// Retorna resposta baseada em Result Pattern
+    /// Se sucesso ? 200 OK
+    /// Se falha ? 400 Bad Request
+    /// </summary>
+    protected ActionResult<ApiResponse<T>> FromResult<T>(Result<T> result, string? successMessage = null)
+    {
+        if (result.IsSuccess)
+            return OkResponse(result.Value, successMessage);
+
+        return FailResponse(result);
+    }
+}

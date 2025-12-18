@@ -1,0 +1,13 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace QuestionarioOnline.Application.DTOs.Requests;
+
+/// <summary>
+/// DTO para criar uma pergunta dentro de um questionário
+/// </summary>
+public record CriarPerguntaDto(
+    string Texto,
+    int Ordem,
+    bool Obrigatoria,
+    List<CriarOpcaoDto> Opcoes
+);

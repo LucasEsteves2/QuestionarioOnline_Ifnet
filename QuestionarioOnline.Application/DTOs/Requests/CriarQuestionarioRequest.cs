@@ -1,0 +1,25 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace QuestionarioOnline.Application.DTOs.Requests;
+
+/// <summary>
+/// Request para criar um novo questionário
+/// </summary>
+public record CriarQuestionarioRequest(
+    [Required(ErrorMessage = "Título é obrigatório")]
+    [StringLength(200, MinimumLength = 3, ErrorMessage = "Título deve ter entre 3 e 200 caracteres")]
+    string Titulo,
+    
+    [StringLength(1000, ErrorMessage = "Descrição deve ter no máximo 1000 caracteres")]
+    string? Descricao,
+    
+    [Required(ErrorMessage = "Data de início é obrigatória")]
+    DateTime DataInicio,
+    
+    [Required(ErrorMessage = "Data de fim é obrigatória")]
+    DateTime DataFim,
+    
+    [Required(ErrorMessage = "Perguntas são obrigatórias")]
+    [MinLength(1, ErrorMessage = "Questionário deve ter pelo menos uma pergunta")]
+    List<CriarPerguntaDto> Perguntas
+);

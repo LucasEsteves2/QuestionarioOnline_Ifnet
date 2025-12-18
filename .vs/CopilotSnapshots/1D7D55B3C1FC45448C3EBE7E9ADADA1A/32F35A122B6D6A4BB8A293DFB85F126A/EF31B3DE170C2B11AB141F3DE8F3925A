@@ -1,0 +1,209 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using QuestionarioOnline.Application.DTOs;
+using QuestionarioOnline.Application.Interfaces;
+using System.Security.Claims;
+
+namespace QuestionarioOnline.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class QuestionarioController : ControllerBase
+{
+    private readonly IQuestionarioService _questionarioService;
+
+    public QuestionarioController(IQuestionarioService questionarioService)
+    {
+        _questionarioService = questionarioService;
+    }
+
+    /// <summary>
+    /// Criar um novo questionário (Usuário Interno Autenticado)
+    /// </summary>
+    [HttpPost]
+    public async Task<ActionResult<QuestionarioDto>> Criar([FromBody] CriarQuestionarioRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            // TODO: Extrair usuário do token JWT
+            var usuarioId = ObterUsuarioIdDoToken();
+
+            var questionario = await _questionarioService.CriarQuestionarioAsync(
+                request,
+                usuarioId,
+                cancellationToken);
+
+            return CreatedAtAction(
+                nameof(ObterPorId),
+                new { id = questionario.Id },
+                questionario);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Publicar um questionário (Usuário Interno Autenticado)
+    /// </summary>
+    [HttpPost("{id}/publicar")]
+    public async Task<ActionResult<QuestionarioDto>> Publicar(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var usuarioId = ObterUsuarioIdDoToken();
+
+            var questionario = await _questionarioService.PublicarQuestionarioAsync(
+                id,
+                usuarioId,
+                cancellationToken);
+
+            return Ok(questionario);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Forbid(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Encerrar um questionário (Usuário Interno Autenticado)
+    /// </summary>
+    [HttpPost("{id}/encerrar")]
+    public async Task<ActionResult<QuestionarioDto>> Encerrar(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var usuarioId = ObterUsuarioIdDoToken();
+
+            var questionario = await _questionarioService.EncerrarQuestionarioAsync(
+                id,
+                usuarioId,
+                cancellationToken);
+
+            return Ok(questionario);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Forbid(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Obter questionário público para responder (Público - sem autenticação)
+    /// </summary>
+    [HttpGet("{id}/publico")]
+    public async Task<ActionResult<QuestionarioPublicoDto>> ObterPublico(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var questionario = await _questionarioService.ObterQuestionarioPublicoAsync(
+            id,
+            cancellationToken);
+
+        if (questionario is null)
+            return NotFound(new { mensagem = "Questionário não encontrado ou não disponível" });
+
+        return Ok(questionario);
+    }
+
+    /// <summary>
+    /// Obter detalhes do questionário (Usuário Interno Autenticado)
+    /// </summary>
+    [HttpGet("{id}")]
+    public async Task<ActionResult<QuestionarioDto>> ObterPorId(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var usuarioId = ObterUsuarioIdDoToken();
+
+            var questionario = await _questionarioService.ObterQuestionarioPorIdAsync(
+                id,
+                usuarioId,
+                cancellationToken);
+
+            if (questionario is null)
+                return NotFound(new { mensagem = "Questionário não encontrado" });
+
+            return Ok(questionario);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Forbid(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Listar questionários do usuário autenticado (Usuário Interno Autenticado)
+    /// </summary>
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<QuestionarioListaDto>>> Listar(
+        CancellationToken cancellationToken)
+    {
+        var usuarioId = ObterUsuarioIdDoToken();
+
+        var questionarios = await _questionarioService.ListarQuestionariosPorUsuarioAsync(
+            usuarioId,
+            cancellationToken);
+
+        return Ok(questionarios);
+    }
+
+    /// <summary>
+    /// Obter resultados do questionário (Usuário Interno Autenticado)
+    /// </summary>
+    [HttpGet("{id}/resultados")]
+    public async Task<ActionResult<ResultadoQuestionarioDto>> ObterResultados(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var usuarioId = ObterUsuarioIdDoToken();
+
+            var resultados = await _questionarioService.ObterResultadosAsync(
+                id,
+                usuarioId,
+                cancellationToken);
+
+            return Ok(resultados);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Forbid(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
+        }
+    }
+
+    private Guid ObterUsuarioIdDoToken()
+    {
+        // TODO: Implementar extração real do JWT
+        // Por enquanto, retorna um GUID fixo para testes
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            // Para desenvolvimento: retornar um GUID fixo ou lançar exceção
+            return Guid.Parse("00000000-0000-0000-0000-000000000001");
+        }
+
+        return userId;
+    }
+}

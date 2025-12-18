@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "QuestionarioOnline.Workers.Function": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7182",
+      "launchBrowser": false
+    }
+  }
+}

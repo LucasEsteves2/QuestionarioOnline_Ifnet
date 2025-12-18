@@ -1,0 +1,186 @@
+﻿# 📋 Sistema de Questionários Online
+
+[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat&logo=dotnet)](https://dotnet.microsoft.com/)
+[![C#](https://img.shields.io/badge/C%23-12.0-239120?style=flat&logo=c-sharp)](https://docs.microsoft.com/en-us/dotnet/csharp/)
+[![Azure](https://img.shields.io/badge/Azure-Queue%20Storage-0089D6?style=flat&logo=microsoft-azure)](https://azure.microsoft.com/)
+[![Infnet](https://img.shields.io/badge/Infnet-Pós--Graduação-red.svg)](https://www.infnet.edu.br/)
+
+> Projeto desenvolvido como Trabalho de Conclusão da **Pós-Graduação em Arquitetura de Software** do **Instituto Infnet**. Sistema empresarial para criação, gerenciamento e coleta de respostas de questionários com processamento assíncrono de alto volume usando Azure Queue Storage.
+
+---
+
+## 📑 **Índice**
+
+- [Contexto Acadêmico](#-contexto-acadêmico)
+- [Sobre o Projeto](#-sobre-o-projeto)
+- [Desafio de Negócio](#-desafio-de-negócio)
+- [Arquitetura](#-arquitetura)
+- [Domínio e Entidades](#-domínio-e-entidades)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Decisões Arquiteturais](#-decisões-arquiteturais)
+- [Tecnologias](#-tecnologias)
+- [Funcionalidades e Endpoints](#-funcionalidades-e-endpoints)
+- [Instalação e Configuração](#-instalação-e-configuração)
+- [Performance e Escalabilidade](#-performance-e-escalabilidade)
+- [Documentação Adicional](#-documentação-adicional)
+
+---
+
+## 🎓 **Contexto Acadêmico**
+
+Este projeto foi desenvolvido como **Trabalho de Conclusão da Pós-Graduação em Arquitetura de Software** do **Instituto Infnet**, sob a perspectiva de um **Arquiteto de Software** responsável por projetar uma solução escalável e de alta performance para uma startup.
+
+### **Requisitos do Projeto Acadêmico**
+
+**Cenário:**
+Uma startup precisa de um sistema de questionários online para pesquisas públicas sobre eleições, com capacidade de receber respostas de **milhões de pessoas** simultaneamente através de campanhas em redes sociais.
+
+**Restrições:**
+- 👥 Time de **5 desenvolvedores** com conhecimento em **.NET e C#**
+- 🔒 Obrigatoriedade de uso do **ecossistema .NET**
+- ⏰ **Prazo crítico**: Eleições se aproximando (urgência de entrega)
+- 📈 Escala: Suportar **milhões de respostas** simultâneas
+- ✅ Simplicidade: Perguntas de **múltipla escolha**
+
+**Objetivo:**
+Elaborar diagramas (UML/C4 Model) e justificar escolhas arquiteturais para dois públicos:
+1. **Desenvolvedores** (visão técnica)
+2. **Usuários/Stakeholders** (visão de negócio)
+
+---
+
+## 🎯 **Sobre o Projeto**
+
+O **Sistema de Questionários Online** é uma solução empresarial desenvolvida com **.NET 8** que permite a criação e gerenciamento de questionários por usuários internos (analistas da startup) e a coleta massiva de respostas de usuários externos (eleitores) de forma escalável e assíncrona.
+
+### **Público-Alvo**
+- **Usuários Internos**: Equipe da startup (criação e análise de pesquisas)
+- **Usuários Externos**: Milhões de eleitores respondendo pesquisas via redes sociais
+- **Desenvolvedores**: Time de 5 devs .NET/C# que implementaram a solução
+
+---
+
+## 🚨 **Desafio de Negócio**
+
+Startups de pesquisa eleitoral enfrentam desafios críticos durante campanhas em redes sociais:
+
+**📊 Volume Massivo e Imprevisível**
+- 🔥 **Picos de acesso**: Posts virais podem gerar 10k+ respostas simultâneas
+- 💥 **Sobrecarga do servidor**: Infraestrutura tradicional não escala rapidamente
+
+**⚡ Performance Crítica**
+- ⏱️ **Timeout**: Usuários abandonam se a resposta demora >3 segundos
+- 📉 **Perda de dados**: Falhas durante picos causam perda de respostas valiosas
+
+**🕐 Prazo Apertado**
+- 🗳️ **Eleições se aproximando**: Entrega fora do prazo = prejuízo total
+- 👨‍💻 **Time pequeno**: 5 desenvolvedores precisam entregar rápido
+
+---
+
+## 🏗️ **Arquitetura**
+
+### **Visão Geral da Solução**
+
+A arquitetura do projeto foi estruturada seguindo os princípios de **Clean Architecture** combinada com **Domain-Driven Design (DDD)**, resultando em um **Monolito Modular** com **processamento assíncrono via fila de mensagens**.
+
+```mermaid
+graph TB
+    subgraph "🔵 PRESENTATION LAYER"
+        API[Web API<br/>Controllers, Middleware, JWT]
+    end
+
+    subgraph "🟡 APPLICATION LAYER"
+        Services[Services<br/>Orquestração e Validação]
+    end
+
+    subgraph "🟢 DOMAIN LAYER"
+        Entities[Entities<br/>Regras de Negócio]
+    end
+
+    subgraph "🟣 INFRASTRUCTURE LAYER"
+        Repos[Repositories<br/>EF Core, Azure Queue]
+    end
+
+    subgraph "🔴 CROSS-CUTTING LAYER"
+        DI[Dependency Injection<br/>Extensions, Constants]
+    end
+
+    subgraph "⚫ WORKERS LAYER"
+        Functions[Azure Functions<br/>Background Processing]
+    end
+
+    API --> Services
+    Services --> Entities
+    Services --> Repos
+    DI -.-> API
+    DI -.-> Services
+    DI -.-> Repos
+    Functions --> Repos
+
+    style Entities fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+    style Services fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    style API fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    style Repos fill:#d1c4e9,stroke:#4527a0,stroke-width:2px
+    style DI fill:#ffccbc,stroke:#d84315,stroke-width:2px
+    style Functions fill:#424242,stroke:#212121,stroke-width:2px
+```
+
+**Princípios aplicados:**
+- ✅ **Clean Architecture**: Camadas isoladas com inversão de dependência
+- ✅ **DDD**: Aggregate Roots, Value Objects, Rich Domain Model
+- ✅ **Processamento Assíncrono**: Fila absorve picos de carga
+- ✅ **Monolito Modular**: Simplicidade agora, evolução futura facilitada
+
+### **Processamento Assíncrono com Azure Queue Storage**
+
+A coleta de respostas dos questionários é realizada de forma assíncrona utilizando o **Azure Queue Storage**, garantindo escalabilidade e resiliência durante picos de acesso.
+
+**Fluxo de Respostas:**
+1. Usuário externo preenche o questionário na aplicação web.
+2. A resposta é enviada para a **Azure Queue** como uma mensagem.
+3. Um **Worker (Azure Function)** processa a mensagem da fila e armazena a resposta no banco de dados.
+4. Caso ocorra algum erro, a mensagem é reenviada para a fila até 5 vezes, após isso vai para a **Dead Letter Queue** para análise.
+
+**Benefícios mensuráveis:**
+
+| Cenário | Síncrono ❌ | Assíncrono ✅ |
+|---------|-------------|---------------|
+| **10.000 respostas em 1 minuto** | 83 minutos (timeout) | 50 segundos (sucesso) |
+| **Taxa de sucesso** | 2% (98% perdidas) | 100% (enfileiradas) |
+| **Experiência do usuário** | Aguarda 500ms+ | Feedback em <5ms |
+| **Resiliência** | Sem retry | Retry automático + DLQ |
+
+---
+
+## 🌐 **Domínio e Entidades**
+
+O domínio do sistema é centrado na criação e gestão de questionários para coleta de respostas. As entidades principais foram modeladas como **Aggregate Roots** para garantir integridade e consistência nas operações.
+
+### **Aggregate Roots**
+
+**⭐ Questionario (Gerenciamento de Pesquisas)**
+- **Responsabilidade**: Gerencia perguntas e opções com consistência transacional
+- **Regras de negócio**: 
+  - Factory Method `Criar()` garante estado válido inicial
+  - `PodeReceberRespostas()` verifica período de coleta e status
+  - `Encerrar()` muda status para `Encerrado` (imutável depois)
+  - **Vinculação**: `UsuarioId` identifica o criador do questionário
+- **Value Object**: `PeriodoColeta` (DataInicio, DataFim com validação)
+
+**⭐ Resposta (Coleta de Votos)**
+- **Responsabilidade**: Gerencia itens de resposta e valida completude
+- **Regras de negócio**:
+  - `ValidarCompletude()` garante que todas perguntas obrigatórias foram respondidas
+  - `AdicionarItem()` valida se pergunta pertence ao questionário
+  - **Anonimato**: Não vincula usuário, apenas `OrigemResposta` (hash IP + UserAgent)
+- **Value Object**: `OrigemResposta` (para detectar duplicatas sem identificar eleitor)
+
+**⭐ Usuario (Autenticação)**
+- **Responsabilidade**: Gerencia autenticação de analistas da startup
+- **Regras de negócio**:
+  - `ValidarSenha()` com BCrypt (hash + salt automático)
+  - `Ativo` flag (desabilitar sem deletar)
+  - `AlterarRole()` para mudança de papéis (Admin, Visualizador)
+- **Value Object**: `Email` (validação de formato)
+

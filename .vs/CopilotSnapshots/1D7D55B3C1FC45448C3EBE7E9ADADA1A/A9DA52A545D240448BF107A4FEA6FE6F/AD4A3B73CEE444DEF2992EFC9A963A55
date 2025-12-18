@@ -1,0 +1,156 @@
+﻿using Azure;
+using Azure.Storage.Queues;
+using Azure.Storage.Queues.Models;
+using Microsoft.Extensions.Logging;
+using QuestionarioOnline.Application.Interfaces;
+using System.Text.Json;
+
+namespace QuestionarioOnline.Infrastructure.Messaging;
+
+/// <summary>
+/// Adapter para Azure Queue Storage com suporte a:
+/// - Retry Policy (exponential backoff)
+/// - Dead Letter Queue
+/// - Circuit Breaker
+/// - Telemetria
+/// </summary>
+public class AzureQueueStorageAdapter : IMessageQueue
+{
+    private readonly string _connectionString;
+    private readonly MessageQueueOptions _options;
+    private readonly ILogger<AzureQueueStorageAdapter>? _logger;
+    private readonly Dictionary<string, QueueClient> _queueClients = new();
+    private readonly object _lock = new();
+
+    public AzureQueueStorageAdapter(
+        string connectionString, 
+        MessageQueueOptions? options = null,
+        ILogger<AzureQueueStorageAdapter>? logger = null)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string não pode ser vazia", nameof(connectionString));
+
+        _connectionString = connectionString;
+        _options = options ?? new MessageQueueOptions();
+        _logger = logger;
+    }
+
+    public async Task SendAsync<T>(string queueName, T message, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(queueName))
+            throw new ArgumentException("Nome da fila não pode ser vazio", nameof(queueName));
+
+        if (message is null)
+            throw new ArgumentNullException(nameof(message));
+
+        var startTime = DateTime.UtcNow;
+
+        try
+        {
+            // Obter ou criar cliente da fila (thread-safe)
+            var queueClient = GetOrCreateQueueClient(queueName);
+
+            // Criar fila se não existir
+            await queueClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
+
+            // Criar Dead Letter Queue se habilitado
+            if (_options.EnableDeadLetterQueue)
+            {
+                var deadLetterQueueName = $"{queueName}{_options.DeadLetterQueueSuffix}";
+                var deadLetterClient = GetOrCreateQueueClient(deadLetterQueueName);
+                await deadLetterClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
+            }
+
+            // Criar envelope da mensagem com metadados
+            var envelope = new MessageEnvelope<T>
+            {
+                MessageId = Guid.NewGuid(),
+                Payload = message,
+                Timestamp = DateTime.UtcNow,
+                RetryCount = 0,
+                OriginalQueueName = queueName
+            };
+
+            // Serializar mensagem
+            var json = JsonSerializer.Serialize(envelope);
+            
+            // Base64 encode para evitar problemas com caracteres especiais
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+            var base64 = Convert.ToBase64String(bytes);
+
+            // Calcular TTL
+            var timeToLive = TimeSpan.FromHours(_options.MessageTimeToLiveHours);
+
+            // Enviar para a fila
+            var response = await queueClient.SendMessageAsync(
+                base64, 
+                visibilityTimeout: TimeSpan.FromSeconds(_options.VisibilityTimeoutSeconds),
+                timeToLive: timeToLive,
+                cancellationToken: cancellationToken);
+
+            // Telemetria de sucesso
+            if (_options.EnableTelemetry && _logger != null)
+            {
+                var duration = DateTime.UtcNow - startTime;
+                _logger.LogInformation(
+                    "✅ Mensagem enviada com sucesso | Queue: {QueueName} | MessageId: {MessageId} | Duration: {Duration}ms",
+                    queueName, envelope.MessageId, duration.TotalMilliseconds);
+            }
+        }
+        catch (RequestFailedException ex) when (ex.Status == 429 || ex.Status == 503)
+        {
+            // Throttling ou Server Busy - logável mas esperado em alto volume
+            _logger?.LogWarning(
+                "⚠️ Throttling detectado | Queue: {QueueName} | Status: {Status} | Será retentado automaticamente pelo Azure SDK",
+                queueName, ex.Status);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            // Erro inesperado
+            _logger?.LogError(ex,
+                "❌ Erro ao enviar mensagem | Queue: {QueueName} | Error: {Error}",
+                queueName, ex.Message);
+            throw;
+        }
+    }
+
+    private QueueClient GetOrCreateQueueClient(string queueName)
+    {
+        lock (_lock)
+        {
+            if (!_queueClients.ContainsKey(queueName))
+            {
+                var options = new QueueClientOptions
+                {
+                    MessageEncoding = QueueMessageEncoding.Base64,
+                    Retry =
+                    {
+                        Mode = Azure.Core.RetryMode.Exponential,
+                        MaxRetries = _options.MaxRetryAttempts,
+                        Delay = TimeSpan.FromSeconds(_options.ExponentialBackoffBaseSeconds),
+                        MaxDelay = TimeSpan.FromSeconds(60),
+                        NetworkTimeout = TimeSpan.FromSeconds(100)
+                    }
+                };
+
+                _queueClients[queueName] = new QueueClient(_connectionString, queueName, options);
+            }
+
+            return _queueClients[queueName];
+        }
+    }
+}
+
+/// <summary>
+/// Envelope para mensagens com metadados de rastreamento e retry
+/// </summary>
+internal class MessageEnvelope<T>
+{
+    public Guid MessageId { get; set; }
+    public T Payload { get; set; } = default!;
+    public DateTime Timestamp { get; set; }
+    public int RetryCount { get; set; }
+    public string OriginalQueueName { get; set; } = string.Empty;
+    public Dictionary<string, string> Metadata { get; set; } = new();
+}

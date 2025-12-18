@@ -1,0 +1,39 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using QuestionarioOnline.Application.Interfaces;
+using QuestionarioOnline.Application.Services;
+using QuestionarioOnline.Domain.Interfaces;
+using QuestionarioOnline.Infrastructure.Messaging;
+using QuestionarioOnline.Infrastructure.Persistence;
+using QuestionarioOnline.Infrastructure.Repositories;
+
+namespace QuestionarioOnline.CrossCutting.DependencyInjection;
+
+public static class DependencyInjectionConfig
+{
+    public static IServiceCollection AddQuestionarioOnlineServices(
+        this IServiceCollection services, 
+        string connectionString,
+        string storageConnectionString)
+    {
+        // DbContext
+        services.AddDbContext<QuestionarioOnlineDbContext>(options =>
+            options.UseSqlServer(connectionString));
+
+        // Repositories
+        services.AddScoped<IQuestionarioRepository, QuestionarioRepository>();
+        services.AddScoped<IRespostaRepository, RespostaRepository>();
+        services.AddScoped<IUsuarioInternoRepository, UsuarioInternoRepository>();
+
+        // Message Queue (Singleton - cliente reutilizável)
+        services.AddSingleton<IMessageQueue>(sp => 
+            new AzureQueueStorageAdapter(storageConnectionString));
+
+        // Services
+        services.AddScoped<IQuestionarioService, QuestionarioService>();
+        services.AddScoped<IRespostaService, RespostaService>();
+        services.AddScoped<IUsuarioInternoService, UsuarioInternoService>();
+
+        return services;
+    }
+}

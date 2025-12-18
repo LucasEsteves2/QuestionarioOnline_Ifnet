@@ -1,0 +1,290 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using QuestionarioOnline.Api.Responses;
+using QuestionarioOnline.Application.DTOs.Requests;
+using QuestionarioOnline.Application.DTOs.Responses;
+using QuestionarioOnline.Application.Interfaces;
+using QuestionarioOnline.Application.Validators;
+
+namespace QuestionarioOnline.Api.Controllers;
+
+[Route("api/[controller]")]
+public class QuestionarioController : BaseController
+{
+    private readonly IQuestionarioService _questionarioService;
+    
+    /// <summary>
+    /// ✅ VALIDATOR CONCRETO - Ctrl + Click aqui vai DIRETO para as regras!
+    /// 
+    /// Validações aplicadas por CriarQuestionarioRequestValidator:
+    /// 
+    /// [CriarQuestionarioRequest]
+    /// ├─ Titulo (string)
+    /// │  ├─ NotEmpty → "Título é obrigatório"
+    /// │  └─ Length(3, 200) → "Título deve ter entre 3 e 200 caracteres"
+    /// │
+    /// ├─ Descricao (string?, opcional)
+    /// │  └─ MaxLength(1000) → "Descrição deve ter no máximo 1000 caracteres"
+    /// │
+    /// ├─ DataInicio (DateTime)
+    /// │  ├─ NotEmpty → "Data de início é obrigatória"
+    /// │  └─ LessThan(DataFim) → "Data de início deve ser anterior à data de fim"
+    /// │
+    /// ├─ DataFim (DateTime)
+    /// │  ├─ NotEmpty → "Data de fim é obrigatória"
+    /// │  └─ GreaterThan(DateTime.UtcNow) → "Data de fim deve ser futura"
+    /// │
+    /// └─ Perguntas (List)
+    ///    ├─ NotEmpty → "Questionário deve ter pelo menos uma pergunta"
+    ///    │
+    ///    └─ [Cada Pergunta]
+    ///       ├─ Texto (string)
+    ///       │  ├─ NotEmpty → "Texto da pergunta é obrigatório"
+    ///       │  └─ MaxLength(500) → "Texto deve ter no máximo 500 caracteres"
+    ///       │
+    ///       ├─ Ordem (int)
+    ///       │  └─ GreaterThanOrEqualTo(0) → "Ordem deve ser maior ou igual a zero"
+    ///       │
+    ///       └─ Opcoes (List)
+    ///          ├─ NotEmpty → "Pergunta deve ter opções"
+    ///          ├─ MinLength(2) → "Pergunta deve ter pelo menos duas opções"
+    ///          │
+    ///          └─ [Cada Opção]
+    ///             ├─ Texto (string)
+    ///             │  ├─ NotEmpty → "Texto da opção é obrigatório"
+    ///             │  └─ MaxLength(500) → "Texto deve ter no máximo 500 caracteres"
+    ///             │
+    ///             └─ Ordem (int)
+    ///                └─ GreaterThanOrEqualTo(0) → "Ordem deve ser maior ou igual a zero"
+    /// 
+    /// 📍 Ctrl + Click em "CriarQuestionarioRequestValidator" abaixo para ver o código!
+    /// </summary>
+    private readonly CriarQuestionarioRequestValidator _criarQuestionarioValidator;
+
+    public QuestionarioController(
+        IQuestionarioService questionarioService,
+        CriarQuestionarioRequestValidator criarQuestionarioValidator)
+    {
+        _questionarioService = questionarioService;
+        _criarQuestionarioValidator = criarQuestionarioValidator;
+    }
+
+    /// <summary>
+    /// Criar um novo questionário (Usuário Interno Autenticado)
+    /// </summary>
+    /// <remarks>
+    /// <para><b>📋 VALIDAÇÕES APLICADAS:</b></para>
+    /// 
+    /// <para><b>Campos Principais:</b></para>
+    /// <list type="bullet">
+    ///   <item><b>Titulo:</b> obrigatório, entre 3 e 200 caracteres</item>
+    ///   <item><b>Descricao:</b> opcional, máximo 1000 caracteres</item>
+    ///   <item><b>DataInicio:</b> obrigatória, deve ser antes de DataFim</item>
+    ///   <item><b>DataFim:</b> obrigatória, deve ser futura (maior que hoje)</item>
+    ///   <item><b>Perguntas:</b> obrigatório, mínimo 1 pergunta</item>
+    /// </list>
+    /// 
+    /// <para><b>Perguntas (nested):</b></para>
+    /// <list type="bullet">
+    ///   <item><b>Texto:</b> obrigatório, máximo 500 caracteres</item>
+    ///   <item><b>Ordem:</b> maior ou igual a zero</item>
+    ///   <item><b>Opcoes:</b> obrigatório, mínimo 2 opções</item>
+    /// </list>
+    /// 
+    /// <para><b>Opções (nested nested):</b></para>
+    /// <list type="bullet">
+    ///   <item><b>Texto:</b> obrigatório, máximo 500 caracteres</item>
+    ///   <item><b>Ordem:</b> maior ou igual a zero</item>
+    /// </list>
+    /// 
+    /// <para>
+    /// ✅ <b>Validator:</b> <see cref="CriarQuestionarioRequestValidator"/>
+    /// (Ctrl + Click no link acima para ver o código completo das validações!)
+    /// </para>
+    /// 
+    /// <para><b>Exemplo de Request:</b></para>
+    /// <code>
+    /// {
+    ///   "titulo": "Pesquisa Eleitoral 2024",
+    ///   "descricao": "Pesquisa sobre intenção de voto",
+    ///   "dataInicio": "2024-01-15T00:00:00Z",
+    ///   "dataFim": "2024-02-15T23:59:59Z",
+    ///   "perguntas": [
+    ///     {
+    ///       "texto": "Em quem você votaria?",
+    ///       "ordem": 0,
+    ///       "obrigatoria": true,
+    ///       "opcoes": [
+    ///         { "texto": "Candidato A", "ordem": 0 },
+    ///         { "texto": "Candidato B", "ordem": 1 }
+    ///       ]
+    ///     }
+    ///   ]
+    /// }
+    /// </code>
+    /// </remarks>
+    [HttpPost]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<QuestionarioDto>>> Criar(
+        [FromBody] CriarQuestionarioRequest request,
+        CancellationToken cancellationToken)
+    {
+        // ✅ VALIDAÇÃO com CriarQuestionarioRequestValidator
+        // 📍 Ctrl + Click em "_criarQuestionarioValidator" (linha 18) para ver TODAS as regras!
+        // 📍 OU Ctrl + Click em "CriarQuestionarioRequestValidator" no using acima
+        var validationResult = await _criarQuestionarioValidator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+        {
+            // Retorna 400 Bad Request com erros de validação
+            // Exemplo: { "Titulo": ["Título é obrigatório", "Título deve ter entre 3 e 200 caracteres"] }
+            return ValidationErrorResponse<QuestionarioDto>(validationResult);
+        }
+
+        // TODO: Extrair usuário do token JWT
+        var usuarioId = ObterUsuarioIdDoToken();
+
+        var result = await _questionarioService.CriarQuestionarioAsync(
+            request,
+            usuarioId,
+            cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return FailResponse(result);
+        }
+
+        return CreatedResponse(
+            nameof(ObterPorId),
+            new { id = result.Value.Id },
+            result.Value,
+            "Questionário criado com sucesso");
+    }
+
+    /// <summary>
+    /// Publicar um questionário (Usuário Interno Autenticado)
+    /// </summary>
+    [HttpPost("{id}/publicar")]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<QuestionarioDto>>> Publicar(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var usuarioId = ObterUsuarioIdDoToken();
+
+        var result = await _questionarioService.PublicarQuestionarioAsync(id, usuarioId, cancellationToken);
+
+        return FromResult(result, "Questionário publicado com sucesso");
+    }
+
+    /// <summary>
+    /// Encerrar um questionário (Usuário Interno Autenticado)
+    /// </summary>
+    [HttpPost("{id}/encerrar")]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<QuestionarioDto>>> Encerrar(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var usuarioId = ObterUsuarioIdDoToken();
+
+        var result = await _questionarioService.EncerrarQuestionarioAsync(id, usuarioId, cancellationToken);
+
+        return FromResult(result, "Questionário encerrado com sucesso");
+    }
+
+    /// <summary>
+    /// Obter questionário público (Acesso Público - para responder)
+    /// </summary>
+    [HttpGet("publico/{id}")]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioPublicoDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioPublicoDto>), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ApiResponse<QuestionarioPublicoDto>>> ObterPublico(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var questionario = await _questionarioService.ObterQuestionarioPublicoAsync(id, cancellationToken);
+
+        if (questionario is null)
+        {
+            return NotFoundResponse<QuestionarioPublicoDto>("Questionário não encontrado ou não está disponível");
+        }
+
+        return OkResponse(questionario);
+    }
+
+    /// <summary>
+    /// Obter questionário por ID (Usuário Interno Autenticado)
+    /// </summary>
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ApiResponse<QuestionarioDto>>> ObterPorId(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var usuarioId = ObterUsuarioIdDoToken();
+
+        var questionario = await _questionarioService.ObterQuestionarioPorIdAsync(id, usuarioId, cancellationToken);
+
+        if (questionario is null)
+        {
+            return NotFoundResponse<QuestionarioDto>("Questionário não encontrado");
+        }
+
+        return OkResponse(questionario);
+    }
+
+    /// <summary>
+    /// Listar questionários do usuário autenticado
+    /// </summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(ApiResponse<IEnumerable<QuestionarioListaDto>>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ApiResponse<IEnumerable<QuestionarioListaDto>>>> Listar(
+        CancellationToken cancellationToken)
+    {
+        var usuarioId = ObterUsuarioIdDoToken();
+
+        var questionarios = await _questionarioService.ListarQuestionariosPorUsuarioAsync(usuarioId, cancellationToken);
+
+        return OkResponse(questionarios);
+    }
+
+    /// <summary>
+    /// Obter resultados de um questionário (Usuário Interno Autenticado)
+    /// </summary>
+    [HttpGet("{id}/resultados")]
+    [ProducesResponseType(typeof(ApiResponse<ResultadoQuestionarioDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<ResultadoQuestionarioDto>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<ResultadoQuestionarioDto>), StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<ApiResponse<ResultadoQuestionarioDto>>> ObterResultados(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var usuarioId = ObterUsuarioIdDoToken();
+
+            var resultado = await _questionarioService.ObterResultadosAsync(id, usuarioId, cancellationToken);
+
+            return OkResponse(resultado);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFoundResponse<ResultadoQuestionarioDto>(ex.Message);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return UnauthorizedResponse<ResultadoQuestionarioDto>(ex.Message);
+        }
+    }
+
+    private Guid ObterUsuarioIdDoToken()
+    {
+        // TODO: Implementar extração do usuário do token JWT
+        // Por enquanto, retorna um GUID fixo para desenvolvimento
+        return Guid.Parse("00000000-0000-0000-0000-000000000001");
+    }
+}

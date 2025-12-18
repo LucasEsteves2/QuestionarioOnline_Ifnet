@@ -1,0 +1,55 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using QuestionarioOnline.Api.Responses;
+using QuestionarioOnline.Api.Services;
+using QuestionarioOnline.Application.DTOs.Requests;
+using QuestionarioOnline.Application.DTOs.Responses;
+using QuestionarioOnline.Application.Interfaces;
+
+namespace QuestionarioOnline.Api.Controllers;
+
+/// <summary>
+/// Autenticação e autorização
+/// </summary>
+[AllowAnonymous]
+[Route("api/[controller]")]
+public class AuthController : BaseController
+{
+    private readonly IUsuarioInternoService _usuarioService;
+    private readonly AuthService _authService;
+
+    public AuthController(
+        IUsuarioInternoService usuarioService,
+        AuthService authService)
+    {
+        _usuarioService = usuarioService;
+        _authService = authService;
+    }
+
+    /// <summary>
+    /// Realizar login
+    /// </summary>
+    [HttpPost("login")]
+    [ProducesResponseType(typeof(ApiResponse<LoginResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<LoginResponse>), StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<ApiResponse<LoginResponse>>> Login(
+        [FromBody] LoginRequest request,
+        CancellationToken cancellationToken)
+    {
+        var usuario = await _usuarioService.ObterPorEmailAsync(request.Email, cancellationToken);
+
+        if (usuario is null || !usuario.ValidarSenha(request.Senha))
+            return UnauthorizedResponse<LoginResponse>("Email ou senha inválidos");
+
+        var token = _authService.GerarToken(usuario);
+
+        var response = new LoginResponse(
+            token,
+            usuario.Id,
+            usuario.Nome,
+            usuario.Email.ToString()
+        );
+
+        return OkResponse(response, "Login realizado com sucesso");
+    }
+}

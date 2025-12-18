@@ -1,0 +1,13 @@
+﻿using QuestionarioOnline.Domain.Entities;
+using QuestionarioOnline.Domain.ValueObjects;
+
+namespace QuestionarioOnline.Domain.Interfaces;
+
+public interface IUsuarioInternoRepository
+{
+    Task<UsuarioInterno?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<UsuarioInterno?> ObterPorEmailAsync(Email email, CancellationToken cancellationToken = default);
+    Task<bool> ExisteEmailAsync(Email email, CancellationToken cancellationToken = default);
+    Task AdicionarAsync(UsuarioInterno usuarioInterno, CancellationToken cancellationToken = default);
+    Task AtualizarAsync(UsuarioInterno usuarioInterno, CancellationToken cancellationToken = default);
+}

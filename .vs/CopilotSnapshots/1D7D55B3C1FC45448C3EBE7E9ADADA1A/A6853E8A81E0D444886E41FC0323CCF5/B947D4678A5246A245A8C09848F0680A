@@ -1,0 +1,95 @@
+﻿using QuestionarioOnline.Domain.Enums;
+using QuestionarioOnline.Domain.ValueObjects;
+
+namespace QuestionarioOnline.Domain.Entities;
+
+public class Questionario
+{
+    public Guid Id { get; private set; }
+    public string Titulo { get; private set; } = string.Empty;
+    public string? Descricao { get; private set; }
+    public StatusQuestionario Status { get; private set; }
+    public PeriodoColeta PeriodoColeta { get; private set; } = null!;
+    public Guid UsuarioId { get; private set; }
+    public DateTime DataCriacao { get; private set; }
+    public DateTime? DataEncerramento { get; private set; }
+
+    private readonly List<Pergunta> _perguntas = new();
+    public IReadOnlyCollection<Pergunta> Perguntas => _perguntas.AsReadOnly();
+
+    private Questionario() { }
+
+    public static Questionario Criar(
+        string titulo,
+        string? descricao,
+        DateTime dataInicio,
+        DateTime dataFim,
+        Guid usuarioId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(titulo, nameof(titulo));
+
+        if (usuarioId == Guid.Empty)
+            throw new ArgumentException("Usuário inválido", nameof(usuarioId));
+
+        var periodoColeta = PeriodoColeta.Create(dataInicio, dataFim);
+
+        return new Questionario
+        {
+            Id = Guid.NewGuid(),
+            Titulo = titulo,
+            Descricao = descricao,
+            Status = StatusQuestionario.Ativo,
+            PeriodoColeta = periodoColeta,
+            UsuarioId = usuarioId,
+            DataCriacao = DateTime.UtcNow
+        };
+    }
+
+    public Result AdicionarPergunta(Pergunta pergunta)
+    {
+        if (Status == StatusQuestionario.Encerrado)
+            return Result.Failure("Não é possível adicionar perguntas em questionário encerrado");
+
+        ArgumentNullException.ThrowIfNull(pergunta, nameof(pergunta));
+
+        _perguntas.Add(pergunta);
+        return Result.Success();
+    }
+
+    public Result RemoverPergunta(Guid perguntaId)
+    {
+        if (Status == StatusQuestionario.Encerrado)
+            return Result.Failure("Não é possível remover perguntas de questionário encerrado");
+
+        var pergunta = _perguntas.FirstOrDefault(p => p.Id == perguntaId);
+        if (pergunta is null)
+            return Result.Failure("Pergunta não encontrada");
+
+        _perguntas.Remove(pergunta);
+        return Result.Success();
+    }
+
+    public Result Encerrar()
+    {
+        if (Status == StatusQuestionario.Encerrado)
+            return Result.Failure("Questionário já está encerrado");
+
+        Status = StatusQuestionario.Encerrado;
+        DataEncerramento = DateTime.UtcNow;
+        
+        return Result.Success();
+    }
+
+    public bool PodeReceberRespostas()
+    {
+        return Status == StatusQuestionario.Ativo && PeriodoColeta.EstaAtivo();
+    }
+
+    public void AdicionarPergunta(string texto, int ordem, bool obrigatoria, IEnumerable<(string Texto, int Ordem)> opcoes)
+    {
+        var pergunta = new Pergunta(Id, texto, ordem, obrigatoria);
+        pergunta.AdicionarOpcoes(opcoes);
+
+        _perguntas.Add(pergunta);
+    }
+}

@@ -1,0 +1,50 @@
+﻿using FluentValidation;
+using QuestionarioOnline.Application.DTOs;
+
+namespace QuestionarioOnline.Application.Validators;
+
+/// <summary>
+/// ✅ Validador para criar questionário
+/// Valida ENTRADA DO USUÁRIO (formato, tamanho, regras de negócio superficiais)
+/// </summary>
+public class CriarQuestionarioRequestValidator : AbstractValidator<CriarQuestionarioRequest>
+{
+    public CriarQuestionarioRequestValidator()
+    {
+        // ✅ Validações de FORMATO e ENTRADA
+        RuleFor(x => x.Titulo)
+            .NotEmpty().WithMessage("Título é obrigatório")
+            .MaximumLength(200).WithMessage("Título deve ter no máximo 200 caracteres")
+            .MinimumLength(3).WithMessage("Título deve ter pelo menos 3 caracteres");
+
+        RuleFor(x => x.Descricao)
+            .MaximumLength(1000).WithMessage("Descrição deve ter no máximo 1000 caracteres")
+            .When(x => !string.IsNullOrEmpty(x.Descricao));
+
+        RuleFor(x => x.DataInicio)
+            .NotEmpty().WithMessage("Data de início é obrigatória")
+            .LessThan(x => x.DataFim).WithMessage("Data de início deve ser anterior à data de fim");
+
+        RuleFor(x => x.DataFim)
+            .NotEmpty().WithMessage("Data de fim é obrigatória")
+            .GreaterThan(DateTime.UtcNow).WithMessage("Data de fim deve ser futura");
+
+        RuleFor(x => x.Perguntas)
+            .NotEmpty().WithMessage("Questionário deve ter pelo menos uma pergunta")
+            .Must(perguntas => perguntas != null && perguntas.Count >= 1)
+            .WithMessage("Questionário deve ter pelo menos uma pergunta");
+
+        RuleForEach(x => x.Perguntas)
+            .ChildRules(pergunta =>
+            {
+                pergunta.RuleFor(p => p.Texto)
+                    .NotEmpty().WithMessage("Texto da pergunta é obrigatório")
+                    .MaximumLength(500).WithMessage("Texto deve ter no máximo 500 caracteres");
+
+                pergunta.RuleFor(p => p.Opcoes)
+                    .NotEmpty().WithMessage("Pergunta deve ter opções")
+                    .Must(opcoes => opcoes != null && opcoes.Count >= 2)
+                    .WithMessage("Pergunta deve ter pelo menos 2 opções");
+            });
+    }
+}

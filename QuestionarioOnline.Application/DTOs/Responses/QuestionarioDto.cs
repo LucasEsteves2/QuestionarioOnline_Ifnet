@@ -1,0 +1,16 @@
+namespace QuestionarioOnline.Application.DTOs.Responses;
+
+/// <summary>
+/// DTO completo de um questionário (para usuário interno)
+/// </summary>
+public record QuestionarioDto(
+    Guid Id,
+    string Titulo,
+    string? Descricao,
+    string Status,
+    DateTime DataInicio,
+    DateTime DataFim,
+    DateTime DataCriacao,
+    DateTime? DataEncerramento,
+    List<PerguntaDto> Perguntas
+);

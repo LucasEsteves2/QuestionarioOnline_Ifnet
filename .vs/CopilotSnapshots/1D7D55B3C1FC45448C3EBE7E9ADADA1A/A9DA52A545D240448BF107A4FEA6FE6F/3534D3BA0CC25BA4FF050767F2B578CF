@@ -1,0 +1,110 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using QuestionarioOnline.Infrastructure.Messaging;
+
+namespace QuestionarioOnline.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class HealthController : ControllerBase
+{
+    private readonly QueueHealthMonitor _healthMonitor;
+
+    public HealthController(IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("AzureWebJobsStorage")
+            ?? throw new InvalidOperationException("AzureWebJobsStorage connection string not found");
+        
+        _healthMonitor = new QueueHealthMonitor(connectionString);
+    }
+
+    /// <summary>
+    /// Verifica saúde da fila de respostas
+    /// </summary>
+    [HttpGet("queue")]
+    public async Task<ActionResult<HealthStatus>> GetQueueHealth(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var health = await _healthMonitor.CheckHealthAsync("respostas-questionario", cancellationToken);
+            
+            if (!health.IsHealthy)
+                return StatusCode(503, health); // Service Unavailable
+
+            return Ok(health);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                status = "Error",
+                message = $"Erro ao verificar saúde da fila: {ex.Message}"
+            });
+        }
+    }
+
+    /// <summary>
+    /// Obtém métricas detalhadas da fila
+    /// </summary>
+    [HttpGet("queue/metrics")]
+    public async Task<ActionResult<object>> GetQueueMetrics(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var mainQueue = await _healthMonitor.GetMetricsAsync("respostas-questionario", cancellationToken);
+            var deadLetter = await _healthMonitor.GetDeadLetterMetricsAsync("respostas-questionario", cancellationToken: cancellationToken);
+
+            return Ok(new
+            {
+                mainQueue = new
+                {
+                    name = mainQueue.QueueName,
+                    exists = mainQueue.Exists,
+                    messagesCount = mainQueue.ApproximateMessagesCount
+                },
+                deadLetterQueue = new
+                {
+                    name = deadLetter.QueueName,
+                    exists = deadLetter.Exists,
+                    messagesCount = deadLetter.ApproximateMessagesCount
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                error = $"Erro ao obter métricas: {ex.Message}"
+            });
+        }
+    }
+
+    /// <summary>
+    /// Reprocessa mensagens da Dead Letter Queue (uso administrativo)
+    /// </summary>
+    [HttpPost("queue/reprocess-dead-letter")]
+    public async Task<ActionResult<object>> ReprocessDeadLetterMessages(
+        [FromQuery] int maxMessages = 10,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var reprocessed = await _healthMonitor.ReprocessDeadLetterMessagesAsync(
+                "respostas-questionario", 
+                maxMessages, 
+                cancellationToken);
+
+            return Ok(new
+            {
+                message = $"{reprocessed} mensagens reprocessadas com sucesso",
+                reprocessedCount = reprocessed
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                error = $"Erro ao reprocessar mensagens: {ex.Message}"
+            });
+        }
+    }
+}

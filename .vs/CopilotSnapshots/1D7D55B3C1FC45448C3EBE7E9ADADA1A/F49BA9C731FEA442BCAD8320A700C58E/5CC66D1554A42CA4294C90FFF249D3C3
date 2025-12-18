@@ -1,0 +1,68 @@
+﻿using QuestionarioOnline.Application.DTOs;
+using QuestionarioOnline.Application.Interfaces;
+using QuestionarioOnline.Domain.Interfaces;
+using QuestionarioOnline.Domain.ValueObjects;
+
+namespace QuestionarioOnline.Application.Services;
+
+public class RespostaService : IRespostaService
+{
+    private readonly IFilaRespostaService _filaRespostaService;
+    private readonly IQuestionarioRepository _questionarioRepository;
+    private readonly IRespostaRepository _respostaRepository;
+
+    public RespostaService(
+        IFilaRespostaService filaRespostaService,
+        IQuestionarioRepository questionarioRepository,
+        IRespostaRepository respostaRepository)
+    {
+        _filaRespostaService = filaRespostaService;
+        _questionarioRepository = questionarioRepository;
+        _respostaRepository = respostaRepository;
+    }
+
+    /// <summary>
+    /// Registra resposta de forma ASSÍNCRONA usando fila
+    /// Retorna imediatamente após enfileirar (não bloqueia)
+    /// </summary>
+    public async Task<RespostaRegistradaDto> RegistrarRespostaAsync(RegistrarRespostaRequest request, CancellationToken cancellationToken = default)
+    {
+        // 1️⃣ Validação rápida - apenas verifica se questionário existe e está ativo
+        var questionario = await _questionarioRepository.ObterPorIdAsync(request.QuestionarioId, cancellationToken);
+
+        if (questionario is null)
+            throw new InvalidOperationException("Questionário não encontrado");
+
+        if (!questionario.PodeReceberRespostas())
+            throw new InvalidOperationException("Questionário não está disponível para receber respostas");
+
+        // 2️⃣ Verificação rápida de duplicação (evita spam)
+        var origemResposta = OrigemResposta.Create(request.IpAddress, request.UserAgent);
+        var jaRespondeu = await _respostaRepository.JaRespondeuAsync(request.QuestionarioId, origemResposta, cancellationToken);
+
+        if (jaRespondeu)
+            throw new InvalidOperationException("Você já respondeu este questionário");
+
+        // 3️⃣ Enfileirar para processamento assíncrono (NÃO BLOQUEIA)
+        var mensagem = new RespostaParaProcessamentoDto(
+            request.QuestionarioId,
+            request.Respostas,
+            request.IpAddress,
+            request.UserAgent,
+            request.Estado,
+            request.Cidade,
+            request.RegiaoGeografica,
+            request.DispositivoTipo,
+            request.NavegadorTipo
+        );
+
+        await _filaRespostaService.EnfileirarRespostaAsync(mensagem, cancellationToken);
+
+        // 4️⃣ Retornar imediatamente (202 Accepted) - processamento será feito pela Azure Function
+        return new RespostaRegistradaDto(
+            Guid.NewGuid(), // ID temporário (o real será gerado pelo worker)
+            request.QuestionarioId,
+            DateTime.UtcNow
+        );
+    }
+}

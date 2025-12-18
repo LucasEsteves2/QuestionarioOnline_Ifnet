@@ -1,0 +1,7 @@
+namespace QuestionarioOnline.Domain.Enums;
+
+public enum StatusQuestionario
+{
+    Ativo = 1,
+    Encerrado = 2
+}

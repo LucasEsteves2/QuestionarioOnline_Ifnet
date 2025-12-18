@@ -1,0 +1,16 @@
+﻿namespace QuestionarioOnline.Application.DTOs.Requests;
+
+/// <summary>
+/// Request para registrar uma resposta de questionário
+/// </summary>
+public record RegistrarRespostaRequest(
+    Guid QuestionarioId,
+    List<RespostaItemDto> Respostas,
+    string IpAddress,
+    string UserAgent,
+    string? Estado = null,
+    string? Cidade = null,
+    string? RegiaoGeografica = null,
+    string? DispositivoTipo = null,
+    string? NavegadorTipo = null
+);

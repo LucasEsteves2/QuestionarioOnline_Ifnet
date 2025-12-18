@@ -1,0 +1,155 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using QuestionarioOnline.Api.Responses;
+using QuestionarioOnline.Application.DTOs.Requests;
+using QuestionarioOnline.Application.DTOs.Responses;
+using QuestionarioOnline.Application.Interfaces;
+using QuestionarioOnline.Application.Validators;
+
+namespace QuestionarioOnline.Api.Controllers;
+
+/// <summary>
+/// Controller para gerenciamento de questionários
+/// </summary>
+[Route("api/[controller]")]
+public class QuestionarioController : BaseController
+{
+    private readonly IQuestionarioService _questionarioService;
+    
+    /// <summary>
+    /// Validator: <see cref="CriarQuestionarioRequestValidator"/>
+    /// Valida: Titulo, Descricao, DataInicio, DataFim, Perguntas (incluindo nested: Opcoes)
+    /// </summary>
+    private readonly CriarQuestionarioRequestValidator _criarQuestionarioValidator;
+
+    public QuestionarioController(
+        IQuestionarioService questionarioService,
+        CriarQuestionarioRequestValidator criarQuestionarioValidator)
+    {
+        _questionarioService = questionarioService;
+        _criarQuestionarioValidator = criarQuestionarioValidator;
+    }
+
+    /// <summary>
+    /// Criar questionário
+    /// </summary>
+    /// <remarks>
+    /// <b>Validações:</b> Titulo (3-200 chars), Descricao (max 1000), DataInicio &lt; DataFim, DataFim futura, Perguntas (min 1)
+    /// <br/><b>Validator:</b> <see cref="CriarQuestionarioRequestValidator"/>
+    /// </remarks>
+    [HttpPost]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<QuestionarioDto>>> Criar(
+        [FromBody] CriarQuestionarioRequest request,
+        CancellationToken cancellationToken)
+    {
+        var validationResult = await _criarQuestionarioValidator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+            return ValidationErrorResponse<QuestionarioDto>(validationResult);
+
+        var usuarioId = ObterUsuarioIdDoToken();
+        var result = await _questionarioService.CriarQuestionarioAsync(request, usuarioId, cancellationToken);
+
+        return result.IsFailure
+            ? FailResponse(result)
+            : CreatedResponse(nameof(ObterPorId), new { id = result.Value.Id }, result.Value, "Questionário criado com sucesso");
+    }
+
+    /// <summary>
+    /// Publicar questionário
+    /// </summary>
+    [HttpPost("{id}/publicar")]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<QuestionarioDto>>> Publicar(Guid id, CancellationToken cancellationToken)
+    {
+        var usuarioId = ObterUsuarioIdDoToken();
+        var result = await _questionarioService.PublicarQuestionarioAsync(id, usuarioId, cancellationToken);
+        return FromResult(result, "Questionário publicado com sucesso");
+    }
+
+    /// <summary>
+    /// Encerrar questionário
+    /// </summary>
+    [HttpPost("{id}/encerrar")]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<QuestionarioDto>>> Encerrar(Guid id, CancellationToken cancellationToken)
+    {
+        var usuarioId = ObterUsuarioIdDoToken();
+        var result = await _questionarioService.EncerrarQuestionarioAsync(id, usuarioId, cancellationToken);
+        return FromResult(result, "Questionário encerrado com sucesso");
+    }
+
+    /// <summary>
+    /// Obter questionário público (para responder)
+    /// </summary>
+    [HttpGet("publico/{id}")]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioPublicoDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioPublicoDto>), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ApiResponse<QuestionarioPublicoDto>>> ObterPublico(Guid id, CancellationToken cancellationToken)
+    {
+        var questionario = await _questionarioService.ObterQuestionarioPublicoAsync(id, cancellationToken);
+        return questionario is null
+            ? NotFoundResponse<QuestionarioPublicoDto>("Questionário não encontrado ou não está disponível")
+            : OkResponse(questionario);
+    }
+
+    /// <summary>
+    /// Obter questionário por ID
+    /// </summary>
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<QuestionarioDto>), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ApiResponse<QuestionarioDto>>> ObterPorId(Guid id, CancellationToken cancellationToken)
+    {
+        var usuarioId = ObterUsuarioIdDoToken();
+        var questionario = await _questionarioService.ObterQuestionarioPorIdAsync(id, usuarioId, cancellationToken);
+        return questionario is null
+            ? NotFoundResponse<QuestionarioDto>("Questionário não encontrado")
+            : OkResponse(questionario);
+    }
+
+    /// <summary>
+    /// Listar questionários do usuário autenticado
+    /// </summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(ApiResponse<IEnumerable<QuestionarioListaDto>>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ApiResponse<IEnumerable<QuestionarioListaDto>>>> Listar(CancellationToken cancellationToken)
+    {
+        var usuarioId = ObterUsuarioIdDoToken();
+        var questionarios = await _questionarioService.ListarQuestionariosPorUsuarioAsync(usuarioId, cancellationToken);
+        return OkResponse(questionarios);
+    }
+
+    /// <summary>
+    /// Obter resultados de um questionário
+    /// </summary>
+    [HttpGet("{id}/resultados")]
+    [ProducesResponseType(typeof(ApiResponse<ResultadoQuestionarioDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<ResultadoQuestionarioDto>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<ResultadoQuestionarioDto>), StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<ApiResponse<ResultadoQuestionarioDto>>> ObterResultados(Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var usuarioId = ObterUsuarioIdDoToken();
+            var resultado = await _questionarioService.ObterResultadosAsync(id, usuarioId, cancellationToken);
+            return OkResponse(resultado);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFoundResponse<ResultadoQuestionarioDto>(ex.Message);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return UnauthorizedResponse<ResultadoQuestionarioDto>(ex.Message);
+        }
+    }
+
+    private Guid ObterUsuarioIdDoToken()
+    {
+        // TODO: Implementar extração do usuário do token JWT
+        return Guid.Parse("00000000-0000-0000-0000-000000000001");
+    }
+}

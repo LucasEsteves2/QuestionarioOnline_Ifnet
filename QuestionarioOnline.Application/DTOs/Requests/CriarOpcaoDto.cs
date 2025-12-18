@@ -1,0 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace QuestionarioOnline.Application.DTOs.Requests;
+
+/// <summary>
+/// DTO para criar uma opção de resposta dentro de uma pergunta
+/// </summary>
+public record CriarOpcaoDto(
+    [Required(ErrorMessage = "Texto da opção é obrigatório")]
+    [StringLength(500, ErrorMessage = "Texto da opção deve ter no máximo 500 caracteres")]
+    string Texto,
+    
+    [Range(0, int.MaxValue, ErrorMessage = "Ordem deve ser maior ou igual a zero")]
+    int Ordem
+);

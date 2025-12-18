@@ -1,0 +1,94 @@
+﻿using Azure.Storage.Queues.Models;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
+using QuestionarioOnline.Application.DTOs;
+using QuestionarioOnline.Domain.Entities;
+using QuestionarioOnline.Domain.Interfaces;
+using QuestionarioOnline.Domain.ValueObjects;
+using System.Text.Json;
+
+namespace QuestionarioOnline.Workers.Function;
+
+public class ProcessarRespostaFunction
+{
+    private readonly ILogger<ProcessarRespostaFunction> _logger;
+    private readonly IRespostaRepository _respostaRepository;
+    private readonly IQuestionarioRepository _questionarioRepository;
+
+    public ProcessarRespostaFunction(
+        ILogger<ProcessarRespostaFunction> logger,
+        IRespostaRepository respostaRepository,
+        IQuestionarioRepository questionarioRepository)
+    {
+        _logger = logger;
+        _respostaRepository = respostaRepository;
+        _questionarioRepository = questionarioRepository;
+    }
+
+    [Function(nameof(ProcessarRespostaFunction))]
+    public async Task Run(
+        [QueueTrigger("respostas-questionario", Connection = "AzureWebJobsStorage")] 
+        QueueMessage message)
+    {
+        try
+        {
+            _logger.LogInformation("📩 Processando resposta da fila: {MessageId}", message.MessageId);
+
+            // 1️⃣ Deserializar mensagem
+            var base64 = message.MessageText;
+            var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(base64));
+            var dto = JsonSerializer.Deserialize<RespostaParaProcessamentoDto>(json);
+
+            if (dto is null)
+            {
+                _logger.LogError("❌ Mensagem inválida na fila");
+                return;
+            }
+
+            // 2️⃣ Buscar questionário com perguntas
+            var questionario = await _questionarioRepository.ObterPorIdComPerguntasAsync(
+                dto.QuestionarioId, 
+                CancellationToken.None);
+
+            if (questionario is null)
+            {
+                _logger.LogWarning("⚠️ Questionário {Id} não encontrado", dto.QuestionarioId);
+                return;
+            }
+
+            // 3️⃣ Criar resposta com dados demográficos
+            var origemResposta = OrigemResposta.Create(dto.IpAddress, dto.UserAgent);
+            
+            var resposta = new Resposta(
+                dto.QuestionarioId,
+                origemResposta,
+                dto.Estado,
+                dto.Cidade,
+                dto.RegiaoGeografica,
+                dto.DispositivoTipo,
+                dto.NavegadorTipo
+            );
+
+            // 4️⃣ Adicionar itens
+            foreach (var item in dto.Respostas)
+            {
+                var respostaItem = new RespostaItem(resposta.Id, item.PerguntaId, item.OpcaoRespostaId);
+                resposta.AdicionarItem(respostaItem);
+            }
+
+            // 5️⃣ Validar e salvar
+            resposta.ValidarCompletude(questionario.Perguntas);
+            await _respostaRepository.AdicionarAsync(resposta, CancellationToken.None);
+
+            _logger.LogInformation("✅ Resposta {Id} processada com sucesso - Estado: {Estado}, Cidade: {Cidade}", 
+                resposta.Id, 
+                dto.Estado ?? "N/A", 
+                dto.Cidade ?? "N/A");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "❌ Erro ao processar resposta da fila");
+            throw; // Azure Functions vai retentar automaticamente
+        }
+    }
+}

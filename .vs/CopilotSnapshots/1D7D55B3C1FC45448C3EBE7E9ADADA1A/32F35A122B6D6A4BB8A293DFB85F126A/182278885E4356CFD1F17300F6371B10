@@ -1,0 +1,8 @@
+﻿using QuestionarioOnline.Application.DTOs;
+
+namespace QuestionarioOnline.Application.Interfaces;
+
+public interface IFilaRespostaService
+{
+    Task EnfileirarRespostaAsync(RespostaParaProcessamentoDto mensagem, CancellationToken cancellationToken = default);
+}

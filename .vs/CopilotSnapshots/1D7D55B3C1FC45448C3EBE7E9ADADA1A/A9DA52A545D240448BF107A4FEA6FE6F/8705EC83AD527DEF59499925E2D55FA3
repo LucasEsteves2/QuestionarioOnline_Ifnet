@@ -1,0 +1,167 @@
+﻿using Azure.Storage.Queues;
+using Azure.Storage.Queues.Models;
+
+namespace QuestionarioOnline.Infrastructure.Messaging;
+
+/// <summary>
+/// Utilitário para monitorar saúde e métricas das filas
+/// </summary>
+public class QueueHealthMonitor
+{
+    private readonly string _connectionString;
+
+    public QueueHealthMonitor(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+
+    /// <summary>
+    /// Obtém métricas de uma fila
+    /// </summary>
+    public async Task<QueueMetrics> GetMetricsAsync(string queueName, CancellationToken cancellationToken = default)
+    {
+        var queueClient = new QueueClient(_connectionString, queueName);
+        
+        if (!await queueClient.ExistsAsync(cancellationToken))
+        {
+            return new QueueMetrics
+            {
+                QueueName = queueName,
+                Exists = false
+            };
+        }
+
+        var properties = await queueClient.GetPropertiesAsync(cancellationToken);
+
+        return new QueueMetrics
+        {
+            QueueName = queueName,
+            Exists = true,
+            ApproximateMessagesCount = properties.Value.ApproximateMessagesCount,
+            Metadata = properties.Value.Metadata
+        };
+    }
+
+    /// <summary>
+    /// Obtém métricas de Dead Letter Queue
+    /// </summary>
+    public async Task<QueueMetrics> GetDeadLetterMetricsAsync(string queueName, string deadLetterSuffix = "-deadletter", CancellationToken cancellationToken = default)
+    {
+        var deadLetterQueueName = $"{queueName}{deadLetterSuffix}";
+        return await GetMetricsAsync(deadLetterQueueName, cancellationToken);
+    }
+
+    /// <summary>
+    /// Verifica se a fila está saudável (poucos erros, sem sobrecarga)
+    /// </summary>
+    public async Task<HealthStatus> CheckHealthAsync(string queueName, CancellationToken cancellationToken = default)
+    {
+        var metrics = await GetMetricsAsync(queueName, cancellationToken);
+        var deadLetterMetrics = await GetDeadLetterMetricsAsync(queueName, cancellationToken: cancellationToken);
+
+        if (!metrics.Exists)
+        {
+            return new HealthStatus
+            {
+                IsHealthy = false,
+                Status = "Unhealthy",
+                Message = "Fila não existe",
+                QueueMetrics = metrics
+            };
+        }
+
+        // Critérios de saúde
+        var isHealthy = true;
+        var warnings = new List<string>();
+
+        // 1. Dead letter queue com muitas mensagens (> 100)
+        if (deadLetterMetrics.Exists && deadLetterMetrics.ApproximateMessagesCount > 100)
+        {
+            warnings.Add($"Dead Letter Queue com {deadLetterMetrics.ApproximateMessagesCount} mensagens (> 100)");
+            isHealthy = false;
+        }
+
+        // 2. Fila principal com backlog grande (> 10.000)
+        if (metrics.ApproximateMessagesCount > 10000)
+        {
+            warnings.Add($"Backlog alto: {metrics.ApproximateMessagesCount} mensagens (> 10.000)");
+        }
+
+        // 3. Fila principal com backlog crítico (> 100.000)
+        if (metrics.ApproximateMessagesCount > 100000)
+        {
+            warnings.Add($"Backlog CRÍTICO: {metrics.ApproximateMessagesCount} mensagens (> 100.000)");
+            isHealthy = false;
+        }
+
+        return new HealthStatus
+        {
+            IsHealthy = isHealthy,
+            Status = isHealthy ? "Healthy" : "Degraded",
+            Message = isHealthy ? "Fila operando normalmente" : string.Join("; ", warnings),
+            QueueMetrics = metrics,
+            DeadLetterQueueMetrics = deadLetterMetrics,
+            Warnings = warnings
+        };
+    }
+
+    /// <summary>
+    /// Reprocessa mensagens da Dead Letter Queue
+    /// </summary>
+    public async Task<int> ReprocessDeadLetterMessagesAsync(
+        string queueName, 
+        int maxMessages = 10, 
+        CancellationToken cancellationToken = default)
+    {
+        var deadLetterQueueName = $"{queueName}-deadletter";
+        var deadLetterClient = new QueueClient(_connectionString, deadLetterQueueName);
+        var originalQueueClient = new QueueClient(_connectionString, queueName);
+
+        if (!await deadLetterClient.ExistsAsync(cancellationToken))
+            return 0;
+
+        int reprocessedCount = 0;
+
+        // Receber mensagens do dead letter
+        var messages = await deadLetterClient.ReceiveMessagesAsync(maxMessages, cancellationToken: cancellationToken);
+
+        foreach (var message in messages.Value)
+        {
+            try
+            {
+                // Reenviar para fila original
+                await originalQueueClient.SendMessageAsync(message.MessageText, cancellationToken: cancellationToken);
+                
+                // Deletar do dead letter
+                await deadLetterClient.DeleteMessageAsync(message.MessageId, message.PopReceipt, cancellationToken);
+                
+                reprocessedCount++;
+            }
+            catch
+            {
+                // Se falhar, deixa na dead letter queue
+                continue;
+            }
+        }
+
+        return reprocessedCount;
+    }
+}
+
+public class QueueMetrics
+{
+    public string QueueName { get; set; } = string.Empty;
+    public bool Exists { get; set; }
+    public int ApproximateMessagesCount { get; set; }
+    public IDictionary<string, string>? Metadata { get; set; }
+}
+
+public class HealthStatus
+{
+    public bool IsHealthy { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
+    public QueueMetrics? QueueMetrics { get; set; }
+    public QueueMetrics? DeadLetterQueueMetrics { get; set; }
+    public List<string> Warnings { get; set; } = new();
+}

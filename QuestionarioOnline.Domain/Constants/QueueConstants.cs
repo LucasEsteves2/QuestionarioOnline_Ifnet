@@ -1,0 +1,43 @@
+namespace QuestionarioOnline.Domain.Constants;
+
+/// <summary>
+/// Constantes para configuração de filas (evita magic numbers)
+/// Localizado no Domain para ser acessível por todas as camadas
+/// </summary>
+public static class QueueConstants
+{
+    /// <summary>
+    /// Nome padrão da fila de respostas
+    /// </summary>
+    public const string RespostasQueueName = "respostas-questionario";
+
+    /// <summary>
+    /// Sufixo padrão para Dead Letter Queue
+    /// </summary>
+    public const string DeadLetterSuffix = "-deadletter";
+
+    /// <summary>
+    /// Timeout padrão de rede (em segundos)
+    /// </summary>
+    public const int DefaultNetworkTimeoutSeconds = 100;
+
+    /// <summary>
+    /// Delay máximo entre retries (em segundos)
+    /// </summary>
+    public const int MaxRetryDelaySeconds = 60;
+
+    /// <summary>
+    /// Threshold para alerta de Dead Letter Queue
+    /// </summary>
+    public const int DeadLetterWarningThreshold = 100;
+
+    /// <summary>
+    /// Threshold de backlog - Warning
+    /// </summary>
+    public const int BacklogWarningThreshold = 10_000;
+
+    /// <summary>
+    /// Threshold de backlog - Critical
+    /// </summary>
+    public const int BacklogCriticalThreshold = 100_000;
+}

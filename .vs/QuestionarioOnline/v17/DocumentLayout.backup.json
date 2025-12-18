@@ -1,0 +1,814 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lucas Dev\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\782961716\\AuthService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline\\controllers\\respostacontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|solutionrelative:questionarioonline\\controllers\\respostacontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline\\controllers\\questionariocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|solutionrelative:questionarioonline\\controllers\\questionariocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\RESTFUL_BEST_PRACTICES.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:docs\\RESTFUL_BEST_PRACTICES.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.application\\services\\questionarioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|solutionrelative:questionarioonline.application\\services\\questionarioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline\\extensions\\claimsprincipalextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|solutionrelative:questionarioonline\\extensions\\claimsprincipalextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B2FA60E5-5E66-4D87-BB6B-8A9106475BB2}|QuestionarioOnline.Domain\\QuestionarioOnline.Domain.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.domain\\entities\\questionario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B2FA60E5-5E66-4D87-BB6B-8A9106475BB2}|QuestionarioOnline.Domain\\QuestionarioOnline.Domain.csproj|solutionrelative:questionarioonline.domain\\entities\\questionario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.application\\services\\respostaservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|solutionrelative:questionarioonline.application\\services\\respostaservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B2FA60E5-5E66-4D87-BB6B-8A9106475BB2}|QuestionarioOnline.Domain\\QuestionarioOnline.Domain.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.domain\\entities\\pergunta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B2FA60E5-5E66-4D87-BB6B-8A9106475BB2}|QuestionarioOnline.Domain\\QuestionarioOnline.Domain.csproj|solutionrelative:questionarioonline.domain\\entities\\pergunta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\PREVENCAO_VOTOS_DUPLICADOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:docs\\PREVENCAO_VOTOS_DUPLICADOS.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.infrastructure\\persistence\\configurations\\respostaconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|solutionrelative:questionarioonline.infrastructure\\persistence\\configurations\\respostaconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5B81628B-F54A-44C5-B88D-9936DE7B7BF9}|QuestionarioOnline.CrossCutting\\QuestionarioOnline.CrossCutting.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.crosscutting\\dependencyinjection\\dependencyinjectionconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B81628B-F54A-44C5-B88D-9936DE7B7BF9}|QuestionarioOnline.CrossCutting\\QuestionarioOnline.CrossCutting.csproj|solutionrelative:questionarioonline.crosscutting\\dependencyinjection\\dependencyinjectionconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|solutionrelative:questionarioonline\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|solutionrelative:questionarioonline\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline\\responses\\apiresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|solutionrelative:questionarioonline\\responses\\apiresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.application\\dtos\\requests\\registrarusuariorequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|solutionrelative:questionarioonline.application\\dtos\\requests\\registrarusuariorequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline\\questionarioonline.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|solutionrelative:questionarioonline\\questionarioonline.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline\\controllers\\basecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|solutionrelative:questionarioonline\\controllers\\basecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B2FA60E5-5E66-4D87-BB6B-8A9106475BB2}|QuestionarioOnline.Domain\\QuestionarioOnline.Domain.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.domain\\entities\\resposta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B2FA60E5-5E66-4D87-BB6B-8A9106475BB2}|QuestionarioOnline.Domain\\QuestionarioOnline.Domain.csproj|solutionrelative:questionarioonline.domain\\entities\\resposta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B2FA60E5-5E66-4D87-BB6B-8A9106475BB2}|QuestionarioOnline.Domain\\QuestionarioOnline.Domain.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.domain\\enums\\usuariorole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B2FA60E5-5E66-4D87-BB6B-8A9106475BB2}|QuestionarioOnline.Domain\\QuestionarioOnline.Domain.csproj|solutionrelative:questionarioonline.domain\\enums\\usuariorole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B2FA60E5-5E66-4D87-BB6B-8A9106475BB2}|QuestionarioOnline.Domain\\QuestionarioOnline.Domain.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.domain\\entities\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B2FA60E5-5E66-4D87-BB6B-8A9106475BB2}|QuestionarioOnline.Domain\\QuestionarioOnline.Domain.csproj|solutionrelative:questionarioonline.domain\\entities\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B2FA60E5-5E66-4D87-BB6B-8A9106475BB2}|QuestionarioOnline.Domain\\QuestionarioOnline.Domain.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.domain\\interfaces\\iusuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B2FA60E5-5E66-4D87-BB6B-8A9106475BB2}|QuestionarioOnline.Domain\\QuestionarioOnline.Domain.csproj|solutionrelative:questionarioonline.domain\\interfaces\\iusuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.infrastructure\\repositories\\usuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|solutionrelative:questionarioonline.infrastructure\\repositories\\usuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.infrastructure\\persistence\\configurations\\usuarioconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|solutionrelative:questionarioonline.infrastructure\\persistence\\configurations\\usuarioconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.infrastructure\\persistence\\questionarioonlinedbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|solutionrelative:questionarioonline.infrastructure\\persistence\\questionarioonlinedbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.infrastructure\\persistence\\configurations\\questionarioconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|solutionrelative:questionarioonline.infrastructure\\persistence\\configurations\\questionarioconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.infrastructure\\persistence\\dbinitializer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|solutionrelative:questionarioonline.infrastructure\\persistence\\dbinitializer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.infrastructure\\repositories\\questionariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|solutionrelative:questionarioonline.infrastructure\\repositories\\questionariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.application\\interfaces\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|solutionrelative:questionarioonline.application\\interfaces\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.application\\dtos\\responses\\usuarioregistradodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|solutionrelative:questionarioonline.application\\dtos\\responses\\usuarioregistradodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.application\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|solutionrelative:questionarioonline.application\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.application\\interfaces\\ijwttokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|solutionrelative:questionarioonline.application\\interfaces\\ijwttokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\EXCEPTIONS_VS_RESULT_PATTERN.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:docs\\EXCEPTIONS_VS_RESULT_PATTERN.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.application\\validators\\registrarusuariorequestvalidator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|solutionrelative:questionarioonline.application\\validators\\registrarusuariorequestvalidator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.application\\validators\\loginrequestvalidator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|solutionrelative:questionarioonline.application\\validators\\loginrequestvalidator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.application\\validators\\respostavalidators.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|solutionrelative:questionarioonline.application\\validators\\respostavalidators.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\VALIDACAO_ENTRADA_FLUENT.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:docs\\VALIDACAO_ENTRADA_FLUENT.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.application\\interfaces\\iquestionarioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|solutionrelative:questionarioonline.application\\interfaces\\iquestionarioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B2FA60E5-5E66-4D87-BB6B-8A9106475BB2}|QuestionarioOnline.Domain\\QuestionarioOnline.Domain.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.domain\\interfaces\\iquestionariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B2FA60E5-5E66-4D87-BB6B-8A9106475BB2}|QuestionarioOnline.Domain\\QuestionarioOnline.Domain.csproj|solutionrelative:questionarioonline.domain\\interfaces\\iquestionariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|solutionrelative:questionarioonline\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline\\extensions\\validationextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A7447090-10CC-46F3-934F-124B30B11A4E}|QuestionarioOnline\\QuestionarioOnline.Api.csproj|solutionrelative:questionarioonline\\extensions\\validationextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\ENDPOINTS_REVIEW.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:docs\\ENDPOINTS_REVIEW.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.application\\interfaces\\irespostaservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A7FF168-159C-4929-A024-BC116C03B9D9}|QuestionarioOnline.Application\\QuestionarioOnline.Application.csproj|solutionrelative:questionarioonline.application\\interfaces\\irespostaservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\CANCELLATION_TOKEN_GUIDE.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:docs\\CANCELLATION_TOKEN_GUIDE.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|c:\\users\\lucas dev\\source\\repos\\questionarioonline\\questionarioonline.infrastructure\\authentication\\jwttokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5504983E-E25E-4171-8D29-D3406946F3F5}|QuestionarioOnline.Infrastructure\\QuestionarioOnline.Infrastructure.csproj|solutionrelative:questionarioonline.infrastructure\\authentication\\jwttokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lucas Dev\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\875087670\\JwtSettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "README.md",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\README.md",
+              "RelativeDocumentMoniker": "README.md",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\README.md",
+              "RelativeToolTip": "README.md",
+              "ViewState": "AgIAAFkDAAAAAAAAAAAuwG0DAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-12-16T16:47:31.166Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 46,
+              "Title": "JwtSettings.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\875087670\\JwtSettings.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\875087670\\JwtSettings.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\875087670\\JwtSettings.cs",
+              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\875087670\\JwtSettings.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-18T12:27:59.481Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\782961716\\AuthService.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\782961716\\AuthService.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\782961716\\AuthService.cs",
+              "RelativeToolTip": "..\\..\\..\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\782961716\\AuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-18T12:27:51.024Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 45,
+              "Title": "JwtTokenService.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Authentication\\JwtTokenService.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Infrastructure\\Authentication\\JwtTokenService.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Authentication\\JwtTokenService.cs",
+              "RelativeToolTip": "QuestionarioOnline.Infrastructure\\Authentication\\JwtTokenService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-18T12:27:45.027Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:134:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:133:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 43,
+              "Title": "IRespostaService.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Interfaces\\IRespostaService.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Application\\Interfaces\\IRespostaService.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Interfaces\\IRespostaService.cs",
+              "RelativeToolTip": "QuestionarioOnline.Application\\Interfaces\\IRespostaService.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAABgwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-18T12:22:22.843Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 42,
+              "Title": "ENDPOINTS_REVIEW.md",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\ENDPOINTS_REVIEW.md",
+              "RelativeDocumentMoniker": "docs\\ENDPOINTS_REVIEW.md",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\ENDPOINTS_REVIEW.md",
+              "RelativeToolTip": "docs\\ENDPOINTS_REVIEW.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-12-18T12:18:47.872Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "RESTFUL_BEST_PRACTICES.md",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\RESTFUL_BEST_PRACTICES.md",
+              "RelativeDocumentMoniker": "docs\\RESTFUL_BEST_PRACTICES.md",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\RESTFUL_BEST_PRACTICES.md",
+              "RelativeToolTip": "docs\\RESTFUL_BEST_PRACTICES.md",
+              "ViewState": "AgIAAIEAAAAAAAAAAAAAAN8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-12-18T12:10:43.616Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 41,
+              "Title": "ValidationExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Extensions\\ValidationExtensions.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline\\Extensions\\ValidationExtensions.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Extensions\\ValidationExtensions.cs",
+              "RelativeToolTip": "QuestionarioOnline\\Extensions\\ValidationExtensions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-18T12:05:25.071Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 40,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Program.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline\\Program.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Program.cs",
+              "RelativeToolTip": "QuestionarioOnline\\Program.cs",
+              "ViewState": "AgIAAIMAAAAAAAAAAABRwIYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-18T11:59:19.559Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "RespostaController.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Controllers\\RespostaController.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline\\Controllers\\RespostaController.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Controllers\\RespostaController.cs",
+              "RelativeToolTip": "QuestionarioOnline\\Controllers\\RespostaController.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAgwC4AAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T12:57:55.548Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "QuestionarioController.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Controllers\\QuestionarioController.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline\\Controllers\\QuestionarioController.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Controllers\\QuestionarioController.cs",
+              "RelativeToolTip": "QuestionarioOnline\\Controllers\\QuestionarioController.cs",
+              "ViewState": "AgIAACIAAAAAAAAAAAAlwFwAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T12:57:42.844Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "RegistrarUsuarioRequestValidator.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Validators\\RegistrarUsuarioRequestValidator.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Application\\Validators\\RegistrarUsuarioRequestValidator.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Validators\\RegistrarUsuarioRequestValidator.cs",
+              "RelativeToolTip": "QuestionarioOnline.Application\\Validators\\RegistrarUsuarioRequestValidator.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-18T11:33:52.368Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 44,
+              "Title": "CANCELLATION_TOKEN_GUIDE.md",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\CANCELLATION_TOKEN_GUIDE.md",
+              "RelativeDocumentMoniker": "docs\\CANCELLATION_TOKEN_GUIDE.md",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\CANCELLATION_TOKEN_GUIDE.md",
+              "RelativeToolTip": "docs\\CANCELLATION_TOKEN_GUIDE.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAN8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-12-18T12:23:32.486Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "LoginRequestValidator.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Validators\\LoginRequestValidator.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Application\\Validators\\LoginRequestValidator.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Validators\\LoginRequestValidator.cs",
+              "RelativeToolTip": "QuestionarioOnline.Application\\Validators\\LoginRequestValidator.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-18T11:34:06.382Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "QuestionarioService.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Services\\QuestionarioService.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Application\\Services\\QuestionarioService.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Services\\QuestionarioService.cs",
+              "RelativeToolTip": "QuestionarioOnline.Application\\Services\\QuestionarioService.cs",
+              "ViewState": "AgIAAMgAAAAAAAAAAAAWwH4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T13:38:33.45Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 36,
+              "Title": "RespostaValidators.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Validators\\RespostaValidators.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Application\\Validators\\RespostaValidators.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Validators\\RespostaValidators.cs",
+              "RelativeToolTip": "QuestionarioOnline.Application\\Validators\\RespostaValidators.cs",
+              "ViewState": "AgIAACMAAAAAAAAAAEBVwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-18T11:37:21.033Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
+              "Title": "VALIDACAO_ENTRADA_FLUENT.md",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\VALIDACAO_ENTRADA_FLUENT.md",
+              "RelativeDocumentMoniker": "docs\\VALIDACAO_ENTRADA_FLUENT.md",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\VALIDACAO_ENTRADA_FLUENT.md",
+              "RelativeToolTip": "docs\\VALIDACAO_ENTRADA_FLUENT.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-12-18T11:38:11.407Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 38,
+              "Title": "IQuestionarioService.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Interfaces\\IQuestionarioService.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Application\\Interfaces\\IQuestionarioService.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Interfaces\\IQuestionarioService.cs",
+              "RelativeToolTip": "QuestionarioOnline.Application\\Interfaces\\IQuestionarioService.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-18T11:44:07.955Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 39,
+              "Title": "IQuestionarioRepository.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Domain\\Interfaces\\IQuestionarioRepository.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Domain\\Interfaces\\IQuestionarioRepository.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Domain\\Interfaces\\IQuestionarioRepository.cs",
+              "RelativeToolTip": "QuestionarioOnline.Domain\\Interfaces\\IQuestionarioRepository.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAIBXwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-18T11:44:48.572Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "EXCEPTIONS_VS_RESULT_PATTERN.md",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\EXCEPTIONS_VS_RESULT_PATTERN.md",
+              "RelativeDocumentMoniker": "docs\\EXCEPTIONS_VS_RESULT_PATTERN.md",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\EXCEPTIONS_VS_RESULT_PATTERN.md",
+              "RelativeToolTip": "docs\\EXCEPTIONS_VS_RESULT_PATTERN.md",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAxwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-12-17T23:01:24.768Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "RespostaService.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Services\\RespostaService.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Application\\Services\\RespostaService.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Services\\RespostaService.cs",
+              "RelativeToolTip": "QuestionarioOnline.Application\\Services\\RespostaService.cs",
+              "ViewState": "AgIAADsAAAAAAAAAAEBVwD8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T22:36:34.163Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Pergunta.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Domain\\Entities\\Pergunta.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Domain\\Entities\\Pergunta.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Domain\\Entities\\Pergunta.cs",
+              "RelativeToolTip": "QuestionarioOnline.Domain\\Entities\\Pergunta.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAcwA8AAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T22:35:04.808Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ClaimsPrincipalExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Extensions\\ClaimsPrincipalExtensions.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline\\Extensions\\ClaimsPrincipalExtensions.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Extensions\\ClaimsPrincipalExtensions.cs",
+              "RelativeToolTip": "QuestionarioOnline\\Extensions\\ClaimsPrincipalExtensions.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T20:55:33.552Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "DependencyInjectionConfig.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.CrossCutting\\DependencyInjection\\DependencyInjectionConfig.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.CrossCutting\\DependencyInjection\\DependencyInjectionConfig.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.CrossCutting\\DependencyInjection\\DependencyInjectionConfig.cs",
+              "RelativeToolTip": "QuestionarioOnline.CrossCutting\\DependencyInjection\\DependencyInjectionConfig.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAxwD8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T13:35:17.299Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\appsettings.json",
+              "RelativeDocumentMoniker": "QuestionarioOnline\\appsettings.json",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\appsettings.json",
+              "RelativeToolTip": "QuestionarioOnline\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAABDAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-12-17T20:55:51.759Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline\\Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "QuestionarioOnline\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAAC0AAAAAAAAAAIBZwDIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T12:35:19.999Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Services\\AuthService.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Application\\Services\\AuthService.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Services\\AuthService.cs",
+              "RelativeToolTip": "QuestionarioOnline.Application\\Services\\AuthService.cs",
+              "ViewState": "AgIAAG0AAAAAAAAAAEBVwHEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T15:24:07.857Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Questionario.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Domain\\Entities\\Questionario.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Domain\\Entities\\Questionario.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Domain\\Entities\\Questionario.cs",
+              "RelativeToolTip": "QuestionarioOnline.Domain\\Entities\\Questionario.cs",
+              "ViewState": "AgIAAFsAAAAAAAAAAABRwF4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T13:00:17.377Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "RespostaConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Persistence\\Configurations\\RespostaConfiguration.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Infrastructure\\Persistence\\Configurations\\RespostaConfiguration.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Persistence\\Configurations\\RespostaConfiguration.cs",
+              "RelativeToolTip": "QuestionarioOnline.Infrastructure\\Persistence\\Configurations\\RespostaConfiguration.cs",
+              "ViewState": "AgIAADUAAAAAAAAAAAAYwEgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T21:01:06.018Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "PREVENCAO_VOTOS_DUPLICADOS.md",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\PREVENCAO_VOTOS_DUPLICADOS.md",
+              "RelativeDocumentMoniker": "docs\\PREVENCAO_VOTOS_DUPLICADOS.md",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\docs\\PREVENCAO_VOTOS_DUPLICADOS.md",
+              "RelativeToolTip": "docs\\PREVENCAO_VOTOS_DUPLICADOS.md",
+              "ViewState": "AgIAAHsAAAAAAAAAAAAAAFwAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-12-17T21:54:44.258Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "IJwtTokenService.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Interfaces\\IJwtTokenService.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Application\\Interfaces\\IJwtTokenService.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Interfaces\\IJwtTokenService.cs",
+              "RelativeToolTip": "QuestionarioOnline.Application\\Interfaces\\IJwtTokenService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T15:26:52.655Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "UsuarioRegistradoDto.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\DTOs\\Responses\\UsuarioRegistradoDto.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Application\\DTOs\\Responses\\UsuarioRegistradoDto.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\DTOs\\Responses\\UsuarioRegistradoDto.cs",
+              "RelativeToolTip": "QuestionarioOnline.Application\\DTOs\\Responses\\UsuarioRegistradoDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T15:23:52.722Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "IAuthService.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Interfaces\\IAuthService.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Application\\Interfaces\\IAuthService.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\Interfaces\\IAuthService.cs",
+              "RelativeToolTip": "QuestionarioOnline.Application\\Interfaces\\IAuthService.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAMBbwAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T15:23:37.516Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "UsuarioRepository.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Repositories\\UsuarioRepository.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Infrastructure\\Repositories\\UsuarioRepository.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Repositories\\UsuarioRepository.cs",
+              "RelativeToolTip": "QuestionarioOnline.Infrastructure\\Repositories\\UsuarioRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T13:33:02.614Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "IUsuarioRepository.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Domain\\Interfaces\\IUsuarioRepository.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Domain\\Interfaces\\IUsuarioRepository.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Domain\\Interfaces\\IUsuarioRepository.cs",
+              "RelativeToolTip": "QuestionarioOnline.Domain\\Interfaces\\IUsuarioRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T13:32:38.233Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "Usuario.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Domain\\Entities\\Usuario.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Domain\\Entities\\Usuario.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Domain\\Entities\\Usuario.cs",
+              "RelativeToolTip": "QuestionarioOnline.Domain\\Entities\\Usuario.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T13:32:02.045Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "UsuarioRole.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Domain\\Enums\\UsuarioRole.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Domain\\Enums\\UsuarioRole.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Domain\\Enums\\UsuarioRole.cs",
+              "RelativeToolTip": "QuestionarioOnline.Domain\\Enums\\UsuarioRole.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T13:22:00.847Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "ApiResponse.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Responses\\ApiResponse.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline\\Responses\\ApiResponse.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Responses\\ApiResponse.cs",
+              "RelativeToolTip": "QuestionarioOnline\\Responses\\ApiResponse.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAIAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T12:58:51.565Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "DbInitializer.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Persistence\\DbInitializer.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Infrastructure\\Persistence\\DbInitializer.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Persistence\\DbInitializer.cs",
+              "RelativeToolTip": "QuestionarioOnline.Infrastructure\\Persistence\\DbInitializer.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAABRwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T13:36:57.942Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "QuestionarioRepository.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Repositories\\QuestionarioRepository.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Infrastructure\\Repositories\\QuestionarioRepository.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Repositories\\QuestionarioRepository.cs",
+              "RelativeToolTip": "QuestionarioOnline.Infrastructure\\Repositories\\QuestionarioRepository.cs",
+              "ViewState": "AgIAAFoAAAAAAAAAAEBVwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T13:37:13.161Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "QuestionarioConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Persistence\\Configurations\\QuestionarioConfiguration.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Infrastructure\\Persistence\\Configurations\\QuestionarioConfiguration.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Persistence\\Configurations\\QuestionarioConfiguration.cs",
+              "RelativeToolTip": "QuestionarioOnline.Infrastructure\\Persistence\\Configurations\\QuestionarioConfiguration.cs",
+              "ViewState": "AgIAAEEAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T13:36:15.813Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "QuestionarioOnlineDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Persistence\\QuestionarioOnlineDbContext.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Infrastructure\\Persistence\\QuestionarioOnlineDbContext.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Persistence\\QuestionarioOnlineDbContext.cs",
+              "RelativeToolTip": "QuestionarioOnline.Infrastructure\\Persistence\\QuestionarioOnlineDbContext.cs",
+              "ViewState": "AgIAAB8AAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T13:34:13.735Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "UsuarioConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Persistence\\Configurations\\UsuarioConfiguration.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Infrastructure\\Persistence\\Configurations\\UsuarioConfiguration.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Infrastructure\\Persistence\\Configurations\\UsuarioConfiguration.cs",
+              "RelativeToolTip": "QuestionarioOnline.Infrastructure\\Persistence\\Configurations\\UsuarioConfiguration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T13:33:36.827Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "Resposta.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Domain\\Entities\\Resposta.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Domain\\Entities\\Resposta.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Domain\\Entities\\Resposta.cs",
+              "RelativeToolTip": "QuestionarioOnline.Domain\\Entities\\Resposta.cs",
+              "ViewState": "AgIAAEkAAAAAAAAAAAAQwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T13:01:11.175Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "BaseController.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Controllers\\BaseController.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline\\Controllers\\BaseController.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\Controllers\\BaseController.cs",
+              "RelativeToolTip": "QuestionarioOnline\\Controllers\\BaseController.cs",
+              "ViewState": "AgIAAGUAAAAAAAAAAABRwGgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T12:47:12.905Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "RegistrarUsuarioRequest.cs",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\DTOs\\Requests\\RegistrarUsuarioRequest.cs",
+              "RelativeDocumentMoniker": "QuestionarioOnline.Application\\DTOs\\Requests\\RegistrarUsuarioRequest.cs",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline.Application\\DTOs\\Requests\\RegistrarUsuarioRequest.cs",
+              "RelativeToolTip": "QuestionarioOnline.Application\\DTOs\\Requests\\RegistrarUsuarioRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T12:43:12.395Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "QuestionarioOnline.Api.csproj",
+              "DocumentMoniker": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\QuestionarioOnline.Api.csproj",
+              "RelativeDocumentMoniker": "QuestionarioOnline\\QuestionarioOnline.Api.csproj",
+              "ToolTip": "C:\\Users\\Lucas Dev\\source\\repos\\QuestionarioOnline\\QuestionarioOnline\\QuestionarioOnline.Api.csproj*",
+              "RelativeToolTip": "QuestionarioOnline\\QuestionarioOnline.Api.csproj*",
+              "ViewState": "AgIAAAAAAAAAAAAAAIBJwBkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-12-17T12:43:54.058Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

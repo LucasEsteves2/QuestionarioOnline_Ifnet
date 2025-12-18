@@ -1,0 +1,10 @@
+using QuestionarioOnline.Application.DTOs.Requests;
+using QuestionarioOnline.Application.DTOs.Responses;
+using QuestionarioOnline.Domain.ValueObjects;
+
+namespace QuestionarioOnline.Application.Interfaces;
+
+public interface IRespostaService
+{
+    Task<Result<RespostaRegistradaDto>> RegistrarRespostaAsync(RegistrarRespostaRequest request);
+}

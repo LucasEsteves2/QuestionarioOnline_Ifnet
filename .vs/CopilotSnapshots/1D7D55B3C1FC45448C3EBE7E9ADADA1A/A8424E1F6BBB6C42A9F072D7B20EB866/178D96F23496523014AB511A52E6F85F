@@ -1,0 +1,95 @@
+﻿namespace QuestionarioOnline.Api.Responses;
+
+public class ApiResponse<T>
+{
+    public string Status { get; set; } = string.Empty;
+    public T? Data { get; set; }
+    public string? Message { get; set; }
+    public Dictionary<string, string[]>? Errors { get; set; }
+    public int StatusCode { get; set; }
+
+    public static ApiResponse<T> Success(T data, string? message = null, int statusCode = 200)
+    {
+        return new ApiResponse<T>
+        {
+            Status = "success",
+            Data = data,
+            Message = message,
+            StatusCode = statusCode
+        };
+    }
+
+    public static ApiResponse<T> ValidationError(Dictionary<string, string[]> errors, string? message = null)
+    {
+        return new ApiResponse<T>
+        {
+            Status = "fail",
+            Message = message ?? "Erro de validação",
+            Errors = errors,
+            StatusCode = 400
+        };
+    }
+
+    public static ApiResponse<T> Fail(string message, int statusCode = 400)
+    {
+        return new ApiResponse<T>
+        {
+            Status = "fail",
+            Message = message,
+            StatusCode = statusCode
+        };
+    }
+
+    public static ApiResponse<T> Error(string message, int statusCode = 500)
+    {
+        return new ApiResponse<T>
+        {
+            Status = "error",
+            Message = message,
+            StatusCode = statusCode
+        };
+    }
+
+    public static ApiResponse<T> NotFound(string? message = null)
+    {
+        return new ApiResponse<T>
+        {
+            Status = "fail",
+            Message = message ?? "Recurso não encontrado",
+            StatusCode = 404
+        };
+    }
+}
+
+public class ApiResponse : ApiResponse<object>
+{
+    public static new ApiResponse Success(string? message = null, int statusCode = 200)
+    {
+        return new ApiResponse
+        {
+            Status = "success",
+            Message = message,
+            StatusCode = statusCode
+        };
+    }
+
+    public static new ApiResponse Fail(string message, int statusCode = 400)
+    {
+        return new ApiResponse
+        {
+            Status = "fail",
+            Message = message,
+            StatusCode = statusCode
+        };
+    }
+
+    public static new ApiResponse NotFound(string? message = null)
+    {
+        return new ApiResponse
+        {
+            Status = "fail",
+            Message = message ?? "Recurso não encontrado",
+            StatusCode = 404
+        };
+    }
+}

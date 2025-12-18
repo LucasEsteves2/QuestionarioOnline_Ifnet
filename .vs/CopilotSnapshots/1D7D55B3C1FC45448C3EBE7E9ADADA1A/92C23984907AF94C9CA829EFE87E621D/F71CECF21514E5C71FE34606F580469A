@@ -1,0 +1,15 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace QuestionarioOnline.Application.DTOs.Requests;
+
+/// <summary>
+/// Request para criar um novo questionário
+/// Validação: CriarQuestionarioRequestValidator (FluentValidation)
+/// </summary>
+public record CriarQuestionarioRequest(
+    string Titulo,
+    string? Descricao,
+    DateTime DataInicio,
+    DateTime DataFim,
+    List<CriarPerguntaDto> Perguntas
+);

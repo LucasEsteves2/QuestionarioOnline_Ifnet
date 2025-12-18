@@ -1,0 +1,8 @@
+﻿namespace QuestionarioOnline.Domain.Enums;
+
+public enum StatusQuestionario
+{
+    Rascunho = 0,
+    Publicado = 1,
+    Encerrado = 2
+}

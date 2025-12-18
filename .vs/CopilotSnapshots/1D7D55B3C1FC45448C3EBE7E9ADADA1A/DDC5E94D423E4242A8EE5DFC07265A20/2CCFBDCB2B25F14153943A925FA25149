@@ -1,0 +1,57 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using QuestionarioOnline.Infrastructure.Persistence;
+
+namespace QuestionarioOnline.Infrastructure.Extensions;
+
+public static class MigrationExtensions
+{
+    public static async Task<IHost> MigrateDatabaseAsync(this IHost host)
+    {
+        using var scope = host.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        var logger = services.GetRequiredService<ILogger<QuestionarioOnlineDbContext>>();
+
+        try
+        {
+            var context = services.GetRequiredService<QuestionarioOnlineDbContext>();
+            logger.LogInformation("Iniciando migração do banco de dados...");
+
+            await context.Database.MigrateAsync();
+
+            logger.LogInformation("Migração concluída com sucesso!");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Erro ao executar migração do banco de dados");
+            throw;
+        }
+
+        return host;
+    }
+
+    public static async Task<IHost> SeedDatabaseAsync(this IHost host)
+    {
+        using var scope = host.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        var logger = services.GetRequiredService<ILogger<QuestionarioOnlineDbContext>>();
+
+        try
+        {
+            var context = services.GetRequiredService<QuestionarioOnlineDbContext>();
+            logger.LogInformation("Iniciando seed do banco de dados...");
+
+            await DbInitializer.SeedAsync(context);
+
+            logger.LogInformation("Seed concluído com sucesso!");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Erro ao executar seed do banco de dados");
+        }
+
+        return host;
+    }
+}

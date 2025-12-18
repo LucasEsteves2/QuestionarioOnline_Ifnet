@@ -1,0 +1,147 @@
+﻿using QuestionarioOnline.Domain.Enums;
+using QuestionarioOnline.Domain.ValueObjects;
+
+namespace QuestionarioOnline.Domain.Entities;
+
+public class Questionario
+{
+    public Guid Id { get; private set; }
+    public string Titulo { get; private set; } = string.Empty;
+    public string? Descricao { get; private set; }
+    public StatusQuestionario Status { get; private set; }
+    public PeriodoColeta PeriodoColeta { get; private set; } = null!;
+    public Guid UsuarioInternoId { get; private set; }
+    public DateTime DataCriacao { get; private set; }
+    public DateTime? DataPublicacao { get; private set; }
+    public DateTime? DataEncerramento { get; private set; }
+
+    private readonly List<Pergunta> _perguntas = new();
+    public IReadOnlyCollection<Pergunta> Perguntas => _perguntas.AsReadOnly();
+
+    // Constructor privado para EF Core
+    private Questionario() { }
+
+    /// <summary>
+    /// Factory Method - Questionario cria seu próprio PeriodoColeta
+    /// ✅ Guard Clauses MÍNIMAS - Apenas invariantes fundamentais
+    /// FluentValidation JÁ validou formato/tamanho na camada Application
+    /// </summary>
+    public static Questionario Criar(
+        string titulo, 
+        string? descricao, 
+        DateTime dataInicio, 
+        DateTime dataFim, 
+        Guid usuarioInternoId)
+    {
+        // ✅ Guard Clause - Invariante FUNDAMENTAL
+        // Se FluentValidation falhar, esta é a última linha de defesa
+        // Protege contra uso direto da API do Domain (ex: testes, outros serviços)
+        ArgumentException.ThrowIfNullOrWhiteSpace(titulo, nameof(titulo));
+        
+        // ✅ Guard Clause - Invariante FUNDAMENTAL
+        // Guid.Empty é estado inválido (não deveria existir)
+        if (usuarioInternoId == Guid.Empty)
+            throw new ArgumentException("Usuário interno inválido", nameof(usuarioInternoId));
+
+        // ✅ Questionario cria seu próprio PeriodoColeta (encapsulamento)
+        // PeriodoColeta.Create vai validar se dataInicio < dataFim
+        var periodoColeta = PeriodoColeta.Create(dataInicio, dataFim);
+
+        return new Questionario
+        {
+            Id = Guid.NewGuid(),
+            Titulo = titulo,
+            Descricao = descricao,
+            Status = StatusQuestionario.Rascunho,
+            PeriodoColeta = periodoColeta,
+            UsuarioInternoId = usuarioInternoId,
+            DataCriacao = DateTime.UtcNow
+        };
+    }
+
+    public void AdicionarPergunta(Pergunta pergunta)
+    {
+        // ✅ Validação de REGRA DE NEGÓCIO (não é simples null check)
+        if (Status != StatusQuestionario.Rascunho)
+            throw new InvalidOperationException("Apenas questionários em rascunho podem ter perguntas adicionadas");
+
+        // ✅ Guard Clause - Invariante
+        ArgumentNullException.ThrowIfNull(pergunta, nameof(pergunta));
+
+        _perguntas.Add(pergunta);
+    }
+
+    public void RemoverPergunta(Guid perguntaId)
+    {
+        // ✅ Regra de negócio
+        if (Status != StatusQuestionario.Rascunho)
+            throw new InvalidOperationException("Apenas questionários em rascunho podem ter perguntas removidas");
+
+        var pergunta = _perguntas.FirstOrDefault(p => p.Id == perguntaId);
+        if (pergunta is not null)
+            _perguntas.Remove(pergunta);
+    }
+
+    public void Publicar()
+    {
+        // ✅ Regras de negócio do Domain
+        if (Status != StatusQuestionario.Rascunho)
+            throw new InvalidOperationException("Apenas questionários em rascunho podem ser publicados");
+
+        if (!_perguntas.Any())
+            throw new InvalidOperationException("Questionário deve ter pelo menos uma pergunta");
+
+        if (!PeriodoColeta.JaIniciou())
+            throw new InvalidOperationException("Período de coleta ainda não iniciou");
+
+        Status = StatusQuestionario.Publicado;
+        DataPublicacao = DateTime.UtcNow;
+    }
+
+    public void Encerrar()
+    {
+        // ✅ Regra de negócio
+        if (Status != StatusQuestionario.Publicado)
+            throw new InvalidOperationException("Apenas questionários publicados podem ser encerrados");
+
+        Status = StatusQuestionario.Encerrado;
+        DataEncerramento = DateTime.UtcNow;
+    }
+
+    public bool PodeReceberRespostas()
+    {
+        return Status == StatusQuestionario.Publicado && PeriodoColeta.EstaAtivo();
+    }
+
+    public void AtualizarTitulo(string titulo)
+    {
+        // ✅ Regra de negócio
+        if (Status != StatusQuestionario.Rascunho)
+            throw new InvalidOperationException("Apenas questionários em rascunho podem ter o título alterado");
+
+        // ✅ Guard Clause - Invariante
+        ArgumentException.ThrowIfNullOrWhiteSpace(titulo, nameof(titulo));
+
+        Titulo = titulo;
+    }
+
+    public void AtualizarDescricao(string? descricao)
+    {
+        // ✅ Regra de negócio
+        if (Status != StatusQuestionario.Rascunho)
+            throw new InvalidOperationException("Apenas questionários em rascunho podem ter a descrição alterada");
+
+        Descricao = descricao;
+    }
+
+    public void AtualizarPeriodo(DateTime dataInicio, DateTime dataFim)
+    {
+        // ✅ Regra de negócio
+        if (Status != StatusQuestionario.Rascunho)
+            throw new InvalidOperationException("Apenas questionários em rascunho podem ter o período alterado");
+
+        // ✅ Cria novo PeriodoColeta internamente
+        // PeriodoColeta.Create vai validar as datas
+        PeriodoColeta = PeriodoColeta.Create(dataInicio, dataFim);
+    }
+}

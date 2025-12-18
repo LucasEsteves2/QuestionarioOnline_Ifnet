@@ -1,0 +1,17 @@
+﻿namespace QuestionarioOnline.Application.DTOs.Requests;
+
+/// <summary>
+/// DTO para mensagem da fila (processamento assíncrono)
+/// Usado internamente pelo worker para processar respostas
+/// </summary>
+public record RespostaParaProcessamentoDto(
+    Guid QuestionarioId,
+    List<RespostaItemDto> Respostas,
+    string IpAddress,
+    string UserAgent,
+    string? Estado,
+    string? Cidade,
+    string? RegiaoGeografica,
+    string? DispositivoTipo,
+    string? NavegadorTipo
+);

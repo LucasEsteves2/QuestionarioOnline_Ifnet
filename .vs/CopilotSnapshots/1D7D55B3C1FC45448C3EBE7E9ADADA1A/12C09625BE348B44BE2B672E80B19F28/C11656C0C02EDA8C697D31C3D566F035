@@ -1,0 +1,90 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace QuestionarioOnline.Application.DTOs;
+
+// DTOs para Questionário
+public record CriarQuestionarioRequest(
+    [Required(ErrorMessage = "Título é obrigatório")]
+    [StringLength(200, MinimumLength = 3, ErrorMessage = "Título deve ter entre 3 e 200 caracteres")]
+    string Titulo,
+    
+    [StringLength(1000, ErrorMessage = "Descrição deve ter no máximo 1000 caracteres")]
+    string? Descricao,
+    
+    [Required(ErrorMessage = "Data de início é obrigatória")]
+    DateTime DataInicio,
+    
+    [Required(ErrorMessage = "Data de fim é obrigatória")]
+    DateTime DataFim,
+    
+    [Required(ErrorMessage = "Perguntas são obrigatórias")]
+    [MinLength(1, ErrorMessage = "Questionário deve ter pelo menos uma pergunta")]
+    List<CriarPerguntaDto> Perguntas
+);
+
+public record CriarPerguntaDto(
+    [Required(ErrorMessage = "Texto da pergunta é obrigatório")]
+    [StringLength(500, ErrorMessage = "Texto da pergunta deve ter no máximo 500 caracteres")]
+    string Texto,
+    
+    [Range(0, int.MaxValue, ErrorMessage = "Ordem deve ser maior ou igual a zero")]
+    int Ordem,
+    
+    bool Obrigatoria,
+    
+    [Required(ErrorMessage = "Opções são obrigatórias")]
+    [MinLength(2, ErrorMessage = "Pergunta deve ter pelo menos duas opções")]
+    List<CriarOpcaoDto> Opcoes
+);
+
+public record CriarOpcaoDto(
+    [Required(ErrorMessage = "Texto da opção é obrigatório")]
+    [StringLength(500, ErrorMessage = "Texto da opção deve ter no máximo 500 caracteres")]
+    string Texto,
+    
+    [Range(0, int.MaxValue, ErrorMessage = "Ordem deve ser maior ou igual a zero")]
+    int Ordem
+);
+
+public record QuestionarioDto(
+    Guid Id,
+    string Titulo,
+    string? Descricao,
+    string Status,
+    DateTime DataInicio,
+    DateTime DataFim,
+    DateTime DataCriacao,
+    DateTime? DataPublicacao,
+    DateTime? DataEncerramento,
+    List<PerguntaDto> Perguntas
+);
+
+public record QuestionarioListaDto(
+    Guid Id,
+    string Titulo,
+    string Status,
+    DateTime DataInicio,
+    DateTime DataFim,
+    int TotalPerguntas
+);
+
+public record PerguntaDto(
+    Guid Id,
+    string Texto,
+    int Ordem,
+    bool Obrigatoria,
+    List<OpcaoDto> Opcoes
+);
+
+public record OpcaoDto(
+    Guid Id,
+    string Texto,
+    int Ordem
+);
+
+public record QuestionarioPublicoDto(
+    Guid Id,
+    string Titulo,
+    string? Descricao,
+    List<PerguntaDto> Perguntas
+);

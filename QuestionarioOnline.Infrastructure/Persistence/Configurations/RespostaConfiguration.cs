@@ -1,0 +1,72 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using QuestionarioOnline.Domain.Entities;
+
+namespace QuestionarioOnline.Infrastructure.Persistence.Configurations;
+
+public class RespostaConfiguration : IEntityTypeConfiguration<Resposta>
+{
+    public void Configure(EntityTypeBuilder<Resposta> builder)
+    {
+        builder.ToTable("Respostas");
+
+        builder.HasKey(e => e.Id);
+
+        builder.Property(e => e.QuestionarioId)
+            .IsRequired();
+
+        builder.Property(e => e.DataResposta)
+            .IsRequired();
+
+        builder.Property(e => e.Estado)
+            .HasMaxLength(100);
+
+        builder.Property(e => e.Cidade)
+            .HasMaxLength(200);
+
+        builder.Property(e => e.RegiaoGeografica)
+            .HasMaxLength(100);
+
+        builder.Property(e => e.DispositivoTipo)
+            .HasMaxLength(50);
+
+        builder.Property(e => e.NavegadorTipo)
+            .HasMaxLength(50);
+
+        // Configuração do Value Object OrigemResposta
+        builder.OwnsOne(e => e.OrigemResposta, origem =>
+        {
+            origem.Property(o => o.Hash)
+                .HasColumnName("OrigemResposta_Hash")
+                .IsRequired()
+                .HasMaxLength(64);
+        });
+
+        builder.HasMany(e => e.Itens)
+            .WithOne()
+            .HasForeignKey("RespostaId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne<Questionario>()
+            .WithMany()
+            .HasForeignKey(e => e.QuestionarioId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Índices
+        builder.HasIndex(e => e.QuestionarioId)
+            .HasDatabaseName("IX_Respostas_QuestionarioId");
+
+        builder.HasIndex(e => e.DataResposta)
+            .HasDatabaseName("IX_Respostas_DataResposta");
+
+        builder.HasIndex(e => new { e.QuestionarioId, e.Estado })
+            .HasDatabaseName("IX_Respostas_QuestionarioId_Estado");
+
+        builder.HasIndex(e => new { e.QuestionarioId, e.Cidade })
+            .HasDatabaseName("IX_Respostas_QuestionarioId_Cidade");
+
+        // NOTA: Índice único composto (QuestionarioId + OrigemResposta_Hash) para prevenir 
+        // votos duplicados será criado via migration SQL ou validado no Application Layer
+        // pois o EF Core tem limitações com índices compostos envolvendo Owned Types
+    }
+}

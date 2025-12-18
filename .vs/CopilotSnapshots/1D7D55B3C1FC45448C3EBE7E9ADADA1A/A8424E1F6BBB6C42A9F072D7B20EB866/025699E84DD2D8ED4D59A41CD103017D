@@ -1,0 +1,66 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using QuestionarioOnline.Application.DTOs;
+using QuestionarioOnline.Application.Interfaces;
+
+namespace QuestionarioOnline.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class UsuarioInternoController : ControllerBase
+{
+    private readonly IUsuarioInternoService _usuarioInternoService;
+
+    public UsuarioInternoController(IUsuarioInternoService usuarioInternoService)
+    {
+        _usuarioInternoService = usuarioInternoService;
+    }
+
+    [HttpPost("registrar")]
+    public async Task<ActionResult<UsuarioInternoDto>> Registrar(
+        [FromBody] CriarUsuarioInternoRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var usuario = await _usuarioInternoService.CriarUsuarioAsync(request, cancellationToken);
+            return CreatedAtAction(nameof(ObterPorId), new { id = usuario.Id }, usuario);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
+        }
+    }
+
+    [HttpPost("autenticar")]
+    public async Task<ActionResult<AutenticacaoResultDto>> Autenticar(
+        [FromBody] AutenticarUsuarioRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var resultado = await _usuarioInternoService.AutenticarAsync(request, cancellationToken);
+
+            if (!resultado.Sucesso)
+                return Unauthorized(resultado);
+
+            return Ok(resultado);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
+        }
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<UsuarioInternoDto>> ObterPorId(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var usuario = await _usuarioInternoService.ObterPorIdAsync(id, cancellationToken);
+
+        if (usuario is null)
+            return NotFound(new { mensagem = "Usuário não encontrado" });
+
+        return Ok(usuario);
+    }
+}

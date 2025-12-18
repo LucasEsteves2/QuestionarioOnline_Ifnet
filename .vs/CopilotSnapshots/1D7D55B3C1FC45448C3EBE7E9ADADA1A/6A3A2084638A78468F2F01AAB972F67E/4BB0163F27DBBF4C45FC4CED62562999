@@ -1,0 +1,48 @@
+﻿using FluentValidation;
+using QuestionarioOnline.Api.Requests;
+
+namespace QuestionarioOnline.Application.Validators;
+
+/// <summary>
+/// Validador para requisição de resposta da API
+/// </summary>
+public class RegistrarRespostaApiRequestValidator : AbstractValidator<RegistrarRespostaApiRequest>
+{
+    public RegistrarRespostaApiRequestValidator()
+    {
+        RuleFor(x => x.QuestionarioId)
+            .NotEmpty().WithMessage("ID do questionário é obrigatório");
+
+        RuleFor(x => x.Respostas)
+            .NotEmpty().WithMessage("Deve haver pelo menos uma resposta");
+
+        RuleForEach(x => x.Respostas).SetValidator(new RespostaItemApiDtoValidator());
+
+        RuleFor(x => x.Estado)
+            .Length(2).WithMessage("Estado deve ter 2 caracteres (UF)")
+            .When(x => !string.IsNullOrEmpty(x.Estado));
+
+        RuleFor(x => x.Cidade)
+            .MaximumLength(100).WithMessage("Cidade deve ter no máximo 100 caracteres")
+            .When(x => !string.IsNullOrEmpty(x.Cidade));
+
+        RuleFor(x => x.RegiaoGeografica)
+            .MaximumLength(50).WithMessage("Região geográfica deve ter no máximo 50 caracteres")
+            .When(x => !string.IsNullOrEmpty(x.RegiaoGeografica));
+    }
+}
+
+/// <summary>
+/// Validador para item de resposta
+/// </summary>
+public class RespostaItemApiDtoValidator : AbstractValidator<RespostaItemApiDto>
+{
+    public RespostaItemApiDtoValidator()
+    {
+        RuleFor(x => x.PerguntaId)
+            .NotEmpty().WithMessage("ID da pergunta é obrigatório");
+
+        RuleFor(x => x.OpcaoRespostaId)
+            .NotEmpty().WithMessage("ID da opção de resposta é obrigatório");
+    }
+}

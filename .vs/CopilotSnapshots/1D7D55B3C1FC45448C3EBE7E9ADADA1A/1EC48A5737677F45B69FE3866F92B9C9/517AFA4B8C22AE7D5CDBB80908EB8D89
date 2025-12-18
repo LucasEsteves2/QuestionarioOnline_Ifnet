@@ -1,0 +1,130 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using QuestionarioOnline.Api.Requests;
+using QuestionarioOnline.Application.DTOs;
+using QuestionarioOnline.Application.Interfaces;
+using UAParser;
+
+namespace QuestionarioOnline.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class RespostaController : ControllerBase
+{
+    private readonly IRespostaService _respostaService;
+
+    public RespostaController(IRespostaService respostaService)
+    {
+        _respostaService = respostaService;
+    }
+
+    /// <summary>
+    /// Registrar resposta de questionário (Público - ASSÍNCRONO)
+    /// Retorna 202 Accepted imediatamente e processa em background via fila
+    /// </summary>
+    [HttpPost]
+    [ProducesResponseType(typeof(RespostaRegistradaDto), StatusCodes.Status202Accepted)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<RespostaRegistradaDto>> Registrar(
+        [FromBody] RegistrarRespostaApiRequest apiRequest,
+        CancellationToken cancellationToken)
+    {
+        // 1?? Controller captura dados técnicos (responsabilidade da camada de apresentação)
+        var ipAddress = ObterIpAddress();
+        var userAgent = ObterUserAgent();
+        var (dispositivoTipo, navegadorTipo) = ParsearUserAgent(userAgent);
+
+        // 2?? Mapeia Request da API para DTO da Application
+        var applicationRequest = new RegistrarRespostaRequest(
+            apiRequest.QuestionarioId,
+            apiRequest.Respostas.Select(r => new RespostaItemDto(
+                r.PerguntaId,
+                r.OpcaoRespostaId
+            )).ToList(),
+            ipAddress,
+            userAgent,
+            apiRequest.Estado,
+            apiRequest.Cidade,
+            apiRequest.RegiaoGeografica,
+            dispositivoTipo,
+            navegadorTipo
+        );
+
+        // 3?? Chama Application Service (retorna Result, não exception)
+        var result = await _respostaService.RegistrarRespostaAsync(
+            applicationRequest, 
+            cancellationToken);
+
+        // 4?? Verifica resultado (Result Pattern)
+        if (result.IsFailure)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Erro ao registrar resposta",
+                Status = StatusCodes.Status400BadRequest,
+                Detail = result.Error
+            });
+        }
+
+        // 5?? Retorna 202 Accepted (processamento assíncrono)
+        return AcceptedAtAction(
+            nameof(Registrar), 
+            new { id = result.Value.Id }, 
+            new 
+            { 
+                mensagem = "Resposta recebida e será processada em breve",
+                resposta = result.Value
+            });
+    }
+
+    #region Métodos Privados (Responsabilidade do Controller)
+
+    private string ObterIpAddress()
+    {
+        var forwardedFor = HttpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(forwardedFor))
+        {
+            var ips = forwardedFor.Split(',');
+            return ips[0].Trim();
+        }
+
+        var realIp = HttpContext.Request.Headers["X-Real-IP"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(realIp))
+            return realIp;
+
+        return HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+    }
+
+    private string ObterUserAgent()
+    {
+        return HttpContext.Request.Headers["User-Agent"].FirstOrDefault() ?? "unknown";
+    }
+
+    private (string? Dispositivo, string? Navegador) ParsearUserAgent(string userAgent)
+    {
+        try
+        {
+            var parser = Parser.GetDefault();
+            var clientInfo = parser.Parse(userAgent);
+            
+            return (
+                clientInfo.Device.Family,
+                $"{clientInfo.UA.Family} {clientInfo.UA.Major}"
+            );
+        }
+        catch
+        {
+            return (null, null);
+        }
+    }
+
+    #endregion
+}
+
+// DTO público (frontend envia apenas dados essenciais)
+public record RegistrarRespostaRequestPublico(
+    Guid QuestionarioId,
+    List<RespostaItemDto> Respostas,
+    string? Estado,
+    string? Cidade,
+    string? RegiaoGeografica
+);

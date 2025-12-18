@@ -1,0 +1,74 @@
+﻿using QuestionarioOnline.Application.DTOs.Requests;
+using QuestionarioOnline.Application.DTOs.Responses;
+using QuestionarioOnline.Application.Interfaces;
+using QuestionarioOnline.Application.Validators;
+using QuestionarioOnline.Domain.Constants;
+using QuestionarioOnline.Domain.Interfaces;
+using QuestionarioOnline.Domain.ValueObjects;
+
+namespace QuestionarioOnline.Application.Services;
+
+public class RespostaService : IRespostaService
+{
+    private readonly IMessageQueue _messageQueue;
+    private readonly IQuestionarioRepository _questionarioRepository;
+    private readonly RegistrarRespostaRequestValidator _validator;
+
+    public RespostaService(
+        IMessageQueue messageQueue,
+        IQuestionarioRepository questionarioRepository,
+        RegistrarRespostaRequestValidator validator)
+    {
+        _messageQueue = messageQueue;
+        _questionarioRepository = questionarioRepository;
+        _validator = validator;
+    }
+
+    /// <summary>
+    /// Registra resposta de forma ASSÍNCRONA usando fila
+    /// Retorna Result com sucesso ou falha (sem exceptions)
+    /// </summary>
+    public async Task<Result<RespostaRegistradaDto>> RegistrarRespostaAsync(
+        RegistrarRespostaRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        // Validar request
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        
+        if (!validationResult.IsValid)
+        {
+            var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+            return Result.Failure<RespostaRegistradaDto>($"Erro de validação: {errors}");
+        }
+
+        // 1?? Validação rápida - verifica se questionário existe
+        var questionario = await _questionarioRepository.ObterPorIdAsync(request.QuestionarioId, cancellationToken);
+
+        if (questionario is null)
+            return Result.Failure<RespostaRegistradaDto>("Questionário não encontrado");
+
+        // 2?? Verifica se questionário está ativo
+        if (!questionario.PodeReceberRespostas())
+            return Result.Failure<RespostaRegistradaDto>("Questionário não está disponível para receber respostas");
+
+        // 3?? Enfiletrar para processamento assíncrono (NÃO BLOQUEIA)
+        var mensagem = new RespostaParaProcessamentoDto(
+            request.QuestionarioId,
+            request.Respostas,
+            request.Estado,
+            request.Cidade,
+            request.RegiaoGeografica
+        );
+
+        await _messageQueue.SendAsync(QueueConstants.RespostasQueueName, mensagem, cancellationToken);
+
+        // 5?? Retornar sucesso imediatamente (202 Accepted)
+        var resposta = new RespostaRegistradaDto(
+            Guid.NewGuid(), // ID temporário (o real será gerado pelo worker)
+            request.QuestionarioId,
+            DateTime.UtcNow
+        );
+
+        return Result.Success(resposta);
+    }
+}

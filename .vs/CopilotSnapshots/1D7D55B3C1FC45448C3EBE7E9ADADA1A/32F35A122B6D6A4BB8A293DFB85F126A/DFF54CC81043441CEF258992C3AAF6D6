@@ -1,0 +1,11 @@
+﻿using QuestionarioOnline.Application.DTOs;
+
+namespace QuestionarioOnline.Application.Interfaces;
+
+/// <summary>
+/// Abstração para fila de mensagens (pode ser Azure Queue, RabbitMQ, AWS SQS, etc.)
+/// </summary>
+public interface IMessageQueue
+{
+    Task SendAsync<T>(string queueName, T message, CancellationToken cancellationToken = default);
+}

@@ -1,0 +1,14 @@
+﻿using QuestionarioOnline.Application.DTOs.Requests;
+using QuestionarioOnline.Application.DTOs.Responses;
+using QuestionarioOnline.Domain.ValueObjects;
+
+namespace QuestionarioOnline.Application.Interfaces;
+
+public interface IRespostaService
+{
+    /// <summary>
+    /// Registra resposta de forma assíncrona enfileirando para processamento em background.
+    /// Operação rápida (validação + enfileiramento), não necessita CancellationToken.
+    /// </summary>
+    Task<Result<RespostaRegistradaDto>> RegistrarRespostaAsync(RegistrarRespostaRequest request);
+}

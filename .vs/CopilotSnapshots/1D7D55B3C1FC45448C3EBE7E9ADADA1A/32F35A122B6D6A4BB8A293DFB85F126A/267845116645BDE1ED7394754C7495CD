@@ -1,0 +1,45 @@
+﻿using Azure.Storage.Queues;
+using QuestionarioOnline.Application.Interfaces;
+using System.Text.Json;
+
+namespace QuestionarioOnline.Infrastructure.Messaging;
+
+/// <summary>
+/// Adapter para Azure Queue Storage.
+/// Implementação concreta da abstração IMessageQueue usando Azure como provedor.
+/// </summary>
+public class AzureQueueStorageAdapter : IMessageQueue
+{
+    private readonly string _connectionString;
+
+    public AzureQueueStorageAdapter(string connectionString)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string não pode ser vazia", nameof(connectionString));
+
+        _connectionString = connectionString;
+    }
+
+    public async Task SendAsync<T>(string queueName, T message, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(queueName))
+            throw new ArgumentException("Nome da fila não pode ser vazio", nameof(queueName));
+
+        if (message is null)
+            throw new ArgumentNullException(nameof(message));
+
+        // Criar cliente da fila (lazy creation)
+        var queueClient = new QueueClient(_connectionString, queueName);
+        await queueClient.CreateIfNotExistsAsync(cancellationToken);
+
+        // Serializar mensagem
+        var json = JsonSerializer.Serialize(message);
+        
+        // Base64 encode para evitar problemas com caracteres especiais
+        var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+        var base64 = Convert.ToBase64String(bytes);
+
+        // Enviar para a fila
+        await queueClient.SendMessageAsync(base64, cancellationToken);
+    }
+}
