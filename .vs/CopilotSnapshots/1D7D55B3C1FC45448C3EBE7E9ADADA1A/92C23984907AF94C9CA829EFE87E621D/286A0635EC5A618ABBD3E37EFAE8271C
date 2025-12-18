@@ -1,9 +1,0 @@
-﻿namespace QuestionarioOnline.Application.DTOs.Requests;
-
-/// <summary>
-/// DTO para criar uma opção de resposta dentro de uma pergunta
-/// </summary>
-public record CriarOpcaoDto(
-    string Texto,
-    int Ordem
-);

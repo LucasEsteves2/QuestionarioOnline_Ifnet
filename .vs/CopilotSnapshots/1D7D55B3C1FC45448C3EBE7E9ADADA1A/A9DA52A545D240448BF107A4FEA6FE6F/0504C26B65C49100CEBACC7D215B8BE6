@@ -1,8 +1,0 @@
-﻿using QuestionarioOnline.Application.DTOs;
-
-namespace QuestionarioOnline.Application.Interfaces;
-
-public interface IRespostaService
-{
-    Task<RespostaRegistradaDto> RegistrarRespostaAsync(RegistrarRespostaRequest request, CancellationToken cancellationToken = default);
-}
