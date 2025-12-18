@@ -23,6 +23,9 @@ public class RespostaController : BaseController
         var applicationDto = request.ToApplicationDto();
         var result = await _respostaService.RegistrarRespostaAsync(applicationDto);
 
+        if (result.IsNotFound)
+            return NotFoundResponse<RespostaRegistradaResponse>(result.Error);
+
         if (result.IsFailure)
             return FailResponse<RespostaRegistradaResponse>(result.Error);
 

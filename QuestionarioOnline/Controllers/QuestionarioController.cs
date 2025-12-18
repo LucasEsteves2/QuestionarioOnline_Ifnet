@@ -39,6 +39,9 @@ public class QuestionarioController : BaseController
     {
         var result = await _questionarioService.EncerrarQuestionarioAsync(id, cancellationToken);
 
+        if (result.IsNotFound)
+            return NotFoundResponse<QuestionarioResponse>(result.Error);
+
         if (result.IsFailure)
             return FailResponse<QuestionarioResponse>(result.Error);
 
@@ -63,6 +66,9 @@ public class QuestionarioController : BaseController
     {
         var result = await _questionarioService.ObterQuestionarioPorIdAsync(id, cancellationToken);
 
+        if (result.IsNotFound)
+            return NotFoundResponse<QuestionarioResponse>(result.Error);
+
         if (result.IsFailure)
             return FailResponse<QuestionarioResponse>(result.Error);
 
@@ -83,6 +89,9 @@ public class QuestionarioController : BaseController
     public async Task<ActionResult<ApiResponse<ResultadoQuestionarioResponse>>> ObterResultados(Guid id, CancellationToken cancellationToken)
     {
         var result = await _questionarioService.ObterResultadosAsync(id, cancellationToken);
+
+        if (result.IsNotFound)
+            return NotFoundResponse<ResultadoQuestionarioResponse>(result.Error);
 
         if (result.IsFailure)
             return FailResponse<ResultadoQuestionarioResponse>(result.Error);

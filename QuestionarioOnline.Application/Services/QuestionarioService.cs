@@ -53,6 +53,10 @@ public class QuestionarioService : IQuestionarioService
 
             return Result.Success(QuestionarioMapper.ToDto(questionario));
         }
+        catch (NotFoundException ex)
+        {
+            return Result.NotFound<QuestionarioDto>(ex.Message);
+        }
         catch (DomainException ex)
         {
             return Result.Failure<QuestionarioDto>(ex.Message);
@@ -67,6 +71,10 @@ public class QuestionarioService : IQuestionarioService
 
             await _questionarioRepository.DeletarAsync(questionario, cancellationToken);
             return Result.Success();
+        }
+        catch (NotFoundException ex)
+        {
+            return Result.NotFound(ex.Message);
         }
         catch (DomainException ex)
         {
@@ -83,6 +91,10 @@ public class QuestionarioService : IQuestionarioService
             questionario.GarantirQuePodeReceberRespostas();
             return Result.Success(QuestionarioMapper.ToPublicoDto(questionario));
         }
+        catch (NotFoundException ex)
+        {
+            return Result.NotFound<QuestionarioPublicoDto>(ex.Message);
+        }
         catch (DomainException ex)
         {
             return Result.Failure<QuestionarioPublicoDto>(ex.Message);
@@ -95,6 +107,10 @@ public class QuestionarioService : IQuestionarioService
         {
             var questionario = await ObterQuestionarioAsync(questionarioId, cancellationToken);
             return Result.Success(QuestionarioMapper.ToDto(questionario));
+        }
+        catch (NotFoundException ex)
+        {
+            return Result.NotFound<QuestionarioDto>(ex.Message);
         }
         catch (DomainException ex)
         {
@@ -118,6 +134,10 @@ public class QuestionarioService : IQuestionarioService
             var respostas = await _respostaRepository.ObterPorQuestionarioAsync(questionarioId, cancellationToken);
             var resultado = CalcularResultados(questionario, respostas);
             return Result.Success(resultado);
+        }
+        catch (NotFoundException ex)
+        {
+            return Result.NotFound<ResultadoQuestionarioDto>(ex.Message);
         }
         catch (DomainException ex)
         {
@@ -162,7 +182,7 @@ public class QuestionarioService : IQuestionarioService
             .ObterPorIdComPerguntasAsync(questionarioId, cancellationToken);
 
         if (questionario is null)
-            throw new DomainException("Questionário não encontrado");
+            throw new NotFoundException("Questionário não encontrado");
 
         return questionario;
     }
