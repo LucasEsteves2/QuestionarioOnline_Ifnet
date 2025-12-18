@@ -4,6 +4,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using QuestionarioOnline.Application.DTOs.Requests;
 using QuestionarioOnline.Domain.Entities;
+using QuestionarioOnline.Domain.Exceptions;
 using QuestionarioOnline.Domain.Interfaces;
 using System.Text.Json;
 
@@ -35,38 +36,35 @@ public class ProcessarRespostaFunction
         var messageId = message.MessageId;
         var dequeueCount = message.DequeueCount;
 
+        _logger.LogInformation(
+            "?? Processando resposta | MessageId: {MessageId} | DequeueCount: {DequeueCount}/{MaxRetries}",
+            messageId, dequeueCount, MaxRetryAttempts);
+
+        var base64 = message.MessageText;
+        var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(base64));
+        
+        MessageEnvelope<RespostaParaProcessamentoDto>? envelope = null;
+        RespostaParaProcessamentoDto? dto = null;
+
         try
         {
-            _logger.LogInformation(
-                "?? Processando resposta | MessageId: {MessageId} | DequeueCount: {DequeueCount}/{MaxRetries}",
-                messageId, dequeueCount, MaxRetryAttempts);
+            envelope = JsonSerializer.Deserialize<MessageEnvelope<RespostaParaProcessamentoDto>>(json);
+            dto = envelope?.Payload;
+        }
+        catch
+        {
+            dto = JsonSerializer.Deserialize<RespostaParaProcessamentoDto>(json);
+        }
 
-            // 1?? Deserializar envelope da mensagem
-            var base64 = message.MessageText;
-            var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(base64));
-            
-            // Tentar deserializar como envelope primeiro, se falhar, tenta direto como DTO
-            MessageEnvelope<RespostaParaProcessamentoDto>? envelope = null;
-            RespostaParaProcessamentoDto? dto = null;
+        if (dto is null)
+        {
+            _logger.LogError("Mensagem inválida (não foi possível deserializar) | MessageId: {MessageId}", messageId);
+            await MoverParaDeadLetterAsync(message, "Mensagem inválida - erro de deserialização");
+            return;
+        }
 
-            try
-            {
-                envelope = JsonSerializer.Deserialize<MessageEnvelope<RespostaParaProcessamentoDto>>(json);
-                dto = envelope?.Payload;
-            }
-            catch
-            {
-                // Fallback para formato antigo (sem envelope)
-                dto = JsonSerializer.Deserialize<RespostaParaProcessamentoDto>(json);
-            }
-
-            if (dto is null)
-            {
-                _logger.LogError("Mensagem inválida (não foi possível deserializar) | MessageId: {MessageId}", messageId);
-                await MoverParaDeadLetterAsync(message, "Mensagem inválida - erro de deserialização");
-                return;
-            }
-
+        try
+        {
             var questionario = await _questionarioRepository.ObterPorIdComPerguntasAsync(
                 dto.QuestionarioId, 
                 CancellationToken.None);
@@ -97,94 +95,65 @@ public class ProcessarRespostaFunction
                 resposta.AdicionarItem(respostaItem);
             }
 
-            resposta.ValidarCompletude(questionario.Perguntas);
+            resposta.GarantirCompletude(questionario.Perguntas);
             await _respostaRepository.AdicionarAsync(resposta, CancellationToken.None);
 
             _logger.LogInformation(
                 "? Resposta processada com sucesso | MessageId: {MessageId} | RespostaId: {RespostaId} | Estado: {Estado} | Cidade: {Cidade}",
                 messageId, resposta.Id, dto.Estado ?? "N/A", dto.Cidade ?? "N/A");
         }
-        catch (InvalidOperationException ex)
+        catch (DomainException ex)
         {
-            // Erro de validação de negócio - não adianta retentar
             _logger.LogError(ex,
-                "? Erro de validação | MessageId: {MessageId} | Error: {Error}",
+                "? Erro de negócio | MessageId: {MessageId} | Error: {Error}",
                 messageId, ex.Message);
             
-            await MoverParaDeadLetterAsync(message, $"Erro de validação: {ex.Message}");
+            await MoverParaDeadLetterAsync(message, $"Erro de negócio: {ex.Message}");
         }
-        catch (Exception ex)
+        catch (Exception ex) when (dequeueCount >= MaxRetryAttempts)
         {
-            // Erro inesperado
-            _logger.LogError(ex,
-                "? Erro ao processar resposta | MessageId: {MessageId} | DequeueCount: {DequeueCount} | Error: {Error}",
-                messageId, dequeueCount, ex.Message);
-
-            // Se atingiu o máximo de tentativas, move para dead letter
-            if (dequeueCount >= MaxRetryAttempts)
-            {
-                _logger.LogCritical(
-                    "?? Máximo de tentativas atingido | MessageId: {MessageId} | Movendo para Dead Letter Queue",
-                    messageId);
-                
-                await MoverParaDeadLetterAsync(message, $"Máximo de {MaxRetryAttempts} tentativas atingido: {ex.Message}");
-            }
-            else
-            {
-                // Deixa Azure Functions fazer retry automático
-                throw;
-            }
+            _logger.LogCritical(ex,
+                "?? Máximo de tentativas atingido | MessageId: {MessageId} | Movendo para Dead Letter Queue",
+                messageId);
+            
+            await MoverParaDeadLetterAsync(message, $"Máximo de {MaxRetryAttempts} tentativas atingido: {ex.Message}");
         }
     }
 
     private async Task MoverParaDeadLetterAsync(QueueMessage message, string reason)
     {
-        try
+        var connectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
+        if (string.IsNullOrEmpty(connectionString))
         {
-            var connectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                _logger.LogError("? Connection string não encontrada para Dead Letter Queue");
-                return;
-            }
-
-            // Criar cliente da fila de dead letter
-            var deadLetterQueueName = "respostas-questionario-deadletter";
-            var deadLetterClient = new QueueClient(connectionString, deadLetterQueueName);
-            await deadLetterClient.CreateIfNotExistsAsync();
-
-            // Adicionar metadados sobre o erro
-            var deadLetterEnvelope = new DeadLetterMessage
-            {
-                OriginalMessageId = message.MessageId,
-                OriginalMessageText = message.MessageText,
-                DequeueCount = message.DequeueCount,
-                Reason = reason,
-                Timestamp = DateTime.UtcNow,
-                ExpirationTime = message.ExpiresOn?.UtcDateTime
-            };
-
-            var json = JsonSerializer.Serialize(deadLetterEnvelope);
-            var base64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(json));
-
-            await deadLetterClient.SendMessageAsync(base64);
-
-            _logger.LogWarning(
-                "?? Mensagem movida para Dead Letter Queue | MessageId: {MessageId} | Reason: {Reason}",
-                message.MessageId, reason);
+            _logger.LogError("? Connection string não encontrada para Dead Letter Queue");
+            return;
         }
-        catch (Exception ex)
+
+        var deadLetterQueueName = "respostas-questionario-deadletter";
+        var deadLetterClient = new QueueClient(connectionString, deadLetterQueueName);
+        await deadLetterClient.CreateIfNotExistsAsync();
+
+        var deadLetterEnvelope = new DeadLetterMessage
         {
-            _logger.LogError(ex,
-                "? Erro ao mover mensagem para Dead Letter Queue | MessageId: {MessageId}",
-                message.MessageId);
-        }
+            OriginalMessageId = message.MessageId,
+            OriginalMessageText = message.MessageText,
+            DequeueCount = message.DequeueCount,
+            Reason = reason,
+            Timestamp = DateTime.UtcNow,
+            ExpirationTime = message.ExpiresOn?.UtcDateTime
+        };
+
+        var json = JsonSerializer.Serialize(deadLetterEnvelope);
+        var base64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(json));
+
+        await deadLetterClient.SendMessageAsync(base64);
+
+        _logger.LogWarning(
+            "?? Mensagem movida para Dead Letter Queue | MessageId: {MessageId} | Reason: {Reason}",
+            message.MessageId, reason);
     }
 }
 
-/// <summary>
-/// Envelope para mensagens na Dead Letter Queue
-/// </summary>
 internal class DeadLetterMessage
 {
     public string OriginalMessageId { get; set; } = string.Empty;
@@ -195,15 +164,7 @@ internal class DeadLetterMessage
     public DateTime? ExpirationTime { get; set; }
 }
 
-/// <summary>
-/// Envelope para mensagens com metadados
-/// </summary>
 internal class MessageEnvelope<T>
 {
-    public Guid MessageId { get; set; }
-    public T Payload { get; set; } = default!;
-    public DateTime Timestamp { get; set; }
-    public int RetryCount { get; set; }
-    public string OriginalQueueName { get; set; } = string.Empty;
-    public Dictionary<string, string> Metadata { get; set; } = new();
+    public T? Payload { get; set; }
 }

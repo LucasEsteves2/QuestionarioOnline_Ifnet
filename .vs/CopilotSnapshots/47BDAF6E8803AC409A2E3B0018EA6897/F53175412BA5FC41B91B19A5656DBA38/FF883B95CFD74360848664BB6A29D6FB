@@ -1,0 +1,24 @@
+﻿namespace QuestionarioOnline.Domain.Exceptions;
+
+public class UsuarioInvalidoException : DomainException
+{
+    public UsuarioInvalidoException(string message) : base(message)
+    {
+    }
+}
+
+public class UsuarioInativoException : DomainException
+{
+    public UsuarioInativoException() 
+        : base("Usuário está inativo e não pode realizar esta operação")
+    {
+    }
+}
+
+public class EmailJaCadastradoException : DomainException
+{
+    public EmailJaCadastradoException(string email) 
+        : base($"O email '{email}' já está cadastrado no sistema")
+    {
+    }
+}

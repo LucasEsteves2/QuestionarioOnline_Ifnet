@@ -9,3 +9,4 @@ C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Domain\obj
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Domain\obj\Debug\net8.0\refint\QuestionarioOnline.Domain.dll
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Domain\obj\Debug\net8.0\QuestionarioOnline.Domain.pdb
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Domain\obj\Debug\net8.0\ref\QuestionarioOnline.Domain.dll
+C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Domain\obj\Debug\net8.0\QuestionarioOnline.Domain.sourcelink.json

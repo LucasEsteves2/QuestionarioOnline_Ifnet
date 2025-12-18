@@ -1,0 +1,27 @@
+﻿using AppDto = QuestionarioOnline.Application.DTOs.Requests;
+
+namespace QuestionarioOnline.Api.Contracts.Requests;
+
+/// <summary>
+/// Extensões para mapear API Requests para Application DTOs
+/// </summary>
+public static class QuestionarioRequestExtensions
+{
+    public static AppDto.CriarQuestionarioRequest ToApplicationDto(this CriarQuestionarioRequest request)
+    {
+        var perguntas = request.Perguntas.Select(p => new AppDto.CriarPerguntaDto(
+            p.Texto,
+            p.Ordem,
+            p.Obrigatoria,
+            p.Opcoes.Select(o => new AppDto.CriarOpcaoDto(o.Texto, o.Ordem)).ToList()
+        )).ToList();
+
+        return new AppDto.CriarQuestionarioRequest(
+            request.Titulo,
+            request.Descricao,
+            request.DataInicio,
+            request.DataFim,
+            perguntas
+        );
+    }
+}

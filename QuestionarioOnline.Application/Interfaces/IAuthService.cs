@@ -6,6 +6,6 @@ namespace QuestionarioOnline.Application.Interfaces;
 
 public interface IAuthService
 {
-    Task<Result<UsuarioRegistradoDto>> RegistrarAsync(RegistrarUsuarioRequest request);
+    Task<Result<LoginResponse>> RegistrarAsync(RegistrarUsuarioRequest request);
     Task<Result<LoginResponse>> LoginAsync(LoginRequest request);
 }

@@ -1,0 +1,6 @@
+﻿namespace QuestionarioOnline.Application.Interfaces;
+
+public interface IMessageQueue
+{
+    Task SendAsync<T>(string queueName, T message);
+}

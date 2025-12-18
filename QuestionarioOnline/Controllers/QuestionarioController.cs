@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using QuestionarioOnline.Api.Responses;
-using QuestionarioOnline.Application.DTOs.Requests;
-using QuestionarioOnline.Application.DTOs.Responses;
+using QuestionarioOnline.Api.Authorization;
+using QuestionarioOnline.Api.Contracts.Requests;
+using QuestionarioOnline.Api.Contracts.Responses;
 using QuestionarioOnline.Application.Interfaces;
 
 namespace QuestionarioOnline.Api.Controllers;
@@ -19,30 +19,38 @@ public class QuestionarioController : BaseController
     }
 
     [HttpPost]
-    public async Task<ActionResult<ApiResponse<QuestionarioDto>>> Criar([FromBody] CriarQuestionarioRequest request, CancellationToken cancellationToken)
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<ActionResult<ApiResponse<QuestionarioResponse>>> Criar([FromBody] CriarQuestionarioRequest request, CancellationToken cancellationToken)
     {
         var usuarioId = ObterUsuarioIdDoToken();
-        var result = await _questionarioService.CriarQuestionarioAsync(request, usuarioId, cancellationToken);
+        var applicationDto = request.ToApplicationDto();
+        var result = await _questionarioService.CriarQuestionarioAsync(applicationDto, usuarioId, cancellationToken);
 
         if (result.IsFailure)
-            return FailResponse(result);
+            return FailResponse<QuestionarioResponse>(result.Error);
 
-        return CreatedResponse(nameof(ObterPorId), new { id = result.Value.Id }, result.Value);
+        var response = QuestionarioResponse.From(result.Value);
+        return CreatedResponse(nameof(ObterPorId), new { id = response.Id }, response);
     }
 
-    [HttpPatch("{id}/status")]
-    public async Task<ActionResult<ApiResponse<QuestionarioDto>>> Encerrar(Guid id, CancellationToken cancellationToken)
+    [HttpPatch("{id}/encerrar")]
+    [Authorize(Roles = Roles.Admin)]
+    public async Task<ActionResult<ApiResponse<QuestionarioResponse>>> Encerrar(Guid id, CancellationToken cancellationToken)
     {
-        var usuarioId = ObterUsuarioIdDoToken();
-        var result = await _questionarioService.EncerrarQuestionarioAsync(id, usuarioId, cancellationToken);
-        return FromResult(result);
+        var result = await _questionarioService.EncerrarQuestionarioAsync(id, cancellationToken);
+
+        if (result.IsFailure)
+            return FailResponse<QuestionarioResponse>(result.Error);
+
+        var response = QuestionarioResponse.From(result.Value);
+        return OkResponse(response);
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> Deletar(Guid id, CancellationToken cancellationToken)
     {
-        var usuarioId = ObterUsuarioIdDoToken();
-        var result = await _questionarioService.DeletarQuestionarioAsync(id, usuarioId, cancellationToken);
+        var result = await _questionarioService.DeletarQuestionarioAsync(id, cancellationToken);
 
         if (result.IsFailure)
             return FailResponseNoContent(result.Error);
@@ -51,35 +59,35 @@ public class QuestionarioController : BaseController
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ApiResponse<QuestionarioDto>>> ObterPorId(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ApiResponse<QuestionarioResponse>>> ObterPorId(Guid id, CancellationToken cancellationToken)
     {
-        var usuarioId = ObterUsuarioIdDoToken();
-        var questionario = await _questionarioService.ObterQuestionarioPorIdAsync(id, usuarioId, cancellationToken);
+        var result = await _questionarioService.ObterQuestionarioPorIdAsync(id, cancellationToken);
 
-        if (questionario is null)
-            return NotFoundResponse<QuestionarioDto>();
+        if (result.IsFailure)
+            return FailResponse<QuestionarioResponse>(result.Error);
 
-        return OkResponse(questionario);
+        var response = QuestionarioResponse.From(result.Value);
+        return OkResponse(response);
     }
 
     [HttpGet]
-    public async Task<ActionResult<ApiResponse<IEnumerable<QuestionarioListaDto>>>> Listar(CancellationToken cancellationToken)
+    public async Task<ActionResult<ApiResponse<IEnumerable<QuestionarioListaResponse>>>> Listar(CancellationToken cancellationToken)
     {
-        var usuarioId = ObterUsuarioIdDoToken();
-        var questionarios = await _questionarioService.ListarQuestionariosPorUsuarioAsync(usuarioId, cancellationToken);
-        return OkResponse(questionarios);
+        var dtos = await _questionarioService.ListarTodosQuestionariosAsync(cancellationToken);
+        var responses = dtos.Select(QuestionarioListaResponse.From);
+        return OkResponse(responses);
     }
 
     [HttpGet("{id}/resultados")]
-    [Authorize(Roles = "Admin,Analista,Visualizador")]
-    public async Task<ActionResult<ApiResponse<ResultadoQuestionarioDto>>> ObterResultados(Guid id, CancellationToken cancellationToken)
+    [Authorize(Roles = $"{Roles.Admin},{Roles.Analista},{Roles.Visualizador}")]
+    public async Task<ActionResult<ApiResponse<ResultadoQuestionarioResponse>>> ObterResultados(Guid id, CancellationToken cancellationToken)
     {
-        var usuarioId = ObterUsuarioIdDoToken();
-        var result = await _questionarioService.ObterResultadosAsync(id, usuarioId, cancellationToken);
+        var result = await _questionarioService.ObterResultadosAsync(id, cancellationToken);
 
         if (result.IsFailure)
-            return NotFoundOrForbiddenResponse<ResultadoQuestionarioDto>(result.Error);
+            return FailResponse<ResultadoQuestionarioResponse>(result.Error);
 
-        return OkResponse(result.Value);
+        var response = ResultadoQuestionarioResponse.From(result.Value);
+        return OkResponse(response);
     }
 }

@@ -1,4 +1,5 @@
 using QuestionarioOnline.Domain.Enums;
+using QuestionarioOnline.Domain.Exceptions;
 using QuestionarioOnline.Domain.ValueObjects;
 
 namespace QuestionarioOnline.Domain.Entities;
@@ -17,14 +18,9 @@ public class Usuario
 
     public Usuario(string nome, Email email, string senhaHash, UsuarioRole role = UsuarioRole.Analista)
     {
-        if (string.IsNullOrWhiteSpace(nome))
-            throw new ArgumentException("Nome não pode ser vazio", nameof(nome));
-
-        if (email is null)
-            throw new ArgumentNullException(nameof(email));
-
-        if (string.IsNullOrWhiteSpace(senhaHash))
-            throw new ArgumentException("Senha não pode ser vazia", nameof(senhaHash));
+        ArgumentException.ThrowIfNullOrWhiteSpace(nome, nameof(nome));
+        ArgumentNullException.ThrowIfNull(email, nameof(email));
+        ArgumentException.ThrowIfNullOrWhiteSpace(senhaHash, nameof(senhaHash));
 
         Id = Guid.NewGuid();
         Nome = nome;
@@ -33,6 +29,12 @@ public class Usuario
         Role = role;
         DataCriacao = DateTime.UtcNow;
         Ativo = true;
+    }
+
+    public void GarantirQueEstaAtivo()
+    {
+        if (!Ativo)
+            throw new DomainException("Usuário está inativo e não pode realizar esta operação");
     }
 
     public void Desativar()
@@ -47,17 +49,13 @@ public class Usuario
 
     public void AtualizarNome(string nome)
     {
-        if (string.IsNullOrWhiteSpace(nome))
-            throw new ArgumentException("Nome não pode ser vazio", nameof(nome));
-
+        ArgumentException.ThrowIfNullOrWhiteSpace(nome, nameof(nome));
         Nome = nome;
     }
 
     public void AtualizarSenha(string novaSenhaHash)
     {
-        if (string.IsNullOrWhiteSpace(novaSenhaHash))
-            throw new ArgumentException("Senha não pode ser vazia", nameof(novaSenhaHash));
-
+        ArgumentException.ThrowIfNullOrWhiteSpace(novaSenhaHash, nameof(novaSenhaHash));
         SenhaHash = novaSenhaHash;
     }
 

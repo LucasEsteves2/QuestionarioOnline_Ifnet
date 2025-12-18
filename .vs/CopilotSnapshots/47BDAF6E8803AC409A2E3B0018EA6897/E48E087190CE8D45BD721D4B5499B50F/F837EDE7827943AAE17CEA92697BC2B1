@@ -1,0 +1,367 @@
+﻿{
+	"info": {
+		"_postman_id": "questionario-online-api",
+		"name": "Question�rio Online API",
+		"description": "API RESTful para cria��o, gerenciamento e coleta de respostas de question�rios com processamento ass�ncrono.\n\n**Tecnologias:**\n- .NET 8\n- Clean Architecture\n- DDD (Domain-Driven Design)\n- Azure Queue Storage\n- JWT Authentication\n\n**Autor:** Lucas Esteves\n**Projeto:** P�s-Gradua��o - Instituto Infnet",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register - Criar Usu�rio",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"Admin Sistema\",\n  \"email\": \"admin@questionario.com\",\n  \"senha\": \"Admin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Registra um novo usu�rio no sistema.\n\n**Valida��es:**\n- Nome: obrigat�rio, 3-100 caracteres\n- Email: obrigat�rio, formato v�lido\n- Senha: obrigat�ria, m�nimo 6 caracteres"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"authToken\", jsonData.data.token);",
+									"        console.log(\"Token salvo:\", jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@questionario.com\",\n  \"senha\": \"Admin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Autentica um usu�rio e retorna um token JWT.\n\n**O token � automaticamente salvo na vari�vel de ambiente `authToken`.**"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints de autentica��o (Login e Register).\n\n**Sem autentica��o requerida.**"
+		},
+		{
+			"name": "Question�rio",
+			"item": [
+				{
+					"name": "Criar Question�rio",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Pesquisa de Satisfa��o 2024\",\n  \"descricao\": \"Avalia��o dos servi�os prestados durante o ano de 2024\",\n  \"dataInicio\": \"2024-01-01T00:00:00Z\",\n  \"dataFim\": \"2024-12-31T23:59:59Z\",\n  \"perguntas\": [\n    {\n      \"texto\": \"Como voc� avalia nosso atendimento?\",\n      \"ordem\": 1,\n      \"obrigatoria\": true,\n      \"opcoes\": [\n        {\n          \"texto\": \"Excelente\",\n          \"ordem\": 1\n        },\n        {\n          \"texto\": \"Bom\",\n          \"ordem\": 2\n        },\n        {\n          \"texto\": \"Regular\",\n          \"ordem\": 3\n        },\n        {\n          \"texto\": \"Ruim\",\n          \"ordem\": 4\n        }\n      ]\n    },\n    {\n      \"texto\": \"Voc� recomendaria nossos servi�os?\",\n      \"ordem\": 2,\n      \"obrigatoria\": true,\n      \"opcoes\": [\n        {\n          \"texto\": \"Sim, com certeza\",\n          \"ordem\": 1\n        },\n        {\n          \"texto\": \"Talvez\",\n          \"ordem\": 2\n        },\n        {\n          \"texto\": \"N�o\",\n          \"ordem\": 3\n        }\n      ]\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario"
+							]
+						},
+						"description": "Cria um novo question�rio.\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Apenas Admin\n\n**Valida��es:**\n- T�tulo: obrigat�rio, 3-200 caracteres\n- Data in�cio e fim: obrigat�rias\n- Perguntas: m�nimo 1 pergunta\n- Op��es: m�nimo 2 op��es por pergunta"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Todos os Question�rios",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario"
+							]
+						},
+						"description": "Lista todos os question�rios do sistema.\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Qualquer usu�rio autenticado\n\n**Response:** Lista simplificada (sem perguntas completas)"
+					},
+					"response": []
+				},
+				{
+					"name": "Obter Question�rio por ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario/{{questionarioId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario",
+								"{{questionarioId}}"
+							]
+						},
+						"description": "Obt�m um question�rio espec�fico por ID.\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Qualquer usu�rio autenticado\n\n**Response:** Question�rio completo com todas as perguntas e op��es"
+					},
+					"response": []
+				},
+				{
+					"name": "Encerrar Question�rio",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario/{{questionarioId}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario",
+								"{{questionarioId}}",
+								"status"
+							]
+						},
+						"description": "Encerra um question�rio (muda status para Encerrado).\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Apenas Admin\n\n**Efeito:** Question�rio n�o aceitar� mais respostas"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Question�rio",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario/{{questionarioId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario",
+								"{{questionarioId}}"
+							]
+						},
+						"description": "Deleta um question�rio.\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Apenas Admin\n\n**Aten��o:** Opera��o irrevers�vel!"
+					},
+					"response": []
+				},
+				{
+					"name": "Obter Resultados",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario/{{questionarioId}}/resultados",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario",
+								"{{questionarioId}}",
+								"resultados"
+							]
+						},
+						"description": "Obt�m resultados e estat�sticas de um question�rio.\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Admin, Analista, Visualizador\n\n**Response:**\n- Total de respostas\n- Votos por op��o\n- Percentuais calculados"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints de gerenciamento de question�rios.\n\n**Criar/Encerrar/Deletar:** Apenas Admin\n**Listar/Obter:** Qualquer usu�rio autenticado\n**Resultados:** Admin, Analista, Visualizador"
+		},
+		{
+			"name": "Resposta",
+			"item": [
+				{
+					"name": "Registrar Resposta",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"questionarioId\": \"{{questionarioId}}\",\n  \"respostas\": [\n    {\n      \"perguntaId\": \"{{perguntaId1}}\",\n      \"opcaoRespostaId\": \"{{opcaoId1}}\"\n    },\n    {\n      \"perguntaId\": \"{{perguntaId2}}\",\n      \"opcaoRespostaId\": \"{{opcaoId2}}\"\n    }\n  ],\n  \"estado\": \"SP\",\n  \"cidade\": \"S�o Paulo\",\n  \"regiaoGeografica\": \"Sudeste\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/resposta",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"resposta"
+							]
+						},
+						"description": "Registra uma resposta para um question�rio.\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Qualquer usu�rio autenticado\n\n**Valida��es:**\n- Question�rio deve estar Ativo\n- Dentro do per�odo de coleta\n- Todas as perguntas obrigat�rias devem ser respondidas\n- Op��es devem pertencer �s perguntas\n\n**Processamento:** Ass�ncrono via Azure Queue Storage\n\n**Response:** 202 Accepted (resposta ser� processada em background)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints de respostas de question�rios.\n\n**Processamento:** As respostas s�o enviadas para uma fila (Azure Queue Storage) e processadas de forma ass�ncrona por Azure Functions."
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://localhost:7001",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "questionarioId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "perguntaId1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "opcaoId1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "perguntaId2",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "opcaoId2",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

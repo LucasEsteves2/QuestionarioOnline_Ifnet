@@ -1,0 +1,18 @@
+using QuestionarioOnline.Application.DTOs.Responses;
+
+namespace QuestionarioOnline.Api.Contracts.Responses;
+
+public record QuestionarioPublicoResponse(
+    Guid Id,
+    string Titulo,
+    string? Descricao,
+    List<PerguntaResponse> Perguntas
+)
+{
+    public static QuestionarioPublicoResponse From(QuestionarioPublicoDto dto) => new(
+        dto.Id,
+        dto.Titulo,
+        dto.Descricao,
+        dto.Perguntas.Select(PerguntaResponse.From).ToList()
+    );
+}

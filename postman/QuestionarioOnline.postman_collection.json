@@ -1,0 +1,264 @@
+{
+	"info": {
+		"_postman_id": "questionario-online-api",
+		"name": "Questionário Online API",
+		"description": "API RESTful para criação, gerenciamento e coleta de respostas de questionários com processamento assíncrono.\n\n**Tecnologias:**\n- .NET 8\n- Clean Architecture\n- DDD (Domain-Driven Design)\n- Azure Queue Storage\n- JWT Authentication\n\n**Autor:** Lucas Esteves\n**Projeto:** Pós-Graduação - Instituto Infnet",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register - Criar Usuário (Auto-Login)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"authToken\", jsonData.data.token);",
+									"        console.log(\"Token salvo:\", jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"Admin Sistema\",\n  \"email\": \"admin@questionario.com\",\n  \"senha\": \"Admin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Registra um novo usuário no sistema e retorna token JWT automaticamente.\n\n**AUTO-LOGIN:** Usuário já está autenticado após o registro!\n\n**Validações:**\n- Nome: obrigatório, 3-100 caracteres\n- Email: obrigatório, formato válido\n- Senha: obrigatória, mínimo 6 caracteres\n\n**Response:** 201 Created + Token JWT\n\n**O token é automaticamente salvo na variável de ambiente `authToken`.**"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"authToken\", jsonData.data.token);",
+									"        console.log(\"Token salvo:\", jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@questionario.com\",\n  \"senha\": \"Admin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Autentica um usuário e retorna um token JWT.\n\n**O token é automaticamente salvo na variável de ambiente `authToken`.**"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints de autenticação (Login e Register).\n\n**Register:** Cria usuário + retorna token (auto-login)\n**Login:** Autentica usuário + retorna token\n\n**Ambos salvam token automaticamente!**"
+		},
+		{
+			"name": "Questionário",
+			"item": [
+				{
+					"name": "Criar Questionário",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Pesquisa de Satisfação 2024\",\n  \"descricao\": \"Avaliação dos serviços prestados durante o ano de 2024\",\n  \"dataInicio\": \"2024-01-01T00:00:00Z\",\n  \"dataFim\": \"2024-12-31T23:59:59Z\",\n  \"perguntas\": [\n    {\n      \"texto\": \"Como você avalia nosso atendimento?\",\n      \"ordem\": 1,\n      \"obrigatoria\": true,\n      \"opcoes\": [\n        {\n          \"texto\": \"Excelente\",\n          \"ordem\": 1\n        },\n        {\n          \"texto\": \"Bom\",\n          \"ordem\": 2\n        },\n        {\n          \"texto\": \"Regular\",\n          \"ordem\": 3\n        },\n        {\n          \"texto\": \"Ruim\",\n          \"ordem\": 4\n        }\n      ]\n    },\n    {\n      \"texto\": \"Você recomendaria nossos serviços?\",\n      \"ordem\": 2,\n      \"obrigatoria\": true,\n      \"opcoes\": [\n        {\n          \"texto\": \"Sim, com certeza\",\n          \"ordem\": 1\n        },\n        {\n          \"texto\": \"Talvez\",\n          \"ordem\": 2\n        },\n        {\n          \"texto\": \"Não\",\n          \"ordem\": 3\n        }\n      ]\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario"
+							]
+						},
+						"description": "Cria um novo questionário.\n\n**Autenticação:** Bearer Token\n**Autorização:** Apenas Admin\n\n**Validações:**\n- Título: obrigatório, 3-200 caracteres\n- Data início e fim: obrigatórias\n- Perguntas: mínimo 1 pergunta\n- Opções: mínimo 2 opções por pergunta"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Todos os Questionários",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario"
+							]
+						},
+						"description": "Lista todos os questionários do sistema.\n\n**Autenticação:** Bearer Token\n**Autorização:** Qualquer usuário autenticado\n\n**Response:** Lista simplificada (sem perguntas completas)"
+					},
+					"response": []
+				},
+				{
+					"name": "Obter Questionário por ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario/{{questionarioId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario",
+								"{{questionarioId}}"
+							]
+						},
+						"description": "Obtém um questionário específico por ID.\n\n**Autenticação:** Bearer Token\n**Autorização:** Qualquer usuário autenticado\n\n**Response:** Questionário completo com todas as perguntas e opções"
+					},
+					"response": []
+				},
+				{
+					"name": "Encerrar Questionário",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario/{{questionarioId}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario",
+								"{{questionarioId}}",
+								"status"
+							]
+						},
+						"description": "Encerra um questionário (muda status para Encerrado).\n\n**Autenticação:** Bearer Token\n**Autorização:** Apenas Admin\n\n**Efeito:** Questionário não aceitará mais respostas"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Questionário",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario/{{questionarioId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario",
+								"{{questionarioId}}"
+							]
+						},
+						"description": "Deleta um questionário.\n\n**Autenticação:** Bearer Token\n**Autoriza

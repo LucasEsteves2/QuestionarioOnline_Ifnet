@@ -1,0 +1,221 @@
+﻿using QuestionarioOnline.Application.DTOs.Requests;
+using QuestionarioOnline.Application.DTOs.Responses;
+using QuestionarioOnline.Application.Interfaces;
+using QuestionarioOnline.Application.Mappers;
+using QuestionarioOnline.Application.Validators;
+using QuestionarioOnline.Domain.Entities;
+using QuestionarioOnline.Domain.Exceptions;
+using QuestionarioOnline.Domain.Interfaces;
+using QuestionarioOnline.Domain.ValueObjects;
+
+namespace QuestionarioOnline.Application.Services;
+
+public class QuestionarioService : IQuestionarioService
+{
+    private readonly IQuestionarioRepository _questionarioRepository;
+    private readonly IRespostaRepository _respostaRepository;
+    private readonly CriarQuestionarioRequestValidator _validator;
+    private readonly ResultadoQuestionarioCalculator _resultadoCalculator;
+
+    public QuestionarioService(
+        IQuestionarioRepository questionarioRepository, 
+        IRespostaRepository respostaRepository,
+        CriarQuestionarioRequestValidator validator)
+    {
+        _questionarioRepository = questionarioRepository;
+        _respostaRepository = respostaRepository;
+        _validator = validator;
+        _resultadoCalculator = new ResultadoQuestionarioCalculator(respostaRepository);
+    }
+
+    public async Task<Result<QuestionarioDto>> CriarQuestionarioAsync(
+        CriarQuestionarioRequest request, 
+        Guid usuarioId, 
+        CancellationToken cancellationToken = default)
+    {
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+            return ValidationFailure<QuestionarioDto>(validationResult);
+
+        return await ExecuteWithDomainExceptionHandling(async () =>
+        {
+            var questionario = CriarQuestionarioComPerguntas(request, usuarioId);
+            await _questionarioRepository.AdicionarAsync(questionario, cancellationToken);
+            return questionario.ToDto();
+        });
+    }
+
+    public async Task<Result<QuestionarioDto>> EncerrarQuestionarioAsync(
+        Guid questionarioId,
+        Guid usuarioId,
+        CancellationToken cancellationToken = default)
+    {
+        var questionario = await ObterQuestionarioOuFalhar(questionarioId, cancellationToken);
+        if (questionario is null)
+            return NotFound<QuestionarioDto>();
+
+        return await ExecuteWithDomainExceptionHandling(async () =>
+        {
+            questionario.GarantirPropriedade(usuarioId);
+            questionario.Encerrar();
+            await _questionarioRepository.AtualizarAsync(questionario, cancellationToken);
+            return questionario.ToDto();
+        });
+    }
+
+    public async Task<Result> DeletarQuestionarioAsync(
+        Guid questionarioId,
+        Guid usuarioId,
+        CancellationToken cancellationToken = default)
+    {
+        var questionario = await ObterQuestionarioOuFalhar(questionarioId, cancellationToken);
+        if (questionario is null)
+            return Result.Failure("Questionário não encontrado");
+
+        return await ExecuteWithDomainExceptionHandling(async () =>
+        {
+            questionario.GarantirPropriedade(usuarioId);
+            await GarantirQueNaoTemRespostas(questionarioId, cancellationToken);
+            await _questionarioRepository.DeletarAsync(questionario, cancellationToken);
+        });
+    }
+
+    public async Task<QuestionarioPublicoDto?> ObterQuestionarioPublicoAsync(
+        Guid questionarioId,
+        CancellationToken cancellationToken = default)
+    {
+        var questionario = await _questionarioRepository.ObterPorIdComPerguntasAsync(
+            questionarioId, 
+            cancellationToken);
+
+        if (questionario is null)
+            return null;
+
+        try
+        {
+            questionario.GarantirQuePodeReceberRespostas();
+            return questionario.ToPublicoDto();
+        }
+        catch (DomainException)
+        {
+            return null;
+        }
+    }
+
+    public async Task<QuestionarioDto?> ObterQuestionarioPorIdAsync(
+        Guid questionarioId,
+        Guid usuarioId,
+        CancellationToken cancellationToken = default)
+    {
+        var questionario = await _questionarioRepository.ObterPorIdComPerguntasAsync(
+            questionarioId, 
+            cancellationToken);
+
+        if (questionario?.UsuarioId != usuarioId)
+            return null;
+
+        return questionario.ToDto();
+    }
+
+    public async Task<IEnumerable<QuestionarioListaDto>> ListarQuestionariosPorUsuarioAsync(
+        Guid usuarioId,
+        CancellationToken cancellationToken = default)
+    {
+        var questionarios = await _questionarioRepository.ObterTodosPorUsuarioAsync(
+            usuarioId, 
+            cancellationToken);
+
+        return questionarios.Select(q => q.ToListaDto());
+    }
+
+    public async Task<Result<ResultadoQuestionarioDto>> ObterResultadosAsync(
+        Guid questionarioId,
+        Guid usuarioId,
+        CancellationToken cancellationToken = default)
+    {
+        var questionario = await ObterQuestionarioOuFalhar(questionarioId, cancellationToken);
+        if (questionario is null)
+            return NotFound<ResultadoQuestionarioDto>();
+
+        return await ExecuteWithDomainExceptionHandling(async () =>
+        {
+            questionario.GarantirPropriedade(usuarioId);
+            return await _resultadoCalculator.CalcularResultadosAsync(questionario, cancellationToken);
+        });
+    }
+
+    private static Questionario CriarQuestionarioComPerguntas(
+        CriarQuestionarioRequest request, 
+        Guid usuarioId)
+    {
+        var questionario = Questionario.Criar(
+            request.Titulo,
+            request.Descricao,
+            request.DataInicio,
+            request.DataFim,
+            usuarioId);
+
+        foreach (var perguntaDto in request.Perguntas.OrderBy(p => p.Ordem))
+        {
+            questionario.AdicionarPergunta(
+                perguntaDto.Texto,
+                perguntaDto.Ordem,
+                perguntaDto.Obrigatoria,
+                perguntaDto.Opcoes.Select(o => (o.Texto, o.Ordem))
+            );
+        }
+
+        return questionario;
+    }
+
+    private async Task<Questionario?> ObterQuestionarioOuFalhar(
+        Guid id, 
+        CancellationToken cancellationToken)
+    {
+        return await _questionarioRepository.ObterPorIdComPerguntasAsync(id, cancellationToken);
+    }
+
+    private async Task GarantirQueNaoTemRespostas(Guid questionarioId, CancellationToken cancellationToken)
+    {
+        var totalRespostas = await _respostaRepository.ContarRespostasPorQuestionarioAsync(
+            questionarioId, 
+            cancellationToken);
+
+        if (totalRespostas > 0)
+            throw new DomainException("Não é possível deletar questionário que já possui respostas");
+    }
+
+    private static async Task<Result<T>> ExecuteWithDomainExceptionHandling<T>(Func<Task<T>> operation)
+    {
+        try
+        {
+            var result = await operation();
+            return Result.Success(result);
+        }
+        catch (DomainException ex)
+        {
+            return Result.Failure<T>(ex.Message);
+        }
+    }
+
+    private static async Task<Result> ExecuteWithDomainExceptionHandling(Func<Task> operation)
+    {
+        try
+        {
+            await operation();
+            return Result.Success();
+        }
+        catch (DomainException ex)
+        {
+            return Result.Failure(ex.Message);
+        }
+    }
+
+    private static Result<T> ValidationFailure<T>(FluentValidation.Results.ValidationResult validationResult)
+    {
+        var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+        return Result.Failure<T>($"Erro de validação: {errors}");
+    }
+
+    private static Result<T> NotFound<T>() => Result.Failure<T>("Questionário não encontrado");
+}

@@ -1,0 +1,6 @@
+﻿namespace QuestionarioOnline.Api.Contracts.Requests;
+
+public record RespostaItemRequest(
+    Guid PerguntaId,
+    Guid OpcaoRespostaId
+);

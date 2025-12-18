@@ -17,3 +17,4 @@ C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Infrastruc
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Infrastructure\obj\Debug\net8.0\ref\QuestionarioOnline.Infrastructure.dll
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Infrastructure\bin\Debug\net8.0\QuestionarioOnline.Application.dll
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Infrastructure\bin\Debug\net8.0\QuestionarioOnline.Application.pdb
+C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Infrastructure\obj\Debug\net8.0\QuestionarioOnline.Infrastructure.sourcelink.json

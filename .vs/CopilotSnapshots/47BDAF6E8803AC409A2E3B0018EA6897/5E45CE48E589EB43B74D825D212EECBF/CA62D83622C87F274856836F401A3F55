@@ -1,0 +1,64 @@
+﻿using QuestionarioOnline.Application.Interfaces;
+
+namespace QuestionarioOnline.Infrastructure.Messaging;
+
+public class InMemoryMessageQueue : IMessageQueue
+{
+    private readonly Dictionary<string, List<object>> _queues = new();
+    private readonly object _lock = new();
+
+    public Task SendAsync<T>(string queueName, T message)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(queueName, nameof(queueName));
+        ArgumentNullException.ThrowIfNull(message, nameof(message));
+
+        lock (_lock)
+        {
+            if (!_queues.ContainsKey(queueName))
+                _queues[queueName] = new List<object>();
+
+            _queues[queueName].Add(message);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public List<T> GetMessages<T>(string queueName)
+    {
+        lock (_lock)
+        {
+            if (!_queues.ContainsKey(queueName))
+                return new List<T>();
+
+            return _queues[queueName].OfType<T>().ToList();
+        }
+    }
+
+    public void Clear(string queueName)
+    {
+        lock (_lock)
+        {
+            if (_queues.ContainsKey(queueName))
+                _queues[queueName].Clear();
+        }
+    }
+
+    public void ClearAll()
+    {
+        lock (_lock)
+        {
+            _queues.Clear();
+        }
+    }
+
+    public int Count(string queueName)
+    {
+        lock (_lock)
+        {
+            if (!_queues.ContainsKey(queueName))
+                return 0;
+
+            return _queues[queueName].Count;
+        }
+    }
+}

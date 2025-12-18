@@ -1,0 +1,16 @@
+using QuestionarioOnline.Application.DTOs.Responses;
+
+namespace QuestionarioOnline.Api.Contracts.Responses;
+
+public record UsuarioRegistradoResponse(
+    Guid Id,
+    string Nome,
+    string Email
+)
+{
+    public static UsuarioRegistradoResponse From(UsuarioRegistradoDto dto) => new(
+        dto.UsuarioId,
+        dto.Nome,
+        dto.Email
+    );
+}

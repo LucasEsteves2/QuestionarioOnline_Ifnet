@@ -30,6 +30,15 @@ public class QuestionarioRepository : IQuestionarioRepository
             .FirstOrDefaultAsync(q => q.Id == id, cancellationToken);
     }
 
+    public async Task<IEnumerable<Questionario>> ObterTodosAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Questionarios
+            .AsNoTracking()
+            .Include(q => q.Perguntas)
+            .OrderByDescending(q => q.DataCriacao)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IEnumerable<Questionario>> ObterTodosPorUsuarioAsync(Guid usuarioId, CancellationToken cancellationToken = default)
     {
         return await _context.Questionarios

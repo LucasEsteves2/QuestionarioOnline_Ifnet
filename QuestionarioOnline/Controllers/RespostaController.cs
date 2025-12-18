@@ -1,12 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using QuestionarioOnline.Api.Requests;
-using QuestionarioOnline.Api.Responses;
-using QuestionarioOnline.Application.DTOs.Requests;
-using QuestionarioOnline.Application.DTOs.Responses;
+using QuestionarioOnline.Api.Contracts.Requests;
+using QuestionarioOnline.Api.Contracts.Responses;
 using QuestionarioOnline.Application.Interfaces;
 
 namespace QuestionarioOnline.Api.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 public class RespostaController : BaseController
 {
@@ -18,30 +18,15 @@ public class RespostaController : BaseController
     }
 
     [HttpPost]
-    public async Task<ActionResult<ApiResponse<RespostaRegistradaDto>>> Registrar([FromBody] RegistrarRespostaApiRequest request)
+    public async Task<ActionResult<ApiResponse<RespostaRegistradaResponse>>> Registrar([FromBody] RegistrarRespostaRequest request)
     {
-        var applicationRequest = MapearParaApplicationRequest(request);
-
-        var result = await _respostaService.RegistrarRespostaAsync(applicationRequest);
+        var applicationDto = request.ToApplicationDto();
+        var result = await _respostaService.RegistrarRespostaAsync(applicationDto);
 
         if (result.IsFailure)
-            return FailResponse(result);
+            return FailResponse<RespostaRegistradaResponse>(result.Error);
 
-        return AcceptedResponse(result.Value, "Resposta recebida e será processada em breve");
-    }
-
-    private static RegistrarRespostaRequest MapearParaApplicationRequest(RegistrarRespostaApiRequest apiRequest)
-    {
-        var respostas = apiRequest.Respostas
-            .Select(r => new RespostaItemDto(r.PerguntaId, r.OpcaoRespostaId))
-            .ToList();
-
-        return new RegistrarRespostaRequest(
-            apiRequest.QuestionarioId,
-            respostas,
-            apiRequest.Estado,
-            apiRequest.Cidade,
-            apiRequest.RegiaoGeografica
-        );
+        var response = RespostaRegistradaResponse.From(result.Value);
+        return AcceptedResponse(response, "Resposta recebida e será processada em breve");
     }
 }

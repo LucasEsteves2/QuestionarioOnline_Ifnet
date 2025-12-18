@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QuestionarioOnline.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fbae651535c51bdb74eacfd6f2e57c3e4fc3dfe4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+834ea43b929ecb85c56b68da5e7f5f9a6eec8633")]
 [assembly: System.Reflection.AssemblyProductAttribute("QuestionarioOnline.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuestionarioOnline.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

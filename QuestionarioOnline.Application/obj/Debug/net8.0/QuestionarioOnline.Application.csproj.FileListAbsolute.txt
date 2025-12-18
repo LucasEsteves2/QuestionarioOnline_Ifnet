@@ -13,3 +13,4 @@ C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Applicatio
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Application\obj\Debug\net8.0\refint\QuestionarioOnline.Application.dll
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Application\obj\Debug\net8.0\QuestionarioOnline.Application.pdb
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Application\obj\Debug\net8.0\ref\QuestionarioOnline.Application.dll
+C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.Application\obj\Debug\net8.0\QuestionarioOnline.Application.sourcelink.json

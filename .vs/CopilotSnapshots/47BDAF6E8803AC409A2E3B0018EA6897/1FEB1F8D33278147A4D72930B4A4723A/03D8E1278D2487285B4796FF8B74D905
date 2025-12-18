@@ -1,0 +1,8 @@
+﻿namespace QuestionarioOnline.Api.Contracts.Requests;
+
+public record CriarPerguntaRequest(
+    string Texto,
+    int Ordem,
+    bool Obrigatoria,
+    List<CriarOpcaoRequest> Opcoes
+);

@@ -1,0 +1,175 @@
+﻿using QuestionarioOnline.Application.DTOs.Requests;
+using QuestionarioOnline.Application.DTOs.Responses;
+using QuestionarioOnline.Application.Interfaces;
+using QuestionarioOnline.Application.Validators;
+using QuestionarioOnline.Domain.Entities;
+using QuestionarioOnline.Domain.Exceptions;
+using QuestionarioOnline.Domain.Interfaces;
+using QuestionarioOnline.Domain.ValueObjects;
+
+namespace QuestionarioOnline.Application.Services;
+
+public class QuestionarioService : IQuestionarioService
+{
+    private readonly IQuestionarioRepository _questionarioRepository;
+    private readonly IRespostaRepository _respostaRepository;
+    private readonly CriarQuestionarioRequestValidator _validator;
+
+    public QuestionarioService(IQuestionarioRepository questionarioRepository, IRespostaRepository respostaRepository, CriarQuestionarioRequestValidator validator)
+    {
+        _questionarioRepository = questionarioRepository;
+        _respostaRepository = respostaRepository;
+        _validator = validator;
+    }
+
+    public async Task<Result<QuestionarioDto>> CriarQuestionarioAsync(CriarQuestionarioRequest request, Guid usuarioId, CancellationToken cancellationToken = default)
+    {
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
+            return ValidationFailure<QuestionarioDto>(validationResult);
+
+        try
+        {
+            var questionario = CriarQuestionarioComPerguntas(request, usuarioId);
+            await _questionarioRepository.AdicionarAsync(questionario, cancellationToken);
+            return Result.Success(QuestionarioMapper.ToDto(questionario));
+        }
+        catch (DomainException ex)
+        {
+            return Result.Failure<QuestionarioDto>(ex.Message);
+        }
+    }
+
+    public async Task<Result<QuestionarioDto>> EncerrarQuestionarioAsync(Guid questionarioId, Guid usuarioId, CancellationToken cancellationToken = default)
+    {
+        var questionario = await ObterQuestionarioOuFalhar(questionarioId, cancellationToken);
+       
+        if (questionario is null)
+            return Result.Failure<QuestionarioDto>("Questionário não encontrado");
+
+        try
+        {
+            questionario.EncerrarPor(usuarioId);
+            await _questionarioRepository.AtualizarAsync(questionario, cancellationToken);
+            return Result.Success(QuestionarioMapper.ToDto(questionario));
+        }
+        catch (DomainException ex)
+        {
+            return Result.Failure<QuestionarioDto>(ex.Message);
+        }
+    }
+
+    public async Task<Result> DeletarQuestionarioAsync(Guid questionarioId, Guid usuarioId, CancellationToken cancellationToken = default)
+    {
+        var questionario = await ObterQuestionarioOuFalhar(questionarioId, cancellationToken);
+        if (questionario is null)
+            return Result.Failure("Questionário não encontrado");
+
+        try
+        {
+            questionario.GarantirQueUsuarioPodeAcessar(usuarioId);
+            await _questionarioRepository.DeletarAsync(questionario, cancellationToken);
+            return Result.Success();
+        }
+        catch (DomainException ex)
+        {
+            return Result.Failure(ex.Message);
+        }
+    }
+
+    public async Task<Result<QuestionarioPublicoDto>> ObterQuestionarioPublicoAsync(Guid questionarioId, CancellationToken cancellationToken = default)
+    {
+        var questionario = await ObterQuestionarioOuFalhar(questionarioId, cancellationToken);
+        if (questionario is null)
+            return Result.Failure<QuestionarioPublicoDto>("Questionário não encontrado");
+
+        try
+        {
+            questionario.GarantirQuePodeReceberRespostas();
+            return Result.Success(QuestionarioMapper.ToPublicoDto(questionario));
+        }
+        catch (DomainException ex)
+        {
+            return Result.Failure<QuestionarioPublicoDto>(ex.Message);
+        }
+    }
+
+    public async Task<Result<QuestionarioDto>> ObterQuestionarioPorIdAsync(Guid questionarioId, Guid usuarioId, CancellationToken cancellationToken = default)
+    {
+        var questionario = await ObterQuestionarioOuFalhar(questionarioId, cancellationToken);
+        if (questionario is null)
+            return Result.Failure<QuestionarioDto>("Questionário não encontrado");
+
+        try
+        {
+            questionario.GarantirQueUsuarioPodeAcessar(usuarioId);
+            return Result.Success(QuestionarioMapper.ToDto(questionario));
+        }
+        catch (DomainException ex)
+        {
+            return Result.Failure<QuestionarioDto>(ex.Message);
+        }
+    }
+
+    public async Task<IEnumerable<QuestionarioListaDto>> ListarQuestionariosPorUsuarioAsync(Guid usuarioId, CancellationToken cancellationToken = default)
+    {
+        var questionarios = await _questionarioRepository.ObterTodosPorUsuarioAsync(usuarioId, cancellationToken);
+        return questionarios.Select(QuestionarioMapper.ToListaDto);
+    }
+
+    public async Task<Result<ResultadoQuestionarioDto>> ObterResultadosAsync(Guid questionarioId, Guid usuarioId, CancellationToken cancellationToken = default)
+    {
+        var questionario = await ObterQuestionarioOuFalhar(questionarioId, cancellationToken);
+        if (questionario is null)
+            return Result.Failure<ResultadoQuestionarioDto>("Questionário não encontrado");
+
+        try
+        {
+            questionario.GarantirQueUsuarioPodeAcessar(usuarioId);
+            var respostas = await _respostaRepository.ObterPorQuestionarioAsync(questionarioId, cancellationToken);
+            var resultado = CalcularResultados(questionario, respostas);
+            return Result.Success(resultado);
+        }
+        catch (DomainException ex)
+        {
+            return Result.Failure<ResultadoQuestionarioDto>(ex.Message);
+        }
+    }
+
+    private async Task<Questionario?> ObterQuestionarioOuFalhar(Guid questionarioId, CancellationToken cancellationToken)
+    {
+        return await _questionarioRepository.ObterPorIdComPerguntasAsync(questionarioId, cancellationToken);
+    }
+
+    private static Questionario CriarQuestionarioComPerguntas(CriarQuestionarioRequest request, Guid usuarioId)
+    {
+        var questionario = Questionario.Criar(request.Titulo, request.Descricao, request.DataInicio, request.DataFim, usuarioId);
+        foreach (var p in request.Perguntas.OrderBy(x => x.Ordem))
+            questionario.AdicionarPergunta(p.Texto, p.Ordem, p.Obrigatoria, p.Opcoes.Select(o => (o.Texto, o.Ordem)));
+        return questionario;
+    }
+
+    private static ResultadoQuestionarioDto CalcularResultados(Questionario questionario, IEnumerable<Resposta> respostas)
+    {
+        var totalRespostas = respostas.Count();
+        var votosPorOpcao = respostas.SelectMany(r => r.Itens).GroupBy(i => i.OpcaoRespostaId).ToDictionary(g => g.Key, g => g.Count());
+
+        var perguntas = questionario.Perguntas.Select(p =>
+            new ResultadoPerguntaDto(
+                p.Id,
+                p.Texto,
+                [.. p.Opcoes.Select(o =>
+                {
+                    votosPorOpcao.TryGetValue(o.Id, out var votos);
+                    var percentual = totalRespostas == 0 ? 0 : (votos * 100.0) / totalRespostas;
+                    return new ResultadoOpcaoDto(o.Id, o.Texto, votos, percentual);
+                })]
+            )
+        ).ToList();
+
+        return new ResultadoQuestionarioDto(questionario.Id, questionario.Titulo, totalRespostas, perguntas);
+    }
+
+    private static Result<T> ValidationFailure<T>(FluentValidation.Results.ValidationResult v) =>
+        Result.Failure<T>($"Erro de validação: {string.Join("; ", v.Errors.Select(e => e.ErrorMessage))}");
+}

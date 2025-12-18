@@ -17,3 +17,4 @@ C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.CrossCutti
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.CrossCutting\obj\Debug\net8.0\refint\QuestionarioOnline.CrossCutting.dll
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.CrossCutting\obj\Debug\net8.0\QuestionarioOnline.CrossCutting.pdb
 C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.CrossCutting\obj\Debug\net8.0\ref\QuestionarioOnline.CrossCutting.dll
+C:\Users\Lucas Dev\source\repos\QuestionarioOnline\QuestionarioOnline.CrossCutting\obj\Debug\net8.0\QuestionarioOnline.CrossCutting.sourcelink.json

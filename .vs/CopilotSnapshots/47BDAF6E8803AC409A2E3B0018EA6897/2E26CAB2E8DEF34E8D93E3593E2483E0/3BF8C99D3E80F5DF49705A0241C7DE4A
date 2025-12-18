@@ -1,0 +1,33 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using QuestionarioOnline.Api.Contracts.Requests;
+using QuestionarioOnline.Api.Contracts.Responses;
+using QuestionarioOnline.Api.Responses;
+using QuestionarioOnline.Application.Interfaces;
+
+namespace QuestionarioOnline.Api.Controllers;
+
+[Authorize]
+[Route("api/[controller]")]
+public class RespostaController : BaseController
+{
+    private readonly IRespostaService _respostaService;
+
+    public RespostaController(IRespostaService respostaService)
+    {
+        _respostaService = respostaService;
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<ApiResponse<RespostaRegistradaResponse>>> Registrar([FromBody] RegistrarRespostaRequest request)
+    {
+        var applicationDto = request.ToApplicationDto();
+        var result = await _respostaService.RegistrarRespostaAsync(applicationDto);
+
+        if (result.IsFailure)
+            return FailResponse<RespostaRegistradaResponse>(result.Error);
+
+        var response = RespostaRegistradaResponse.From(result.Value);
+        return AcceptedResponse(response, "Resposta recebida e será processada em breve");
+    }
+}

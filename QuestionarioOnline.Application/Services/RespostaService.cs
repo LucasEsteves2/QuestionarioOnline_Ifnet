@@ -3,6 +3,7 @@ using QuestionarioOnline.Application.DTOs.Responses;
 using QuestionarioOnline.Application.Interfaces;
 using QuestionarioOnline.Application.Validators;
 using QuestionarioOnline.Domain.Constants;
+using QuestionarioOnline.Domain.Exceptions;
 using QuestionarioOnline.Domain.Interfaces;
 using QuestionarioOnline.Domain.ValueObjects;
 
@@ -24,33 +25,36 @@ public class RespostaService : IRespostaService
     public async Task<Result<RespostaRegistradaDto>> RegistrarRespostaAsync(RegistrarRespostaRequest request)
     {
         var validationResult = await _validator.ValidateAsync(request);
-
         if (!validationResult.IsValid)
         {
             var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
             return Result.Failure<RespostaRegistradaDto>($"Erro de validação: {errors}");
         }
 
-        var questionario = await _questionarioRepository.ObterPorIdAsync(request.QuestionarioId, CancellationToken.None);
-
+        var questionario = await _questionarioRepository.ObterPorIdAsync(request.QuestionarioId);
         if (questionario is null)
             return Result.Failure<RespostaRegistradaDto>("Questionário não encontrado");
 
-        if (!questionario.PodeReceberRespostas())
-            return Result.Failure<RespostaRegistradaDto>("Questionário não está disponível para receber respostas");
+        try
+        {
+            questionario.GarantirQuePodeReceberRespostas();
 
-        var mensagem = new RespostaParaProcessamentoDto(
-            request.QuestionarioId,
-            request.Respostas,
-            request.Estado,
-            request.Cidade,
-            request.RegiaoGeografica
-        );
+            var mensagem = new RespostaParaProcessamentoDto(
+                request.QuestionarioId,
+                request.Respostas,
+                request.Estado,
+                request.Cidade,
+                request.RegiaoGeografica
+            );
 
-        await _messageQueue.SendAsync(QueueConstants.RespostasQueueName, mensagem, CancellationToken.None);
+            await _messageQueue.SendAsync(QueueConstants.RespostasQueueName, mensagem);
 
-        var resposta = new RespostaRegistradaDto(Guid.NewGuid(), request.QuestionarioId, DateTime.UtcNow);
-
-        return Result.Success(resposta);
+            var resposta = new RespostaRegistradaDto(Guid.NewGuid(), request.QuestionarioId, DateTime.UtcNow);
+            return Result.Success(resposta);
+        }
+        catch (DomainException ex)
+        {
+            return Result.Failure<RespostaRegistradaDto>(ex.Message);
+        }
     }
 }

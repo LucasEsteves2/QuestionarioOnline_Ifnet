@@ -1,0 +1,103 @@
+﻿using Microsoft.EntityFrameworkCore;
+using QuestionarioOnline.Domain.Entities;
+using QuestionarioOnline.Domain.Interfaces;
+using QuestionarioOnline.Infrastructure.Persistence;
+
+namespace QuestionarioOnline.Infrastructure.Repositories;
+
+public class QuestionarioRepository : IQuestionarioRepository
+{
+    private readonly QuestionarioOnlineDbContext _context;
+
+    public QuestionarioRepository(QuestionarioOnlineDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<Questionario?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.Questionarios
+            .AsNoTracking()
+            .FirstOrDefaultAsync(q => q.Id == id, cancellationToken);
+    }
+
+    public async Task<Questionario?> ObterPorIdComPerguntasAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.Questionarios
+            .AsNoTracking()
+            .Include(q => q.Perguntas.OrderBy(p => p.Ordem))
+            .ThenInclude(p => p.Opcoes.OrderBy(o => o.Ordem))
+            .FirstOrDefaultAsync(q => q.Id == id, cancellationToken);
+    }
+
+    public async Task<IEnumerable<Questionario>> ObterTodosAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Questionarios
+            .AsNoTracking()
+            .Include(q => q.Perguntas)
+            .OrderByDescending(q => q.DataCriacao)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Questionario>> ObterTodosPorUsuarioAsync(Guid usuarioId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Questionarios
+            .AsNoTracking()
+            .Where(q => q.UsuarioId == usuarioId)
+            .OrderByDescending(q => q.DataCriacao)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<(IEnumerable<Questionario> Items, int Total)> ObterTodosPorUsuarioPaginadoAsync(
+        Guid usuarioId,
+        int page = 1,
+        int pageSize = 20,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.Questionarios
+            .AsNoTracking()
+            .Where(q => q.UsuarioId == usuarioId);
+
+        var total = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .OrderByDescending(q => q.DataCriacao)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (items, total);
+    }
+
+    public async Task<IEnumerable<Questionario>> ObterPublicadosAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Questionarios
+            .AsNoTracking()
+            .Where(q => q.Status == Domain.Enums.StatusQuestionario.Ativo)
+            .OrderByDescending(q => q.DataCriacao)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task AdicionarAsync(Questionario questionario, CancellationToken cancellationToken = default)
+    {
+        await _context.Questionarios.AddAsync(questionario, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task AtualizarAsync(Questionario questionario, CancellationToken cancellationToken = default)
+    {
+        _context.Questionarios.Update(questionario);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeletarAsync(Questionario questionario, CancellationToken cancellationToken = default)
+    {
+        _context.Questionarios.Remove(questionario);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<bool> ExisteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.Questionarios.AnyAsync(q => q.Id == id, cancellationToken);
+    }
+}

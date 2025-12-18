@@ -1,0 +1,25 @@
+﻿namespace QuestionarioOnline.Domain.Exceptions;
+
+public class QuestionarioJaEncerradoException : DomainException
+{
+    public QuestionarioJaEncerradoException() 
+        : base("Não é possível realizar esta operação em um questionário encerrado")
+    {
+    }
+}
+
+public class QuestionarioNaoPodeReceberRespostasException : DomainException
+{
+    public QuestionarioNaoPodeReceberRespostasException(string motivo) 
+        : base($"Questionário não pode receber respostas: {motivo}")
+    {
+    }
+}
+
+public class PerguntaDuplicadaException : DomainException
+{
+    public PerguntaDuplicadaException() 
+        : base("Já existe uma pergunta com esta ordem")
+    {
+    }
+}

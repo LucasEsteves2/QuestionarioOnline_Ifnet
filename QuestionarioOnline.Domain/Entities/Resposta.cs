@@ -1,3 +1,4 @@
+using QuestionarioOnline.Domain.Exceptions;
 using QuestionarioOnline.Domain.ValueObjects;
 
 namespace QuestionarioOnline.Domain.Entities;
@@ -51,23 +52,23 @@ public class Resposta
 
     public void AdicionarItem(RespostaItem item)
     {
-        if (item is null)
-            throw new ArgumentNullException(nameof(item));
+        ArgumentNullException.ThrowIfNull(item, nameof(item));
 
         if (_itens.Any(i => i.PerguntaId == item.PerguntaId))
-            throw new InvalidOperationException("Já existe uma resposta para esta pergunta");
+            throw new DomainException("Já existe uma resposta para esta pergunta");
 
         _itens.Add(item);
     }
 
-    public void ValidarCompletude(IEnumerable<Pergunta> perguntas)
+    public void GarantirCompletude(IEnumerable<Pergunta> perguntas)
     {
-        var perguntasObrigatorias = perguntas.Where(p => p.Obrigatoria).Select(p => p.Id).ToList();
+        var perguntasObrigatorias = perguntas.Where(p => p.Obrigatoria).ToList();
         var perguntasRespondidas = _itens.Select(i => i.PerguntaId).ToList();
 
-        var perguntasFaltantes = perguntasObrigatorias.Except(perguntasRespondidas).ToList();
-
-        if (perguntasFaltantes.Any())
-            throw new InvalidOperationException("Existem perguntas obrigatórias não respondidas");
+        foreach (var pergunta in perguntasObrigatorias)
+        {
+            if (!perguntasRespondidas.Contains(pergunta.Id))
+                throw new DomainException($"A pergunta '{pergunta.Texto}' é obrigatória e não foi respondida");
+        }
     }
 }

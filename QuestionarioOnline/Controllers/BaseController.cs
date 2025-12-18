@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using QuestionarioOnline.Api.Contracts.Responses;
 using QuestionarioOnline.Api.Extensions;
-using QuestionarioOnline.Api.Responses;
 using QuestionarioOnline.Domain.ValueObjects;
 
 namespace QuestionarioOnline.Api.Controllers;

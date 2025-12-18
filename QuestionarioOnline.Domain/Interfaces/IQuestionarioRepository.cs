@@ -6,8 +6,9 @@ public interface IQuestionarioRepository
 {
     Task<Questionario?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<Questionario?> ObterPorIdComPerguntasAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Questionario>> ObterTodosPorUsuarioAsync(Guid usuarioInternoId, CancellationToken cancellationToken = default);
-    Task<(IEnumerable<Questionario> Items, int Total)> ObterTodosPorUsuarioPaginadoAsync(Guid usuarioInternoId, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Questionario>> ObterTodosAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<Questionario>> ObterTodosPorUsuarioAsync(Guid usuarioId, CancellationToken cancellationToken = default);
+    Task<(IEnumerable<Questionario> Items, int Total)> ObterTodosPorUsuarioPaginadoAsync(Guid usuarioId, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default);
     Task<IEnumerable<Questionario>> ObterPublicadosAsync(CancellationToken cancellationToken = default);
     Task AdicionarAsync(Questionario questionario, CancellationToken cancellationToken = default);
     Task AtualizarAsync(Questionario questionario, CancellationToken cancellationToken = default);

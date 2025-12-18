@@ -3,6 +3,8 @@ using QuestionarioOnline.Application.DTOs.Responses;
 using QuestionarioOnline.Application.Interfaces;
 using QuestionarioOnline.Application.Validators;
 using QuestionarioOnline.Domain.Entities;
+using QuestionarioOnline.Domain.Enums;
+using QuestionarioOnline.Domain.Exceptions;
 using QuestionarioOnline.Domain.Interfaces;
 using QuestionarioOnline.Domain.ValueObjects;
 
@@ -23,72 +25,72 @@ public class AuthService : IAuthService
         _loginValidator = loginValidator;
     }
 
-    public async Task<Result<UsuarioRegistradoDto>> RegistrarAsync(RegistrarUsuarioRequest request)
+    public async Task<Result<LoginResponse>> RegistrarAsync(RegistrarUsuarioRequest request)
     {
         var validationResult = await _registrarValidator.ValidateAsync(request);
-
-        if (!validationResult.IsValid)
-        {
-            var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
-            return Result.Failure<UsuarioRegistradoDto>($"Erro de validação: {errors}");
-        }
-
-        var email = Email.Create(request.Email);
-
-        var usuarioExistente = await _usuarioRepository.ObterPorEmailAsync(email);
-
-        if (usuarioExistente != null)
-            return Result.Failure<UsuarioRegistradoDto>("Email já cadastrado");
-
-        var senhaHash = BCrypt.Net.BCrypt.HashPassword(request.Senha);
-
-        var novoUsuario = new Usuario(request.Nome, email, senhaHash);
-
-        await _usuarioRepository.AdicionarAsync(novoUsuario);
-
-        var dto = new UsuarioRegistradoDto(
-            novoUsuario.Id,
-            novoUsuario.Nome,
-            novoUsuario.Email.Address
-        );
-
-        return Result.Success(dto);
-    }
-
-    public async Task<Result<LoginResponse>> LoginAsync(LoginRequest request)
-    {
-        var validationResult = await _loginValidator.ValidateAsync(request);
-
+     
         if (!validationResult.IsValid)
         {
             var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
             return Result.Failure<LoginResponse>($"Erro de validação: {errors}");
         }
 
-        var email = Email.Create(request.Email);
+        try
+        {
+            var email = Email.Create(request.Email);
 
-        var usuario = await _usuarioRepository.ObterPorEmailAsync(email);
+            var usuarioExistente = await _usuarioRepository.ObterPorEmailAsync(email);
+     
+            if (usuarioExistente != null)
+                throw new DomainException($"O email '{request.Email}' já está cadastrado no sistema");
 
-        if (usuario == null)
-            return Result.Failure<LoginResponse>("Email ou senha inválidos");
+            var senhaHash = BCrypt.Net.BCrypt.HashPassword(request.Senha);
+            var novoUsuario = new Usuario(request.Nome, email, senhaHash, UsuarioRole.Admin);
 
-        if (!usuario.Ativo)
-            return Result.Failure<LoginResponse>("Usuário inativo");
+            await _usuarioRepository.AdicionarAsync(novoUsuario);
 
-        var senhaValida = BCrypt.Net.BCrypt.Verify(request.Senha, usuario.SenhaHash);
+            var token = _jwtTokenService.GerarToken(novoUsuario);
+            var response = new LoginResponse(token, novoUsuario.Id, novoUsuario.Nome, novoUsuario.Email.Address);
+            
+            return Result.Success(response);
+        }
+        catch (DomainException ex)
+        {
+            return Result.Failure<LoginResponse>(ex.Message);
+        }
+    }
 
-        if (!senhaValida)
-            return Result.Failure<LoginResponse>("Email ou senha inválidos");
+    public async Task<Result<LoginResponse>> LoginAsync(LoginRequest request)
+    {
+        var validationResult = await _loginValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+            return Result.Failure<LoginResponse>($"Erro de validação: {errors}");
+        }
 
-        var token = _jwtTokenService.GerarToken(usuario);
+        try
+        {
+            var email = Email.Create(request.Email);
 
-        var response = new LoginResponse(
-            token,
-            usuario.Id,
-            usuario.Nome,
-            usuario.Email.ToString()
-        );
+            var usuario = await _usuarioRepository.ObterPorEmailAsync(email);
+            if (usuario == null)
+                return Result.Failure<LoginResponse>("Email ou senha inválidos");
 
-        return Result.Success(response);
+            usuario.GarantirQueEstaAtivo();
+
+            var senhaValida = BCrypt.Net.BCrypt.Verify(request.Senha, usuario.SenhaHash);
+            if (!senhaValida)
+                return Result.Failure<LoginResponse>("Email ou senha inválidos");
+
+            var token = _jwtTokenService.GerarToken(usuario);
+            var response = new LoginResponse(token, usuario.Id, usuario.Nome, usuario.Email.Address);
+
+            return Result.Success(response);
+        }
+        catch (DomainException ex)
+        {
+            return Result.Failure<LoginResponse>(ex.Message);
+        }
     }
 }

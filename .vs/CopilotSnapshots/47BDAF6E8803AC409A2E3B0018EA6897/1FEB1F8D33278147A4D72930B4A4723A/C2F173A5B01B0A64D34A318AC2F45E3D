@@ -1,0 +1,26 @@
+﻿using AppDto = QuestionarioOnline.Application.DTOs.Requests;
+
+namespace QuestionarioOnline.Api.Contracts.Requests;
+
+/// <summary>
+/// Request para registrar novo usuário (API Contract)
+/// </summary>
+public record RegistrarUsuarioRequest(
+    string Nome,
+    string Email,
+    string Senha
+)
+{
+    public AppDto.RegistrarUsuarioRequest ToApplicationDto() => new(Nome, Email, Senha);
+}
+
+/// <summary>
+/// Request para login (API Contract)
+/// </summary>
+public record LoginRequest(
+    string Email,
+    string Senha
+)
+{
+    public AppDto.LoginRequest ToApplicationDto() => new(Email, Senha);
+}

@@ -2,15 +2,11 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Sistema de Questionários Online",
-    "description": "API RESTful para criação, gerenciamento e coleta de respostas de questionários com processamento assíncrono de alto volume.\r\n\r\n**Projeto Acadêmico**\r\n- Pós-Graduação em Arquitetura de Software - Instituto Infnet\r\n- Autor: Lucas Esteves\r\n- Tecnologias: .NET 8, Clean Architecture, DDD, Azure Queue Storage\r\n\r\n**Arquitetura**\r\n- Clean Architecture com Domain-Driven Design (DDD)\r\n- Processamento assíncrono via Azure Queue Storage e Azure Functions\r\n- Monolito Modular com separação clara de camadas\r\n- Suporte a milhões de respostas simultâneas\r\n\r\n**Autenticação**\r\n- JWT Bearer Token (Stateless)\r\n- Role-Based Access Control (RBAC): Admin, Analista, Visualizador",
+    "description": "API RESTful para criação, gerenciamento e coleta de respostas de questionários com processamento assíncrono de alto volume.\r\n\r\n**Projeto Acadêmico**\r\n- Pós-Graduação em Arquitetura de Software - Instituto Infnet\r\n- Autor: Lucas Esteves\r\n- Tecnologias: .NET 8, Clean Architecture, DDD, Azure Queue Storage\r\n",
     "contact": {
       "name": "Lucas Esteves",
       "url": "https://github.com/seu-usuario/questionario-online",
       "email": "lucas.esteves@infnet.edu.br"
-    },
-    "license": {
-      "name": "MIT License",
-      "url": "https://opensource.org/licenses/MIT"
     },
     "version": "v1.0"
   },
@@ -40,42 +36,22 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Created",
+          "200": {
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/UsuarioRegistradoDtoApiResponse"
+                  "$ref": "#/components/schemas/UsuarioRegistradoResponseApiResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UsuarioRegistradoDtoApiResponse"
+                  "$ref": "#/components/schemas/UsuarioRegistradoResponseApiResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UsuarioRegistradoDtoApiResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsuarioRegistradoDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsuarioRegistradoDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsuarioRegistradoDtoApiResponse"
+                  "$ref": "#/components/schemas/UsuarioRegistradoResponseApiResponse"
                 }
               }
             }
@@ -127,46 +103,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponseApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponseApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponseApiResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponseApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponseApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponseApiResponse"
-                }
-              }
-            }
           }
         }
       }
@@ -196,42 +132,22 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Created",
+          "200": {
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
+                  "$ref": "#/components/schemas/QuestionarioResponseApiResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
+                  "$ref": "#/components/schemas/QuestionarioResponseApiResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
+                  "$ref": "#/components/schemas/QuestionarioResponseApiResponse"
                 }
               }
             }
@@ -248,17 +164,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/QuestionarioListaDtoIEnumerableApiResponse"
+                  "$ref": "#/components/schemas/QuestionarioListaResponseIEnumerableApiResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/QuestionarioListaDtoIEnumerableApiResponse"
+                  "$ref": "#/components/schemas/QuestionarioListaResponseIEnumerableApiResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/QuestionarioListaDtoIEnumerableApiResponse"
+                  "$ref": "#/components/schemas/QuestionarioListaResponseIEnumerableApiResponse"
                 }
               }
             }
@@ -288,77 +204,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
+                  "$ref": "#/components/schemas/QuestionarioResponseApiResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
+                  "$ref": "#/components/schemas/QuestionarioResponseApiResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
+                  "$ref": "#/components/schemas/QuestionarioResponseApiResponse"
                 }
               }
             }
@@ -384,64 +240,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ObjectApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ObjectApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ObjectApiResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ObjectApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ObjectApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ObjectApiResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ObjectApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ObjectApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ObjectApiResponse"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       },
@@ -466,97 +265,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
+                  "$ref": "#/components/schemas/QuestionarioResponseApiResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
+                  "$ref": "#/components/schemas/QuestionarioResponseApiResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioDtoApiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Questionario/publico/{id}": {
-      "get": {
-        "tags": [
-          "Questionario"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioPublicoDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioPublicoDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioPublicoDtoApiResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioPublicoDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioPublicoDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/QuestionarioPublicoDtoApiResponse"
+                  "$ref": "#/components/schemas/QuestionarioResponseApiResponse"
                 }
               }
             }
@@ -586,57 +305,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResultadoQuestionarioDtoApiResponse"
+                  "$ref": "#/components/schemas/ResultadoQuestionarioResponseApiResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResultadoQuestionarioDtoApiResponse"
+                  "$ref": "#/components/schemas/ResultadoQuestionarioResponseApiResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResultadoQuestionarioDtoApiResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResultadoQuestionarioDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResultadoQuestionarioDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResultadoQuestionarioDtoApiResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResultadoQuestionarioDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResultadoQuestionarioDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResultadoQuestionarioDtoApiResponse"
+                  "$ref": "#/components/schemas/ResultadoQuestionarioResponseApiResponse"
                 }
               }
             }
@@ -653,58 +332,38 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegistrarRespostaApiRequest"
+                "$ref": "#/components/schemas/RegistrarRespostaRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegistrarRespostaApiRequest"
+                "$ref": "#/components/schemas/RegistrarRespostaRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/RegistrarRespostaApiRequest"
+                "$ref": "#/components/schemas/RegistrarRespostaRequest"
               }
             }
           }
         },
         "responses": {
-          "202": {
-            "description": "Accepted",
+          "200": {
+            "description": "OK",
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/RespostaRegistradaDtoApiResponse"
+                  "$ref": "#/components/schemas/RespostaRegistradaResponseApiResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RespostaRegistradaDtoApiResponse"
+                  "$ref": "#/components/schemas/RespostaRegistradaResponseApiResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RespostaRegistradaDtoApiResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/RespostaRegistradaDtoApiResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RespostaRegistradaDtoApiResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RespostaRegistradaDtoApiResponse"
+                  "$ref": "#/components/schemas/RespostaRegistradaResponseApiResponse"
                 }
               }
             }
@@ -715,7 +374,7 @@
   },
   "components": {
     "schemas": {
-      "CriarOpcaoDto": {
+      "CriarOpcaoRequest": {
         "type": "object",
         "properties": {
           "texto": {
@@ -729,7 +388,7 @@
         },
         "additionalProperties": false
       },
-      "CriarPerguntaDto": {
+      "CriarPerguntaRequest": {
         "type": "object",
         "properties": {
           "texto": {
@@ -746,7 +405,7 @@
           "opcoes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CriarOpcaoDto"
+              "$ref": "#/components/schemas/CriarOpcaoRequest"
             },
             "nullable": true
           }
@@ -775,7 +434,7 @@
           "perguntas": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CriarPerguntaDto"
+              "$ref": "#/components/schemas/CriarPerguntaRequest"
             },
             "nullable": true
           }
@@ -850,7 +509,83 @@
         },
         "additionalProperties": false
       },
-      "ObjectApiResponse": {
+      "OpcaoResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "texto": {
+            "type": "string",
+            "nullable": true
+          },
+          "ordem": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PerguntaResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "texto": {
+            "type": "string",
+            "nullable": true
+          },
+          "ordem": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "obrigatoria": {
+            "type": "boolean"
+          },
+          "opcoes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OpcaoResponse"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuestionarioListaResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "titulo": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataInicio": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dataFim": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totalPerguntas": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuestionarioListaResponseIEnumerableApiResponse": {
         "type": "object",
         "properties": {
           "status": {
@@ -858,6 +593,10 @@
             "nullable": true
           },
           "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionarioListaResponse"
+            },
             "nullable": true
           },
           "message": {
@@ -882,53 +621,7 @@
         },
         "additionalProperties": false
       },
-      "OpcaoDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "texto": {
-            "type": "string",
-            "nullable": true
-          },
-          "ordem": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "PerguntaDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "texto": {
-            "type": "string",
-            "nullable": true
-          },
-          "ordem": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "obrigatoria": {
-            "type": "boolean"
-          },
-          "opcoes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OpcaoDto"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "QuestionarioDto": {
+      "QuestionarioResponse": {
         "type": "object",
         "properties": {
           "id": {
@@ -967,14 +660,14 @@
           "perguntas": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PerguntaDto"
+              "$ref": "#/components/schemas/PerguntaResponse"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "QuestionarioDtoApiResponse": {
+      "QuestionarioResponseApiResponse": {
         "type": "object",
         "properties": {
           "status": {
@@ -982,7 +675,7 @@
             "nullable": true
           },
           "data": {
-            "$ref": "#/components/schemas/QuestionarioDto"
+            "$ref": "#/components/schemas/QuestionarioResponse"
           },
           "message": {
             "type": "string",
@@ -1006,130 +699,7 @@
         },
         "additionalProperties": false
       },
-      "QuestionarioListaDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "titulo": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "dataInicio": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "dataFim": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "totalPerguntas": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "QuestionarioListaDtoIEnumerableApiResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/QuestionarioListaDto"
-            },
-            "nullable": true
-          },
-          "message": {
-            "type": "string",
-            "nullable": true
-          },
-          "errors": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "nullable": true
-            },
-            "nullable": true
-          },
-          "statusCode": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "QuestionarioPublicoDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "titulo": {
-            "type": "string",
-            "nullable": true
-          },
-          "descricao": {
-            "type": "string",
-            "nullable": true
-          },
-          "perguntas": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PerguntaDto"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "QuestionarioPublicoDtoApiResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "data": {
-            "$ref": "#/components/schemas/QuestionarioPublicoDto"
-          },
-          "message": {
-            "type": "string",
-            "nullable": true
-          },
-          "errors": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "nullable": true
-            },
-            "nullable": true
-          },
-          "statusCode": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "RegistrarRespostaApiRequest": {
+      "RegistrarRespostaRequest": {
         "type": "object",
         "properties": {
           "questionarioId": {
@@ -1139,7 +709,7 @@
           "respostas": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/RespostaItemApiDto"
+              "$ref": "#/components/schemas/RespostaItemRequest"
             },
             "nullable": true
           },
@@ -1176,7 +746,7 @@
         },
         "additionalProperties": false
       },
-      "RespostaItemApiDto": {
+      "RespostaItemRequest": {
         "type": "object",
         "properties": {
           "perguntaId": {
@@ -1190,7 +760,7 @@
         },
         "additionalProperties": false
       },
-      "RespostaRegistradaDto": {
+      "RespostaRegistradaResponse": {
         "type": "object",
         "properties": {
           "id": {
@@ -1201,14 +771,14 @@
             "type": "string",
             "format": "uuid"
           },
-          "dataResposta": {
+          "dataRegistro": {
             "type": "string",
             "format": "date-time"
           }
         },
         "additionalProperties": false
       },
-      "RespostaRegistradaDtoApiResponse": {
+      "RespostaRegistradaResponseApiResponse": {
         "type": "object",
         "properties": {
           "status": {
@@ -1216,7 +786,7 @@
             "nullable": true
           },
           "data": {
-            "$ref": "#/components/schemas/RespostaRegistradaDto"
+            "$ref": "#/components/schemas/RespostaRegistradaResponse"
           },
           "message": {
             "type": "string",
@@ -1240,10 +810,10 @@
         },
         "additionalProperties": false
       },
-      "ResultadoOpcaoDto": {
+      "ResultadoOpcaoResponse": {
         "type": "object",
         "properties": {
-          "opcaoId": {
+          "id": {
             "type": "string",
             "format": "uuid"
           },
@@ -1251,7 +821,7 @@
             "type": "string",
             "nullable": true
           },
-          "totalVotos": {
+          "votos": {
             "type": "integer",
             "format": "int32"
           },
@@ -1262,10 +832,10 @@
         },
         "additionalProperties": false
       },
-      "ResultadoPerguntaDto": {
+      "ResultadoPerguntaResponse": {
         "type": "object",
         "properties": {
-          "perguntaId": {
+          "id": {
             "type": "string",
             "format": "uuid"
           },
@@ -1276,17 +846,17 @@
           "opcoes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ResultadoOpcaoDto"
+              "$ref": "#/components/schemas/ResultadoOpcaoResponse"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "ResultadoQuestionarioDto": {
+      "ResultadoQuestionarioResponse": {
         "type": "object",
         "properties": {
-          "questionarioId": {
+          "id": {
             "type": "string",
             "format": "uuid"
           },
@@ -1301,14 +871,14 @@
           "perguntas": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ResultadoPerguntaDto"
+              "$ref": "#/components/schemas/ResultadoPerguntaResponse"
             },
             "nullable": true
           }
         },
         "additionalProperties": false
       },
-      "ResultadoQuestionarioDtoApiResponse": {
+      "ResultadoQuestionarioResponseApiResponse": {
         "type": "object",
         "properties": {
           "status": {
@@ -1316,7 +886,7 @@
             "nullable": true
           },
           "data": {
-            "$ref": "#/components/schemas/ResultadoQuestionarioDto"
+            "$ref": "#/components/schemas/ResultadoQuestionarioResponse"
           },
           "message": {
             "type": "string",
@@ -1340,10 +910,10 @@
         },
         "additionalProperties": false
       },
-      "UsuarioRegistradoDto": {
+      "UsuarioRegistradoResponse": {
         "type": "object",
         "properties": {
-          "usuarioId": {
+          "id": {
             "type": "string",
             "format": "uuid"
           },
@@ -1358,7 +928,7 @@
         },
         "additionalProperties": false
       },
-      "UsuarioRegistradoDtoApiResponse": {
+      "UsuarioRegistradoResponseApiResponse": {
         "type": "object",
         "properties": {
           "status": {
@@ -1366,7 +936,7 @@
             "nullable": true
           },
           "data": {
-            "$ref": "#/components/schemas/UsuarioRegistradoDto"
+            "$ref": "#/components/schemas/UsuarioRegistradoResponse"
           },
           "message": {
             "type": "string",

@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using QuestionarioOnline.Api.Responses;
-using QuestionarioOnline.Application.DTOs.Requests;
-using QuestionarioOnline.Application.DTOs.Responses;
+using QuestionarioOnline.Api.Contracts.Requests;
+using QuestionarioOnline.Api.Contracts.Responses;
 using QuestionarioOnline.Application.Interfaces;
 
 namespace QuestionarioOnline.Api.Controllers;
@@ -19,25 +18,28 @@ public class AuthController : BaseController
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<ApiResponse<UsuarioRegistradoDto>>> Register([FromBody] RegistrarUsuarioRequest request)
+    public async Task<ActionResult<ApiResponse<LoginResponse>>> Register([FromBody] RegistrarUsuarioRequest request)
     {
-        var result = await _authService.RegistrarAsync(request);
+        var applicationDto = request.ToApplicationDto();
+        var result = await _authService.RegistrarAsync(applicationDto);
 
         if (result.IsFailure)
-            return FailResponse<UsuarioRegistradoDto>(result.Error);
+            return FailResponse<LoginResponse>(result.Error);
 
-        var response = ApiResponse<UsuarioRegistradoDto>.Success(result.Value, statusCode: 201);
-        return StatusCode(StatusCodes.Status201Created, response);
+        var response = LoginResponse.From(result.Value);
+        return CreatedResponse(nameof(Register), new { id = response.UsuarioId }, response);
     }
 
     [HttpPost("login")]
     public async Task<ActionResult<ApiResponse<LoginResponse>>> Login([FromBody] LoginRequest request)
     {
-        var result = await _authService.LoginAsync(request);
+        var applicationDto = request.ToApplicationDto();
+        var result = await _authService.LoginAsync(applicationDto);
 
         if (result.IsFailure)
             return UnauthorizedResponse<LoginResponse>(result.Error);
 
-        return OkResponse(result.Value);
+        var response = LoginResponse.From(result.Value);
+        return OkResponse(response);
     }
 }
