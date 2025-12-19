@@ -9,23 +9,6 @@
 
 ---
 
-## 📑 **Índice**
-
-- [Contexto Acadêmico](#-contexto-acadêmico)
-- [Sobre o Projeto](#-sobre-o-projeto)
-- [Desafio de Negócio](#-desafio-de-negócio)
-- [Arquitetura](#-arquitetura)
-- [Domínio e Entidades](#-domínio-e-entidades)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
-- [Decisões Arquiteturais](#-decisões-arquiteturais)
-- [Tecnologias](#-tecnologias)
-- [Funcionalidades e Endpoints](#-funcionalidades-e-endpoints)
-- [Instalação e Configuração](#-instalação-e-configuração)
-- [Performance e Escalabilidade](#-performance-e-escalabilidade)
-- [Documentação Adicional](#-documentação-adicional)
-
----
-
 ## 🎓 **Contexto Acadêmico**
 
 Este projeto foi desenvolvido como **Trabalho de Conclusão da Pós-Graduação em Arquitetura de Software** do **Instituto Infnet**, sob a perspectiva de um **Arquiteto de Software** responsável por projetar uma solução escalável e de alta performance para uma startup.
@@ -40,43 +23,151 @@ Uma startup precisa de um sistema de questionários online para pesquisas públi
 - 🔒 Obrigatoriedade de uso do **ecossistema .NET**
 - ⏰ **Prazo crítico**: Eleições se aproximando (urgência de entrega)
 - 📈 Escala: Suportar **milhões de respostas** simultâneas
-- ✅ Simplicidade: Perguntas de **múltipla escolha**
-
-**Objetivo:**
-Elaborar diagramas (UML/C4 Model) e justificar escolhas arquiteturais para dois públicos:
-1. **Desenvolvedores** (visão técnica)
-2. **Usuários/Stakeholders** (visão de negócio)
 
 ---
 
-## 🎯 **Sobre o Projeto**
+## 🚀 **Instalação e Configuração**
 
-O **Sistema de Questionários Online** é uma solução empresarial desenvolvida com **.NET 8** que permite a criação e gerenciamento de questionários por usuários internos (analistas da startup) e a coleta massiva de respostas de usuários externos (eleitores) de forma escalável e assíncrona.
+### **Pré-requisitos**
 
-### **Público-Alvo**
-- **Usuários Internos**: Equipe da startup (criação e análise de pesquisas)
-- **Usuários Externos**: Milhões de eleitores respondendo pesquisas via redes sociais
-- **Desenvolvedores**: Time de 5 devs .NET/C# que implementaram a solução
+- ✅ **.NET 8 SDK** - [Download](https://dotnet.microsoft.com/download/dotnet/8.0)
+- ✅ **Docker Desktop** - [Download](https://www.docker.com/products/docker-desktop/)
+- ✅ **Visual Studio 2022** ou **VS Code**
+- ✅ **SQL Server LocalDB** (já incluído no Visual Studio)
+---
+
+### **📁 1. Clone o Repositório**
+
+```bash
+git clone https://github.com/LucasEsteves2/QuestionarioOnline_Ifnet.git
+cd QuestionarioOnline
+```
 
 ---
 
-## 🚨 **Desafio de Negócio**
+### **🐳 2. Iniciar RabbitMQ (Docker Compose)**
 
-Startups de pesquisa eleitoral enfrentam desafios críticos durante campanhas em redes sociais:
+O projeto usa **RabbitMQ** como message broker para processamento assíncrono de respostas.
 
-**📊 Volume Massivo e Imprevisível**
-- 🔥 **Picos de acesso**: Posts virais podem gerar 10k+ respostas simultâneas
-- 💥 **Sobrecarga do servidor**: Infraestrutura tradicional não escala rapidamente
+**Na raiz do projeto, execute:**
 
-**⚡ Performance Crítica**
-- ⏱️ **Timeout**: Usuários abandonam se a resposta demora >3 segundos
-- 📉 **Perda de dados**: Falhas durante picos causam perda de respostas valiosas
+```powershell
+docker-compose up -d
+```
 
-**🕐 Prazo Apertado**
-- 🗳️ **Eleições se aproximando**: Entrega fora do prazo = prejuízo total
-- 👨‍💻 **Time pequeno**: 5 desenvolvedores precisam entregar rápido
+**O que acontece:**
+- ✅ Baixa a imagem `rabbitmq:3.13-management-alpine` (primeira vez: ~2-5 min)
+- ✅ Cria e inicia o container `questionario-rabbitmq`
+- ✅ RabbitMQ fica pronto em ~15 segundos
+
+**Verificar status:**
+
+```powershell
+docker ps | findstr rabbitmq
+```
+
+**URLs disponíveis:**
+- **RabbitMQ Management UI**: http://localhost:15672
+  - Usuário: `admin`
+  - Senha: `admin123`
+- **AMQP Protocol**: `amqp://localhost:5672`
 
 ---
+
+### **💾 3. Configurar Banco de Dados (LocalDB)**
+
+O projeto usa **SQL Server LocalDB** para desenvolvimento local (já vem com Visual Studio).
+
+**Aplicar Migrations:**
+
+```powershell
+# Na raiz do projeto
+dotnet ef database update --project QuestionarioOnline.Infrastructure --startup-project QuestionarioOnline
+```
+
+**Connection String (já configurada em `appsettings.json`):**
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=QuestionarioOnlineDb;Trusted_Connection=True;MultipleActiveResultSets=true"
+  }
+}
+```
+
+---
+
+### **🚀 4. Rodar a Aplicação**
+
+1. Abra `QuestionarioOnline.sln`
+2. Configure **Multiple Startup Projects**:
+   - Botão direito na Solution → **"Set Startup Projects..."**
+   - Escolha **"Multiple startup projects"**
+   - Marque:
+     - ✅ `QuestionarioOnline.Api` → **Start**
+     - ✅ `QuestionarioOnline.Workers.Function` → **Start**
+3. Pressione **F5**
+
+**Resultado:**
+- ✅ API inicia em: https://localhost:7001
+- ✅ Workers (Azure Functions) iniciam automaticamente
+- ✅ Swagger abre: https://localhost:7001/swagger
+
+---
+## ✨ **Funcionalidades e Endpoints**
+
+### **Sistema de Permissões (Roles)**
+
+O sistema implementa **controle de acesso baseado em papéis (RBAC)** com 3 níveis:
+
+| Role | Permissões | Caso de Uso |
+|------|-----------|-------------|
+| **Analista** | Criar questionários, ver seus próprios resultados | Usuário padrão da startup |
+| **Admin** | CRUD completo de questionários, ver TODOS os resultados | Gestor da startup |
+| **Visualizador** | Ver resultados de TODOS os questionários (somente leitura) | Stakeholders, investidores |
+
+**Regras de Negócio:**
+- ✅ **Analista**: Apenas vê resultados dos questionários que ele **criou**
+- ✅ **Admin**: Acesso total ao sistema (CRUD + resultados de todos)
+- ✅ **Visualizador**: Vê resultados de qualquer questionário (somente leitura)
+- ✅ **Role padrão**: Novos usuários são cadastrados como `Analista`
+
+---
+
+### **🔐 Autenticação**
+
+| Método | Endpoint | Descrição | Autenticação |
+|--------|----------|-----------|--------------|
+| `POST` | `/api/auth/register` | Cadastrar novo usuário | ❌ Público |
+| `POST` | `/api/auth/login` | Login com email/senha → Retorna JWT | ❌ Público |
+
+---
+
+### **📋 Questionários**
+
+| Método | Endpoint | Descrição | Autenticação | Roles |
+|--------|----------|-----------|--------------|-------|
+| `POST` | `/api/questionario` | Criar questionário | ✅ JWT | **Admin** |
+| `GET` | `/api/questionario` | Listar todos os questionários | ✅ JWT | Todos |
+| `GET` | `/api/questionario/{id}` | Obter questionário por ID | ✅ JWT | Todos |
+| `GET` | `/api/questionario/{id}/resultados` | Obter resultados (agregados) | ✅ JWT | Admin, Analista*, Visualizador |
+| `PATCH` | `/api/questionario/{id}/encerrar` | Encerrar questionário | ✅ JWT | **Admin** |
+| `DELETE` | `/api/questionario/{id}` | Deletar questionário | ✅ JWT | **Admin** |
+
+**\*** Analista: Apenas resultados dos questionários que ele criou
+
+---
+
+### **💬 Respostas**
+
+| Método | Endpoint | Descrição | Autenticação | Roles |
+|--------|----------|-----------|--------------|-------|
+| `POST` | `/api/resposta` | Registrar resposta (enfileira para processamento) | ✅ JWT | Todos |
+| `GET` | `/api/resposta/questionario/{questionarioId}` | Listar respostas de um questionário | ✅ JWT | Admin, Visualizador |
+
+---
+
+
 
 ## 🏗️ **Arquitetura**
 
@@ -126,11 +217,6 @@ graph TB
     style Functions fill:#424242,stroke:#212121,stroke-width:2px
 ```
 
-**Princípios aplicados:**
-- ✅ **Clean Architecture**: Camadas isoladas com inversão de dependência
-- ✅ **DDD**: Aggregate Roots, Value Objects, Rich Domain Model
-- ✅ **Processamento Assíncrono**: Fila absorve picos de carga
-- ✅ **Monolito Modular**: Simplicidade agora, evolução futura facilitada
 ### **Camadas da Arquitetura**
 
 #### **🔵 Presentation Layer (API)**
@@ -336,16 +422,6 @@ sequenceDiagram
 - **Processamento**: 100-500ms por resposta (em background)
 - **Escalabilidade**: Azure Functions escalam automaticamente (0 a 1000 instâncias)
 
-**Benefícios mensuráveis:**
-
-| Cenário | Síncrono ❌ | Assíncrono ✅ |
-|---------|-------------|---------------|
-| **10.000 respostas em 1 minuto** | 83 minutos (timeout) | 50 segundos (sucesso) |
-| **Taxa de sucesso** | 2% (98% perdidas) | 100% (enfileiradas) |
-| **Experiência do usuário** | Aguarda 500ms+ | Feedback em <5ms |
-| **Resiliência** | Sem retry | Retry automático + DLQ |
-
----
 
 ### **Visão C4 (Container)**
 
@@ -473,31 +549,12 @@ classDiagram
 
 **⭐ Questionario (Aggregate Root)**
 - **Responsabilidade**: Gerencia estrutura de pesquisas eleitorais
-- **Regras de negócio**:
-  - `GarantirQuePodeReceberRespostas()` valida Status e PeriodoColeta
-  - `Encerrar()` muda status para Encerrado (irreversível)
-  - Perguntas só podem ser adicionadas se Status ≠ Encerrado
-- **Value Objects**: `PeriodoColeta` (DataInicio, DataFim com validação)
-- **Enum**: `StatusQuestionario` (Ativo, Encerrado)
 
 **⭐ Resposta (Aggregate Root)**
 - **Responsabilidade**: Armazena respostas anônimas de eleitores
-- **Regras de negócio**:
-  - `GarantirCompletude()` valida se todas perguntas obrigatórias foram respondidas
-  - `AdicionarItem()` impede responder a mesma pergunta 2x
-  - Anonimato garantido via hash SHA256 (IP + UserAgent)
-- **Value Object**: `OrigemResposta` (hash irreversível para detectar duplicatas)
-- **Dados demográficos opcionais**: Estado, Cidade, RegiaoGeografica
 
 **⭐ Usuario (Aggregate Root)**
 - **Responsabilidade**: Gerencia autenticação de analistas da startup
-- **Regras de negócio**:
-  - `SenhaHash` com BCrypt (hash + salt automático)
-  - `Ativo` flag (desabilitar sem deletar)
-  - `AtualizarRole()` para mudança de papéis (Admin, Visualizador)
-- **Value Object**: `Email` (validação de formato)
-- **Enum**: `UsuarioRole` (Analista, Admin, Visualizador)
-
 ---
 
 ## 🎯 **Decisões Arquiteturais**
@@ -771,175 +828,6 @@ Aplicar **Clean Architecture** (camadas isoladas) + **DDD** (Aggregate Roots, Va
 
 ---
 
-## ✨ **Funcionalidades e Endpoints**
-
-### **Sistema de Permissões (Roles)**
-
-O sistema implementa **controle de acesso baseado em papéis (RBAC)** com 3 níveis:
-
-| Role | Permissões | Caso de Uso |
-|------|-----------|-------------|
-| **Analista** | Criar questionários, ver seus próprios resultados | Usuário padrão da startup |
-| **Admin** | Ver resultados de TODOS os questionários, gerenciar sistema | Gestor da startup |
-| **Visualizador** | Ver resultados de TODOS os questionários (somente leitura) | Stakeholders, investidores |
-
-**Regras de Negócio:**
-- ✅ **Analista**: Apenas vê resultados dos questionários que ele **criou**
-- ✅ **Admin**: Vê resultados de qualquer questionário
-- ✅ **Visualizador**: Vê resultados de qualquer questionário (somente leitura)
-- ✅ **Role padrão**: Novos usuários são cadastrados como `Analista`
-
-**Implementação Técnica:**
-- Role armazenada no JWT (`ClaimTypes.Role`)
-- Validade via `[Authorize(Roles = "Admin,Analista,Visualizador")]`
-- Enum `UsuarioRole` no Domain Layer
-
----
-
-### **Autenticação**
-
-| Método | Endpoint | Descrição | Autenticação |
-|--------|----------|-----------|--------------|
-| `POST` | `/api/auth/register` | Cadastrar novo usuário | ❌ Público |
-| `POST` | `/api/auth/login` | Login com email/senha | ❌ Público |
-
-### **Questionários**
-
-| Método | Endpoint | Descrição | Autenticação | Roles Permitidas |
-|--------|----------|-----------|--------------|------------------|
-| `POST` | `/api/questionario` | Criar questionário | ✅ JWT | Analista, Admin |
-| `GET` | `/api/questionario` | Listar questionários do usuário | ✅ JWT | Analista, Admin, Visualizador |
-| `GET` | `/api/questionario/{id}` | Obter por ID | ✅ JWT | Analista, Admin, Visualizador |
-| `GET` | `/api/questionario/publico/{id}` | Obter público (responder) | ❌ Público | - |
-| `POST` | `/api/questionario/{id}/encerrar` | Encerrar questionário | ✅ JWT | Analista (criador), Admin |
-| `GET` | `/api/questionario/{id}/resultados` | Obter resultados | ✅ JWT | **Ver abaixo** |
-
-**Controle de Acesso aos Resultados:**
-- 🔒 **Analista**: Apenas resultados dos questionários que ele **criou**
-- 🔓 **Admin**: Resultados de **TODOS** os questionários
-- 👁️ **Visualizador**: Resultados de **TODOS** os questionários (somente leitura)
-
-
----
-
-## 🚀 **Instalação e Configuração**
-
-### **Pré-requisitos**
-
-- ✅ [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- ✅ [SQL Server](https://www.microsoft.com/sql-server) ou LocalDB
-- ✅ [Azure Storage Emulator](https://learn.microsoft.com/azure/storage/common/storage-use-emulator) ou [Azurite](https://github.com/Azure/Azurite)
-- ✅ [Visual Studio 2022](https://visualstudio.microsoft.com/) ou [VS Code](https://code.visualstudio.com/)
-
-### **Instalação**
-
-**1. Clone o repositório**
-```bash
-git clone https://github.com/seu-usuario/questionario-online.git
-cd questionario-online
-```
-
-**2. Restore pacotes NuGet**
-```bash
-dotnet restore
-```
-
-**3. Configure a connection string**
-
-Edite `QuestionarioOnline/appsettings.json`:
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=QuestionarioOnlineDb;Trusted_Connection=True",
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true"
-  }
-}
-```
-
-**4. Execute as migrations**
-```bash
-dotnet run --project QuestionarioOnline
-```
-
-O banco será criado automaticamente no primeiro run.
-
-**5. Inicie o Azure Storage Emulator**
-```bash
-# Windows
-AzureStorageEmulator.exe start
-
-# Linux/Mac (use Azurite)
-azurite --silent
-```
-
-**6. Acesse a API**
-```bash
-dotnet run --project QuestionarioOnline
-```
-
-Swagger: `https://localhost:7xxx/swagger`
-
----
-
-## ⚡ **Performance e Escalabilidade**
-
-### **Otimizações Implementadas**
-
-| Otimização | Impacto | Descrição |
-|------------|---------|-----------|
-| **AsNoTracking** | +30% | Queries sem Change Tracker |
-| **Índices** | +40x | 14 índices estratégicos |
-| **Paginação** | +100x | Skip/Take em listagens |
-| **Assíncrono** | ∞ | Queue + Functions escaláveis |
-
-### **Métricas**
-
-```
-✅ Query ObterPorId: 35ms (antes: 50ms)
-✅ Listagem 100 registros: 50ms (antes: 500ms)
-✅ Registrar resposta: <5ms (202 Accepted)
-✅ Processar 10k respostas: ~2min (paralelo)
-```
-
-📊 **Análise completa:** [MELHORIAS_PERFORMANCE.md](docs/MELHORIAS_PERFORMANCE.md)
-
----
-
-## 📚 **Documentação Adicional**
-
-| Documento | Descrição |
-|-----------|-----------|
-| [ARQUITETURA_COMPLETA.md](docs/ARQUITETURA_COMPLETA.md) | Diagramas C4, UML completos |
-| [EF_CORE_CONFIGURATION.md](docs/EF_CORE_CONFIGURATION.md) | Entity Framework |
-| [JWT_AUTHENTICATION_GUIDE.md](docs/JWT_AUTHENTICATION_GUIDE.md) | Autenticação JWT |
-| [MELHORIAS_PERFORMANCE.md](docs/MELHORIAS_PERFORMANCE.md) | Otimizações |
-
----
-
-## 🤝 **Contribuindo**
-
-Contribuições são bem-vindas!
-
-1. Fork o projeto
-2. Crie uma branch (`git checkout -b feature/MinhaFeature`)
-3. Commit (`git commit -m 'feat: Adiciona MinhaFeature'`)
-4. Push (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
-
----
-
-## 📄 **Licença**
-
-Este projeto está sob a licença MIT. Veja [LICENSE](LICENSE) para detalhes.
-
----
-
-## 👤 **Autor**
-
-**Seu Nome** - Pós-Graduação em Arquitetura de Software - Instituto Infnet  
-💼 [LinkedIn](https://linkedin.com/in/seu-perfil) | 🐙 [GitHub](https://github.com/seu-usuario)
-
----
 
 <div align="center">
 
@@ -953,4 +841,3 @@ Este projeto está sob a licença MIT. Veja [LICENSE](LICENSE) para detalhes.
 
 ---
 
-**Desenvolvido com ❤️ e rigor técnico para avaliação acadêmica do Instituto Infnet**
