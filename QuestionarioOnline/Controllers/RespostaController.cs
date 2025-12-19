@@ -19,6 +19,7 @@ public class RespostaController : BaseController
     }
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<ActionResult<ApiResponse<RespostaRegistradaResponse>>> Registrar([FromBody] ApiRequest.RegistrarRespostaRequest request)
     {
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "0.0.0.0";

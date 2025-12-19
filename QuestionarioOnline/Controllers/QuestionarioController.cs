@@ -62,6 +62,7 @@ public class QuestionarioController : BaseController
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<ActionResult<ApiResponse<QuestionarioResponse>>> ObterPorId(Guid id, CancellationToken cancellationToken)
     {
         var result = await _questionarioService.ObterQuestionarioPorIdAsync(id, cancellationToken);
@@ -77,6 +78,7 @@ public class QuestionarioController : BaseController
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<ApiResponse<IEnumerable<QuestionarioListaResponse>>>> Listar(CancellationToken cancellationToken)
     {
         var dtos = await _questionarioService.ListarTodosQuestionariosAsync(cancellationToken);

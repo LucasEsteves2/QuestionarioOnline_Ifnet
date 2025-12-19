@@ -1,17 +1,13 @@
-﻿# 📋 Sistema de Questionários Online
+﻿﻿# 📋 Sistema de Questionários Online
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat&logo=dotnet)](https://dotnet.microsoft.com/)
 [![C#](https://img.shields.io/badge/C%23-12.0-239120?style=flat&logo=c-sharp)](https://docs.microsoft.com/en-us/dotnet/csharp/)
 [![Azure](https://img.shields.io/badge/Azure-Queue%20Storage-0089D6?style=flat&logo=microsoft-azure)](https://azure.microsoft.com/)
 [![Infnet](https://img.shields.io/badge/Infnet-Pós--Graduação-red.svg)](https://www.infnet.edu.br/)
 
-> Projeto desenvolvido como Trabalho de Conclusão da **Pós-Graduação em Arquitetura de Software** do **Instituto Infnet**. Sistema empresarial para criação, gerenciamento e coleta de respostas de questionários com processamento assíncrono de alto volume usando Azure Queue Storage.
-
----
-
 ## 🎓 **Contexto Acadêmico**
 
-Este projeto foi desenvolvido como **Trabalho de Conclusão da Pós-Graduação em Arquitetura de Software** do **Instituto Infnet**, sob a perspectiva de um **Arquiteto de Software** responsável por projetar uma solução escalável e de alta performance para uma startup.
+Este projeto foi desenvolvido como **Trabalho da Pós-Graduação em Arquitetura de Software** do **Instituto Infnet**, sob a perspectiva de um **Arquiteto de Software** responsável por projetar uma solução escalável e de alta performance para uma startup.
 
 ### **Requisitos do Projeto Acadêmico**
 
@@ -90,14 +86,6 @@ O projeto usa **SQL Server LocalDB** para desenvolvimento local (já vem com Vis
 
 ✅ **Migrations rodam automaticamente** na primeira execução!
 
-**Aplicar Migrations Manualmente (opcional):**
-
-Se preferir rodar migrations manualmente antes de iniciar a aplicação:
-
-```powershell
-# Na raiz do projeto
-dotnet ef database update --project QuestionarioOnline.Infrastructure --startup-project QuestionarioOnline
-```
 
 ---
 
@@ -116,6 +104,17 @@ dotnet ef database update --project QuestionarioOnline.Infrastructure --startup-
 - ✅ API inicia em: https://localhost:7001
 - ✅ Workers (Azure Functions) iniciam automaticamente
 - ✅ Swagger abre: https://localhost:7001/swagger
+
+
+### 🌐 5. Clonar e Executar o Frontend (Opcional)
+
+Caso queira utilizar a interface web do sistema, clone o projeto de frontend:
+
+```bash
+git clone <URL_DO_REPOSITORIO_FRONTEND>
+cd <nome-do-projeto-frontend>
+```
+
 
 ---
 ## ✨ **Funcionalidades e Endpoints**
@@ -181,44 +180,59 @@ A arquitetura do projeto foi estruturada seguindo os princípios de **Clean Arch
 
 ```mermaid
 graph TB
+    %% Cross-Cutting (configura o sistema)
+    subgraph "🔴 CROSS-CUTTING LAYER"
+        direction TB
+        DI[Configurações<br/>Dependências]
+    end
+
+    %% Main architecture flow
     subgraph "🔵 PRESENTATION LAYER"
-        API[Web API<br/>Controllers, Middleware, JWT]
+        direction TB
+        API[API REST]
     end
 
     subgraph "🟡 APPLICATION LAYER"
-        Services[Services<br/>Orquestração e Validação]
+        direction TB
+        Services[Casos de uso]
     end
 
     subgraph "🟢 DOMAIN LAYER"
-        Entities[Entities<br/>Regras de Negócio]
+        direction TB
+        Domain[Regras de negócio]
     end
 
     subgraph "🟣 INFRASTRUCTURE LAYER"
-        Repos[Repositories<br/>EF Core, Azure Queue]
+        direction TB
+        Repos[Persistência]
     end
 
-    subgraph "🔴 CROSS-CUTTING LAYER"
-        DI[Dependency Injection<br/>Extensions, Constants]
-    end
-
+    %% Workers
     subgraph "⚫ WORKERS LAYER"
-        Functions[Azure Functions<br/>Background Processing]
+        direction TB
+        Functions[Processamento<br/>Assíncrono]
     end
 
+    %% Execution / flow
     API --> Services
-    Services --> Entities
+    Services --> Domain
     Services --> Repos
+    Functions --> Repos
+
+    %% Structural dependencies (code-level)
     DI -.-> API
     DI -.-> Services
     DI -.-> Repos
-    Functions --> Repos
 
-    style Entities fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
-    style Services fill:#fff9c4,stroke:#f57f17,stroke-width:2px
-    style API fill:#e1f5ff,stroke:#01579b,stroke-width:2px
-    style Repos fill:#d1c4e9,stroke:#4527a0,stroke-width:2px
-    style DI fill:#ffccbc,stroke:#d84315,stroke-width:2px
-    style Functions fill:#424242,stroke:#212121,stroke-width:2px
+    %% Styles
+    style Domain fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
+    style Services fill:#fff9c4,stroke:#f57f17,stroke-width:2px,color:#795548
+    style API fill:#e1f5ff,stroke:#01579b,stroke-width:2px,color:#01579b
+    style Repos fill:#d1c4e9,stroke:#4527a0,stroke-width:2px,color:#311b92
+    style DI fill:#ffccbc,stroke:#d84315,stroke-width:2px,color:#bf360c
+    style Functions fill:#424242,stroke:#212121,stroke-width:2px,color:#ffffff
+
+
 ```
 
 ### **Camadas da Arquitetura**
@@ -232,14 +246,6 @@ Camada de apresentação que expõe os endpoints REST para consumo externo.
 - Serializar/deserializar DTOs
 - Documentar API via Swagger/OpenAPI
 - Aplicar middleware (CORS, Exception Handling, Logging)
-
-**Componentes:**
-- `Controllers`: QuestionarioController, RespostaController, AuthController
-- `Middlewares`: ExceptionMiddleware, AuthenticationMiddleware
-- `Responses`: ApiResponse<T> (padronização)
-
-**Princípio aplicado:** Dependency Rule - Depende apenas de Application Layer
-
 ---
 
 #### **🟡 Application Layer**
@@ -251,15 +257,6 @@ Camada de aplicação que orquestra os casos de uso do sistema.
 - Validar entrada de dados (FluentValidation)
 - Transformar entre DTOs e entidades de domínio
 - Gerenciar transações
-
-**Componentes:**
-- `Services`: QuestionarioService, RespostaService
-- `DTOs`: Request/Response objects
-- `Validators`: CriarQuestionarioValidator
-- `Interfaces`: IQuestionarioService, IRespostaService
-
-**Princípio aplicado:** Orquestração sem regras de negócio (essas ficam no Domain)
-
 ---
 
 #### **🟢 Domain Layer (Core)**
@@ -271,15 +268,6 @@ Núcleo do sistema que contém as regras de negócio e modelos de domínio.
 - Garantir invariantes de domínio
 - Definir value objects imutáveis
 - Especificar interfaces de repositórios (contratos)
-
-**Componentes:**
-- `Entities`: Questionario ⭐, Resposta ⭐, Usuario ⭐
-- `Value Objects`: Email, PeriodoColeta, OrigemResposta
-- `Enums`: StatusQuestionario, UsuarioRole
-- `Interfaces`: IQuestionarioRepository, IRespostaRepository
-
-**Princípio aplicado:** Domain-Driven Design - Independente de frameworks externos
-
 ---
 
 #### **🟣 Infrastructure Layer**
@@ -292,14 +280,6 @@ Camada de infraestrutura que implementa detalhes técnicos e acesso a recursos e
 - Implementar repositórios concretos
 - Aplicar otimizações de performance (índices, AsNoTracking)
 
-**Componentes:**
-- `DbContext`: QuestionarioOnlineDbContext
-- `Repositories`: QuestionarioRepository, RespostaRepository
-- `Configurations`: Mapeamento EF Core (14 configurações)
-- `Messaging`: AzureQueueStorageAdapter
-
-**Princípio aplicado:** Dependency Inversion - Implementa interfaces do Domain
-
 ---
 
 #### **🔴 Cross-Cutting Layer**
@@ -311,11 +291,6 @@ Camada transversal que conecta todas as outras via Injeção de Dependência.
 - Configurar lifetime dos objetos (Scoped, Singleton, Transient)
 - Centralizar configuração de infraestrutura
 
-**Componentes:**
-- `DependencyInjectionConfig`: Registro centralizado de dependências
-
-**Princípio aplicado:** Inversão de Controle (IoC)
-
 ---
 
 #### **⚫ Workers Layer**
@@ -326,13 +301,22 @@ Camada de processamento assíncrono em background.
 - Persistir respostas de questionários de forma assíncrona
 - Implementar retry e dead letter queue
 - Escalar automaticamente baseado no tamanho da fila
+---
 
-**Componentes:**
-- `ProcessarRespostaFunction`: Azure Function com Queue Trigger
+### 🧱 Visão de Containers e Integrações
 
-**Princípio aplicado:** Escalabilidade horizontal e desacoplamento via mensageria
+
+O diagrama abaixo apresenta a arquitetura do sistema em nível de containers, seguindo o C4 Model.
+
+<img width="1562" height="1471" alt="teste2" src="https://github.com/user-attachments/assets/1e6f8baa-9d8e-4240-9a16-67cf484d21cf" />
+
+
+A comunicação do sistema é dividida entre operações **síncronas** (gestão e consultas) e **assíncronas** (coleta massiva de respostas), conforme detalhado nos fluxos abaixo.
+
 
 ---
+
+
 
 ### **Fluxo de Dados (Operações Síncronas)**
 
@@ -425,35 +409,9 @@ sequenceDiagram
 - **Latência da API**: <5ms (usuário não espera processamento)
 - **Processamento**: 100-500ms por resposta (em background)
 - **Escalabilidade**: Azure Functions escalam automaticamente (0 a 1000 instâncias)
-
-
-### **Visão C4 (Container)**
-
-O diagrama C4 Model ilustra os containers e suas interações:
-
-```mermaid
-C4Container
-    title Sistema de Questionários Online
-
-    Person(user_interno, "Usuário Interno<br/>(Startup)")
-    Person(user_externo, "Usuário Externo<br/>(Eleitor)")
-
-    Container_Boundary(system, "Sistema") {
-        Container(api, "Web API", ".NET 8")
-        Container(function, "Azure Function", ".NET 8")
-        ContainerDb(db, "Database", "SQL Server")
-        ContainerQueue(queue, "Queue", "Azure Storage")
-    }
-
-    Rel(user_interno, api, "Gerencia questionários", "HTTPS/JWT")
-    Rel(user_externo, api, "Responde pesquisas", "HTTPS")
-    Rel(api, queue, "Enfileira respostas", "Azure SDK")
-    Rel(api, db, "CRUD questionários", "EF Core")
-    Rel(function, queue, "Consome mensagens", "Trigger")
-    Rel(function, db, "Persiste respostas", "EF Core")
-```
-
 ---
+
+
 
 ## 📐 **Domínio e Entidades**
 
@@ -561,274 +519,125 @@ classDiagram
 - **Responsabilidade**: Gerencia autenticação de analistas da startup
 ---
 
-## 🎯 **Decisões Arquiteturais**
+## 🎯 Decisões Arquiteturais
 
-### **1. 🏢 Por que Monolito Modular (não Microservices)?**
+### 🏢 Monolito Modular (não Microservices)
 
-**Contexto:**  
-Startup com time de 5 desenvolvedores e prazo de 3 meses para entregar sistema funcional antes das eleições.
+**Decisão**  
+Adotar **Monolito Modular** com **Clean Architecture**, mantendo módulos bem definidos e preparados para extração futura.
 
-**Decisão:**  
-Adotar **Monolito Modular** com **Clean Architecture**, mantendo fronteiras claras entre módulos (Questionario, Resposta, Auth) para facilitar futura extração como microservices.
+**Justificativa**
+- Time pequeno (5 devs) e prazo curto (3 meses)
+- Menor overhead operacional (1 repositório, 1 deploy)
+- Debug simplificado e transações ACID nativas
 
-**Justificativas:**
+**Trade-off aceito**  
+Escala e deploy acoplados — aceitável para MVP.
 
-**✅ Pragmatismo:**
-- **Prazo crítico**: Monolito = 3 meses de desenvolvimento | Microservices = 6+ meses
-- **Setup simplificado**: 1 repositório, 1 pipeline CI/CD, 1 deploy
-- **Debug facilitado**: Stack traces completos, sem rastreamento distribuído
-- **Transações ACID**: Operações atômicas nativas (CREATE Questionario + Perguntas em 1 transação)
-
-**✅ Time pequeno:**
-- **5 desenvolvedores = 1 squad**: Todos trabalham no mesmo repositório
-- **Conhecimento compartilhado**: Pull requests revisados por todos
-- **Baixo overhead**: Sem necessidade de orquestração de múltiplos serviços
-
-**⚠️ Trade-off aceito:**
-- **Escala acoplada**: API, Questionario e Auth escalam juntos (mesma VM)
-  - **Mitigação**: Processamento assíncrono via fila desacopla o pico de carga de respostas
-- **Deploy all-or-nothing**: Mudança em Auth exige deploy completo
-  - **Aceitável para MVP**: Entregas rápidas são mais importantes que deploy granular
-
-**Caminho evolutivo:**
-```
-Fase 1 (Hoje - 3 meses):   Monolito Modular
-Fase 2 (6-12 meses):        Worker separado (primeira extração)
-Fase 3 (12-18 meses):       Microservices completo (se necessário)
-```
+**Evolução planejada**  
+Monolito → Worker separado → Microservices (se necessário).
 
 ---
 
-### **2. ⚡ Por que Processamento Assíncrono (Fila + Azure Functions)?**
+### ⚡ Processamento Assíncrono (Fila + Azure Functions)
 
-**Contexto:**  
-Sistema precisa receber **10.000+ respostas simultâneas** durante campanhas virais em redes sociais (Instagram, Twitter, etc.). Processamento síncrono causaria timeout e perda de dados.
+**Decisão**  
+Processar respostas via **Azure Queue Storage** + **Azure Functions**, retornando `202 Accepted`.
 
-**Decisão:**  
-Adotar **fila de mensagens (Azure Queue Storage)** + **Azure Functions** para processar respostas em background, retornando `202 Accepted` imediatamente para o usuário.
+**Justificativa**
+- Suporta picos de 10k+ respostas simultâneas
+- Evita timeout e perda de dados
+- Escalabilidade automática e custo sob demanda
 
-**Justificativas:**
-
-**⚡ Performance crítica:**
-- **API responde em <5ms**: Enfileira mensagem e retorna imediatamente
-- **Sem timeout**: Processamento pode levar minutos sem afetar experiência
-- **Latência previsível**: Independente de quantas respostas chegam, API sempre responde rápido
-
-**Cenário real (post viral):**
-```
-10.000 respostas em 1 minuto:
-
-❌ Processamento síncrono:
-   10.000 × 500ms = 5.000 segundos (83 minutos)
-   - Timeout após 30s
-   - 98% das respostas perdidas
-
-✅ Processamento assíncrono:
-   10.000 × 5ms = 50 segundos
-   - 100% de sucesso (202 Accepted)
-   - Worker processa em 2 minutos (background)
-```
-
-**📈 Escalabilidade automática:**
-- **Azure Functions escalam de 0 a 1000 instâncias** baseado no tamanho da fila
-- **Custo otimizado**: Paga apenas pelo que usa (serverless pay-per-use)
-
-**🛡️ Resiliência:**
-- **Mensagens persistidas**: Se Worker crashar, mensagem volta para fila
-- **Retry automático**: 5 tentativas com backoff exponencial
-- **Dead Letter Queue (DLQ)**: Mensagens problemáticas vão para fila secundária
-
-**❌ Por que não:**
-- ❌ **Service Bus**: Custo 3x maior, features desnecessárias (tópicos, subscriptions)
-- ❌ **HTTP síncrono**: Timeout, sem retry, perda de dados em falhas
-- ❌ **RabbitMQ**: Exige gerenciar infraestrutura (VM, cluster, HA)
+**Benefícios**
+Alta performance, resiliência (retry + DLQ) e desacoplamento.
 
 ---
 
-### **3. 💾 Por que SQL Server + EF Core (não NoSQL)?**
+### 💾 SQL Server + EF Core (não NoSQL)
 
-**Contexto:**  
-Dados electorais exigem **integridade transacional** (ACID) e **queries analíticas complexas** (agregações por Estado, Cidade, Região).
+**Decisão**  
+Usar **SQL Server** com **EF Core**, aplicando índices, paginação e `AsNoTracking`.
 
-**Decisão:**  
-Usar **SQL Server** com **Entity Framework Core 8**, aplicando otimizações (AsNoTracking, índices, paginação).
+**Justificativa**
+- Integridade transacional (ACID)
+- Queries analíticas complexas (JOIN, agregações)
+- Expertise do time e ferramentas maduras
 
-**Justificativas:**
-
-**✅ ACID crítico:**
-- **Integridade transacional**: Criar Questionario + Perguntas + Opções em 1 transação atômica
-- **Zero margem de erro**: Dados eleitorais não podem ser inconsistentes
-- **Rollback automático**: Se falhar qualquer operação, reverte tudo
-
-**✅ Expertise do time:**
-- **5 devs já conhecem SQL Server**: Curva de aprendizado zero
-- **Ferramentas maduras**: SSMS, Azure Data Studio, Application Insights
-
-**⚡ Otimizações aplicadas:**
-- **AsNoTracking** (+30% performance): Queries de leitura sem Change Tracker
-- **14 índices estratégicos** (+40x buscas): QuestionarioId, Estado, Cidade
-- **Paginação** (Skip/Take): Suporta 100k+ questionários sem memory overflow
-
-**❌ Por que não NoSQL:**
-- ❌ **MongoDB/Cosmos DB**: Eventual consistency = risco para dados eleitorais
-- ❌ **Sem JOIN nativo**: Queries analíticas complexas exigem múltiplas chamadas
+**Trade-off**
+Menor flexibilidade de schema — aceitável para dados eleitorais.
 
 ---
 
-### **4. 🔐 Por que JWT Stateless (não Session-based)?**
+### 🔐 Autenticação JWT Stateless
 
-**Contexto:**  
-Sistema precisa escalar horizontalmente (múltiplas instâncias da API) sem compartilhar estado entre servidores.
+**Decisão**  
+Usar **JWT Bearer** stateless.
 
-**Decisão:**  
-Usar **JWT Bearer** para autenticação stateless.
-
-**Justificativas:**
-
-**✅ Escalabilidade horizontal:**
-- **Zero estado compartilhado**: Cada instância valida JWT independentemente
-- **Sem Redis/Memcached**: Não precisa cache distribuído para sessions
-- **Load Balancer simples**: Qualquer instância pode atender qualquer request
-
-**✅ Performance:**
-- **Sem consulta ao DB**: Token contém claims (usuarioId, email, roles)
-- **Validação local**: Verifica assinatura HMAC-SHA256 (milissegundos)
-
-**⚠️ Por que não Session-based:**
-- ❌ Exige Redis/cache distribuído (complexidade)
-- ❌ Estado compartilhado entre instâncias (acoplamento)
+**Justificativa**
+- Escalabilidade horizontal sem estado compartilhado
+- Sem necessidade de Redis ou session store
+- Validação rápida e local do token
 
 ---
 
-### **5. 🗳️ Por que NÃO vinculamos o eleitor que vota?**
+### 🗳️ Voto Anônimo (sem identificação do eleitor)
 
-**Contexto:**  
-Sistema de pesquisas eleitorais públicas precisa garantir anonimato dos eleitores enquanto impede votos duplicados.
+**Decisão**  
+Não armazenar identificação do eleitor. O sistema não possui conceito de usuário para quem responde pesquisas públicas.
 
-**Decisão:**  
-**NÃO armazenar** identificação pessoal do eleitor. Usar **hash SHA256** (IP + UserAgent) para validar duplicatas sem identificar pessoas.
+**Justificativa**
+- Alto volume de acessos (milhares/milhões de respostas)
+- Criar usuários tornaria o sistema inviável em escala
+- Autenticação adicionaria latência, custo e complexidade desnecessária
+- Nenhum ganho funcional em identificar o eleitor
 
-**Justificativas:**
+**Abordagem adotada**
+- Endpoint público (`POST /api/respostas`)
+- Hash SHA256 (IP + UserAgent) apenas para evitar votos duplicados
+- Armazenamento apenas de dados agregados (Estado, Cidade, Região)
 
-**✅ Legalidade e Ética:**
-- **Pesquisas eleitorais públicas devem ser anônimas** (legislação eleitoral)
-- **LGPD/GDPR**: Armazenar dados pessoais exige consentimento e compliance
-- **Liberdade de expressão**: Eleitor vota sem medo de retaliação
+**Resultado**
+- Alta escalabilidade
+- Baixa latência
+- Zero dados sensíveis armazenados
+- Sistema simples, rápido e seguro
 
-**✅ Escalabilidade:**
-- **Sem autenticação**: Milhões de pessoas votam sem precisar criar conta
-- **Performance**: Sem consultas a tabela de usuários (apenas validação de hash)
-- **Simplicidade**: Endpoint público (`POST /api/resposta`) sem JWT
+### 🏗️ Clean Architecture + DDD
 
-**✅ Segurança e Privacidade:**
-- **Zero dados sensíveis**: Sem CPF, email, nome, telefone
-- **Risco baixo de vazamento**: Apenas hash irreversível no banco
-- **Confiança do público**: Anonimato garantido aumenta participação
+**Decisão**  
+Aplicar **Clean Architecture** para isolamento de camadas e **DDD** para regras de negócio.
 
-**📊 Como Garantimos Integridade SEM Identificação?**
-
-```csharp
-// Value Object - OrigemResposta
-public static OrigemResposta Create(string ipAddress, string userAgent)
-{
-    // Gera hash SHA256 irreversível (não armazena IP/UserAgent real)
-    var combined = $"{ipAddress}|{userAgent}";
-    var hash = ComputeHash(combined);  // Exemplo: "a3f5d8b2..."
-    
-    return new OrigemResposta(hash);
-}
-
-private static string ComputeHash(string input)
-{
-    var bytes = Encoding.UTF8.GetBytes(input);
-    var hashBytes = SHA256.HashData(bytes);
-    return Convert.ToHexString(hashBytes).ToLowerInvariant();
-}
-```
-
-**O que o hash permite:**
-- ✅ **Impedir voto duplicado**: Verifica se hash já existe no questionário
-- ✅ **Análise demográfica**: Armazena Estado, Cidade, Região (dados agregados)
-- ✅ **Detectar fraude em massa**: Muitas respostas do mesmo hash = suspeito
-- ❌ **NÃO permite**: Identificar eleitor específico (hash é irreversível)
-
-**Estrutura no Banco:**
-```sql
-CREATE TABLE Respostas (
-    Id uniqueidentifier PRIMARY KEY,
-    QuestionarioId uniqueidentifier NOT NULL,
-    OrigemResposta_Hash nvarchar(64) NOT NULL,  -- SHA256 (anônimo!)
-    Estado nvarchar(50),  -- Apenas dados demográficos
-    Cidade nvarchar(100),
-    DataResposta datetime2 NOT NULL
-);
-
--- ❌ SEM: UsuarioId, CPF, Email, IP real, Nome
-```
-
-**Trade-off aceito:**
-- ⚠️ **Limitação**: Eleitor do mesmo IP/navegador não pode votar 2x (mesmo questionário)
-  - **Mitigação**: Aceitável para pesquisas eleitorais (1 voto por pessoa é o objetivo)
-- ⚠️ **Fraude por VPN**: Eleitor pode mudar IP para votar múltiplas vezes
-  - **Mitigação**: Dead Letter Queue + análise manual de padrões suspeitos
+**Justificativa**
+- Código testável e de fácil manutenção
+- Baixo acoplamento entre camadas
+- Base sólida para evolução futura
 
 ---
 
-### **6. 🏗️ Por que Clean Architecture + DDD?**
-
-**Contexto:**  
-Time de 5 devs precisa trabalhar em paralelo sem conflitos, com código testável e preparado para evolução.
-
-**Decisão:**  
-Aplicar **Clean Architecture** (camadas isoladas) + **DDD** (Aggregate Roots, Value Objects).
-
-**Justificativas:**
-
-**✅ Manutenibilidade:**
-- **Separação clara**: Cada dev trabalha em camada diferente
-- **Baixo acoplamento**: Mudança em Infrastructure não afeta Domain
-- **Código legível**: Regras de negócio isoladas em Domain
-
-**✅ Testabilidade:**
-- **Domain isolado**: Testes unitários sem mocks complexos
-- **Interfaces**: Application depende de IRepository (mock fácil)
-
-**✅ Evolução para Microservices:**
-- **Fronteiras claras**: Cada módulo já está isolado
-- **Comunicação via interfaces**: Fácil substituir por chamadas HTTP/gRPC
 
 
----
+## 🛠️ Tecnologias
 
-## 🛠️ **Tecnologias**
+| Categoria        | Tecnologia                     | Descrição |
+|------------------|--------------------------------|-----------|
+| **Backend**      | .NET 8                         | LTS até 2026 |
+|                  | ASP.NET Core                   | Web API |
+|                  | C# 12                          | Records, pattern matching |
+| **Banco de Dados** | SQL Server / Azure SQL        | ACID, alta disponibilidade |
+|                  | Entity Framework Core 8        | ORM otimizado |
+|                  | Fluent API                     | Mapeamento explícito |
+| **Mensageria**   | Azure Queue Storage            | Serverless e durável |
+|                  | Azure Functions                | Escala automática |
+| **Autenticação** | JWT Bearer                     | Stateless |
+|                  | BCrypt.Net                     | Hash de senhas |
+| **Validação**    | FluentValidation               | Validação declarativa |
+| **Padrões**      | Clean Architecture             | Separação de camadas |
+|                  | Domain-Driven Design (DDD)     | Modelagem de domínio |
+|                  | Repository Pattern             | Abstração de persistência |
+|                  | Result Pattern                 | Fluxo orientado a sucesso/erro |
+|                  | RBAC                           | Controle por papéis |
 
-### **Backend**
-- **.NET 8** - LTS até 2026
-- **ASP.NET Core** - Web API
-- **C# 12** - Records, pattern matching
-
-### **Banco de Dados**
-- **SQL Server / Azure SQL** - ACID + HA
-- **Entity Framework Core 8** - ORM otimizado
-- **FluentAPI** - Configuração explícita
-
-### **Mensageria**
-- **Azure Queue Storage** - Serverless, durável
-- **Azure Functions** - Escala automática
-
-### **Autenticação**
-- **JWT Bearer** - Stateless
-- **BCrypt.Net** - Hash de senhas
-
-### **Validação**
-- **FluentValidation** - Validação declarativa
-
-### **Padrões**
-- **Clean Architecture** (Uncle Bob)
-- **Domain-Driven Design** (Eric Evans)
-- **Repository Pattern**
-- **Result Pattern** (Railway-Oriented)
-- **Role-Based Access Control (RBAC)**
 
 ---
 

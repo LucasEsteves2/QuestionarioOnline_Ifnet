@@ -15,7 +15,7 @@ public class ProcessarRespostaFunction
     private readonly IRespostaService _respostaService;
     private readonly ILogger<ProcessarRespostaFunction> _logger;
 
-    public ProcessarRespostaFunction(
+    public ProcessarRespostaFunction( 
         IRespostaService respostaService,
         ILogger<ProcessarRespostaFunction> logger)
     {

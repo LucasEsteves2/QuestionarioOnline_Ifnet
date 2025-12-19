@@ -21,6 +21,7 @@ public class RespostaItemConfiguration : IEntityTypeConfiguration<RespostaItem>
         builder.Property(e => e.OpcaoRespostaId)
             .IsRequired();
 
+        // Use Restrict to avoid SQL Server multiple cascade paths when deleting Questionario
         builder.HasOne<Pergunta>()
             .WithMany()
             .HasForeignKey(e => e.PerguntaId)

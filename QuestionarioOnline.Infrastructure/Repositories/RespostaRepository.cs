@@ -49,4 +49,17 @@ public class RespostaRepository : IRespostaRepository
         return await _context.Respostas
             .CountAsync(r => r.QuestionarioId == questionarioId, cancellationToken);
     }
+
+    public async Task DeletarPorQuestionarioAsync(Guid questionarioId, CancellationToken cancellationToken = default)
+    {
+        var respostas = await _context.Respostas
+            .Where(r => r.QuestionarioId == questionarioId)
+            .ToListAsync(cancellationToken);
+
+        if (respostas.Any())
+        {
+            _context.Respostas.RemoveRange(respostas);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+    }
 }

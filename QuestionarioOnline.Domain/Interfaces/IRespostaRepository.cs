@@ -10,4 +10,5 @@ public interface IRespostaRepository
     Task<bool> JaRespondeuAsync(Guid questionarioId, OrigemResposta origemResposta, CancellationToken cancellationToken = default);
     Task AdicionarAsync(Resposta resposta, CancellationToken cancellationToken = default);
     Task<int> ContarRespostasPorQuestionarioAsync(Guid questionarioId, CancellationToken cancellationToken = default);
+    Task DeletarPorQuestionarioAsync(Guid questionarioId, CancellationToken cancellationToken = default);
 }

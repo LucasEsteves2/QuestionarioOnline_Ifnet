@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+ï»¿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using QuestionarioOnline.Application.Interfaces;
@@ -56,12 +56,12 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new()
     {
-        Title = "Sistema de Questionários Online",
+        Title = "Sistema de QuestionÃ¡rios Online",
         Version = "v1.0",
-        Description = @"API RESTful para criação, gerenciamento e coleta de respostas de questionários com processamento assíncrono de alto volume.
+        Description = @"API RESTful para criaÃ§Ã£o, gerenciamento e coleta de respostas de questionÃ¡rios com processamento assÃ­ncrono de alto volume.
 
-**Projeto Acadêmico**
-- Pós-Graduação em Arquitetura de Software - Instituto Infnet
+**Projeto AcadÃªmico**
+- PÃ³s-GraduaÃ§Ã£o em Arquitetura de Software - Instituto Infnet
 - Autor: Lucas Esteves
 - Tecnologias: .NET 8, Clean Architecture, DDD, RabbitMQ
 ",
@@ -117,17 +117,20 @@ if (app.Environment.IsDevelopment())
     using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<QuestionarioOnlineDbContext>();
-        
-        Console.WriteLine("Aplicando migrations...");
-        await db.Database.MigrateAsync();
-        Console.WriteLine("Banco de dados atualizado com sucesso!");
+
+        Console.WriteLine("ðŸ‘‰ Apagando banco (DEV)...");
+        await db.Database.EnsureDeletedAsync();
+
+        Console.WriteLine("ðŸ‘‰ Criando banco via EnsureCreated (DEV)...");
+        await db.Database.EnsureCreatedAsync();
+
+        Console.WriteLine("âœ… Banco recriado com sucesso!");
     }
+
 
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 

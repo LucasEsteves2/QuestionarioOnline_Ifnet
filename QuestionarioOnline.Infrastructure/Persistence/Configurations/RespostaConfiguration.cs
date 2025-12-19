@@ -50,6 +50,7 @@ public class RespostaConfiguration : IEntityTypeConfiguration<Resposta>
         builder.HasOne<Questionario>()
             .WithMany()
             .HasForeignKey(e => e.QuestionarioId)
+            // Use Restrict to avoid multiple cascade paths on SQL Server; deletions handled explicitly in service
             .OnDelete(DeleteBehavior.Restrict);
 
         // Índices

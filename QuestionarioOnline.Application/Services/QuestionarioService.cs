@@ -69,6 +69,9 @@ public class QuestionarioService : IQuestionarioService
         {
             var questionario = await ObterQuestionarioAsync(questionarioId, cancellationToken);
 
+            // Delete respostas (and their itens) explicitly to avoid multiple cascade paths on SQL Server
+            await _respostaRepository.DeletarPorQuestionarioAsync(questionarioId, cancellationToken);
+
             await _questionarioRepository.DeletarAsync(questionario, cancellationToken);
             return Result.Success();
         }
