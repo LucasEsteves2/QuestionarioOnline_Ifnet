@@ -7,11 +7,6 @@ using QuestionarioOnline.Infrastructure.Authentication;
 using QuestionarioOnline.Infrastructure.Persistence;
 using System.Text;
 
-Console.WriteLine("========================================");
-Console.WriteLine("  QuestionarioOnline API");
-Console.WriteLine("========================================");
-Console.WriteLine();
-
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -118,13 +113,15 @@ if (app.Environment.IsDevelopment())
     {
         var db = scope.ServiceProvider.GetRequiredService<QuestionarioOnlineDbContext>();
 
-        Console.WriteLine("👉 Apagando banco (DEV)...");
-        await db.Database.EnsureDeletedAsync();
+        Console.WriteLine("👉 Verificando banco (DEV)...");
 
-        Console.WriteLine("👉 Criando banco via EnsureCreated (DEV)...");
-        await db.Database.EnsureCreatedAsync();
+        // Cria database so se não existir //deixei assim pra facilitar sua vida professor
+        var created = await db.Database.EnsureCreatedAsync();
 
-        Console.WriteLine("✅ Banco recriado com sucesso!");
+        if (created)
+            Console.WriteLine("✅ Banco criado (DEV)");
+        else
+            Console.WriteLine("⏭️ Banco já existe, mantendo esquema atual (DEV)");
     }
 
 
