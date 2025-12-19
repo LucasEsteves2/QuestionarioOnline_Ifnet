@@ -1,0 +1,416 @@
+{
+	"info": {
+		"_postman_id": "b378e73d-e061-425c-bcfa-4cc2e8528230",
+		"name": "Api Questionario - LucasEsteves",
+		"description": "API RESTful para cria��o, gerenciamento e coleta de respostas de question�rios com processamento ass�ncrono.\n\n**Tecnologias:**\n- .NET 8\n- Clean Architecture\n- DDD (Domain-Driven Design)\n- Azure Queue Storage\n- JWT Authentication\n\n**Autor:** Lucas Esteves\n**Projeto:** P�s-Gradua��o - Instituto Infnet",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18313042"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register - Criar Usuario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nome\": \"Admin\",\n  \"email\": \"admin4@questionario.com\",\n  \"senha\": \"Admin@123\"\n}\n\n// Por padrão deixei que todos os novos usarios fiquem com role de Administrador!"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Registra um novo usu�rio no sistema.\n\n**Valida��es:**\n- Nome: obrigat�rio, 3-100 caracteres\n- Email: obrigat�rio, formato v�lido\n- Senha: obrigat�ria, m�nimo 6 caracteres"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"authToken\", jsonData.data.token);",
+									"        console.log(\"Token salvo:\", jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@questionario.com\",\n  \"senha\": \"Admin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Autentica um usu�rio e retorna um token JWT.\n\n**O token � automaticamente salvo na vari�vel de ambiente `authToken`.**"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints de autentica��o (Login e Register).\n\n**Sem autentica��o requerida.**"
+		},
+		{
+			"name": "Questionario",
+			"item": [
+				{
+					"name": "Criar Questionario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"titulo\": \"Pesquisa Pública de Intenção de Voto – Eleições 2026\",\n    \"descricao\": \"Pesquisa pública e anônima destinada a coletar a opinião de eleitores sobre o cenário eleitoral atual. As respostas serão utilizadas exclusivamente para fins estatísticos.\",\n    \"dataInicio\": \"2025-12-18T00:00:00.000Z\",\n    \"dataFim\": \"2026-02-28T23:59:59.000Z\",\n    \"perguntas\": [\n        {\n            \"texto\": \"Se as eleições fossem hoje, em quem você votaria para Presidente?\",\n            \"ordem\": 1,\n            \"obrigatoria\": true,\n            \"opcoes\": [\n                {\n                    \"texto\": \"Candidato A\",\n                    \"ordem\": 1\n                },\n                {\n                    \"texto\": \"Candidato B\",\n                    \"ordem\": 2\n                },\n                {\n                    \"texto\": \"Candidato C\",\n                    \"ordem\": 3\n                },\n                {\n                    \"texto\": \"Votaria em branco\",\n                    \"ordem\": 4\n                },\n                {\n                    \"texto\": \"Votaria nulo\",\n                    \"ordem\": 5\n                },\n                {\n                    \"texto\": \"Ainda não decidi\",\n                    \"ordem\": 6\n                }\n            ]\n        },\n        {\n            \"texto\": \"Qual é o principal fator que influencia sua decisão de voto?\",\n            \"ordem\": 2,\n            \"obrigatoria\": true,\n            \"opcoes\": [\n                {\n                    \"texto\": \"Propostas de governo\",\n                    \"ordem\": 1\n                },\n                {\n                    \"texto\": \"Histórico político do candidato\",\n                    \"ordem\": 2\n                },\n                {\n                    \"texto\": \"Posicionamento ideológico\",\n                    \"ordem\": 3\n                },\n                {\n                    \"texto\": \"Influência de redes sociais\",\n                    \"ordem\": 4\n                },\n                {\n                    \"texto\": \"Opinião de familiares ou amigos\",\n                    \"ordem\": 5\n                }\n            ]\n        },\n        {\n            \"texto\": \"Você costuma acompanhar debates políticos ou notícias sobre eleições?\",\n            \"ordem\": 3,\n            \"obrigatoria\": false,\n            \"opcoes\": [\n                {\n                    \"texto\": \"Sempre\",\n                    \"ordem\": 1\n                },\n                {\n                    \"texto\": \"Às vezes\",\n                    \"ordem\": 2\n                },\n                {\n                    \"texto\": \"Raramente\",\n                    \"ordem\": 3\n                },\n                {\n                    \"texto\": \"Nunca\",\n                    \"ordem\": 4\n                }\n            ]\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario"
+							]
+						},
+						"description": "Cria um novo question�rio.\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Apenas Admin\n\n**Valida��es:**\n- T�tulo: obrigat�rio, 3-200 caracteres\n- Data in�cio e fim: obrigat�rias\n- Perguntas: m�nimo 1 pergunta\n- Op��es: m�nimo 2 op��es por pergunta"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Todos os Questionarios",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario",
+								""
+							]
+						},
+						"description": "Lista todos os question�rios do sistema.\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Qualquer usu�rio autenticado\n\n**Response:** Lista simplificada (sem perguntas completas)"
+					},
+					"response": []
+				},
+				{
+					"name": "Obter Questionario por ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario/{{questionarioId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario",
+								"{{questionarioId}}"
+							]
+						},
+						"description": "Obt�m um question�rio espec�fico por ID.\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Qualquer usu�rio autenticado\n\n**Response:** Question�rio completo com todas as perguntas e op��es"
+					},
+					"response": []
+				},
+				{
+					"name": "Encerrar Questionario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario/{{questionarioId}}/encerrar",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario",
+								"{{questionarioId}}",
+								"encerrar"
+							]
+						},
+						"description": "Encerra um question�rio (muda status para Encerrado).\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Apenas Admin\n\n**Efeito:** Question�rio n�o aceitar� mais respostas"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Questionario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario/{{questionarioId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario",
+								"{{questionarioId}}"
+							]
+						},
+						"description": "Deleta um question�rio.\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Apenas Admin\n\n**Aten��o:** Opera��o irrevers�vel!"
+					},
+					"response": []
+				},
+				{
+					"name": "Obter Resultados",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario/{{questionarioId}}/resultados",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario",
+								"{{questionarioId}}",
+								"resultados"
+							]
+						},
+						"description": "Obt�m resultados e estat�sticas de um question�rio.\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Admin, Analista, Visualizador\n\n**Response:**\n- Total de respostas\n- Votos por op��o\n- Percentuais calculados"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints de gerenciamento de question�rios.\n\n**Criar/Encerrar/Deletar:** Apenas Admin\n**Listar/Obter:** Qualquer usu�rio autenticado\n**Resultados:** Admin, Analista, Visualizador"
+		},
+		{
+			"name": "Resposta",
+			"item": [
+				{
+					"name": "Registrar Respostaa",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"questionarioId\": \"a889f095-a4fa-4c78-bc0e-8009fcb9f8d3\",\r\n  \"respostas\": [\r\n    {\r\n      \"perguntaId\": \"a1d2c3e4-1111-4b5a-9c2d-1234567890ab\",\r\n      \"opcaoRespostaId\": \"f9e8d7c6-2222-4a1b-8c9d-abcdef123456\"\r\n    },\r\n    {\r\n      \"perguntaId\": \"b2e3f4a5-3333-4c6d-9e1f-0987654321cd\",\r\n      \"opcaoRespostaId\": \"c1b2a3d4-4444-4e5f-8a9b-fedcba654321\"\r\n    }\r\n  ],\r\n  \"estado\": \"RJ\",\r\n  \"cidade\": \"Petrópolis\",\r\n  \"regiaoGeografica\": \"Sudeste\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/questionario/{{questionarioId}}/resposta",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questionario",
+								"{{questionarioId}}",
+								"resposta"
+							]
+						},
+						"description": "Obt�m resultados e estat�sticas de um question�rio.\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Admin, Analista, Visualizador\n\n**Response:**\n- Total de respostas\n- Votos por op��o\n- Percentuais calculados"
+					},
+					"response": []
+				},
+				{
+					"name": "Consultar Respostas ByQuestionario",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"questionarioId\": \"a889f095-a4fa-4c78-bc0e-8009fcb9f8d3\",\r\n  \"respostas\": [\r\n    {\r\n      \"perguntaId\": \"a1d2c3e4-1111-4b5a-9c2d-1234567890ab\",\r\n      \"opcaoRespostaId\": \"f9e8d7c6-2222-4a1b-8c9d-abcdef123456\"\r\n    },\r\n    {\r\n      \"perguntaId\": \"b2e3f4a5-3333-4c6d-9e1f-0987654321cd\",\r\n      \"opcaoRespostaId\": \"c1b2a3d4-4444-4e5f-8a9b-fedcba654321\"\r\n    }\r\n  ],\r\n  \"estado\": \"RJ\",\r\n  \"cidade\": \"Petrópolis\",\r\n  \"regiaoGeografica\": \"Sudeste\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:7014/api/Resposta/questionario/a889f095-a4fa-4c78-bc0e-8009fcb9f8d3",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "7014",
+							"path": [
+								"api",
+								"Resposta",
+								"questionario",
+								"a889f095-a4fa-4c78-bc0e-8009fcb9f8d3"
+							]
+						},
+						"description": "Obt�m resultados e estat�sticas de um question�rio.\n\n**Autentica��o:** Bearer Token\n**Autoriza��o:** Admin, Analista, Visualizador\n\n**Response:**\n- Total de respostas\n- Votos por op��o\n- Percentuais calculados"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints de respostas de question�rios.\n\n**Processamento:** As respostas s�o enviadas para uma fila (Azure Queue Storage) e processadas de forma ass�ncrona por Azure Functions."
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://localhost:7001",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "questionarioId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "perguntaId1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "opcaoId1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "perguntaId2",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "opcaoId2",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
