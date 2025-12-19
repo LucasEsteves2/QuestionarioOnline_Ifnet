@@ -385,26 +385,35 @@ classDiagram
         <<Aggregate Root>>
         +Guid Id
         +string Titulo
+        +string? Descricao
         +StatusQuestionario Status
         +PeriodoColeta PeriodoColeta
         +Guid UsuarioId
+        +DateTime DataCriacao
+        +DateTime? DataEncerramento
         +IReadOnlyCollection~Pergunta~ Perguntas
         +Criar()$ Questionario
         +AdicionarPergunta(pergunta)
+        +AdicionarPergunta(texto, ordem, obrigatoria, opcoes)
+        +RemoverPergunta(perguntaId)
         +Encerrar()
-        +PodeReceberRespostas() bool
+        +GarantirQuePodeReceberRespostas()
     }
 
     class Pergunta {
         +Guid Id
+        +Guid QuestionarioId
         +string Texto
         +int Ordem
         +bool Obrigatoria
         +IReadOnlyCollection~OpcaoResposta~ Opcoes
+        +AdicionarOpcao(opcao)
+        +AdicionarOpcoes(opcoes)
     }
 
     class OpcaoResposta {
         +Guid Id
+        +Guid PerguntaId
         +string Texto
         +int Ordem
     }
@@ -415,14 +424,20 @@ classDiagram
         +Guid QuestionarioId
         +OrigemResposta OrigemResposta
         +DateTime DataResposta
+        +string? Estado
+        +string? Cidade
+        +string? RegiaoGeografica
+        +string? DispositivoTipo
+        +string? NavegadorTipo
         +IReadOnlyCollection~RespostaItem~ Itens
         +Criar()$ Resposta
         +AdicionarItem(item)
-        +ValidarCompletude(perguntas)
+        +GarantirCompletude(perguntas)
     }
 
     class RespostaItem {
         +Guid Id
+        +Guid RespostaId
         +Guid PerguntaId
         +Guid OpcaoRespostaId
     }
@@ -432,10 +447,15 @@ classDiagram
         +Guid Id
         +string Nome
         +Email Email
+        +string SenhaHash
         +UsuarioRole Role
+        +DateTime DataCriacao
         +bool Ativo
-        +ValidarSenha(senha) bool
-        +AlterarRole(role)
+        +GarantirQueEstaAtivo()
+        +Desativar()
+        +Ativar()
+        +AtualizarNome(nome)
+        +AtualizarRole(role)
     }
 
     Questionario "1" *-- "0..*" Pergunta
@@ -446,13 +466,37 @@ classDiagram
     RespostaItem --> Pergunta
     RespostaItem --> OpcaoResposta
 
-    style Questionario fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
-    style Resposta fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
-    style Usuario fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
     style Questionario fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
     style Resposta fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
     style Usuario fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
 ```
+
+**⭐ Questionario (Aggregate Root)**
+- **Responsabilidade**: Gerencia estrutura de pesquisas eleitorais
+- **Regras de negócio**:
+  - `GarantirQuePodeReceberRespostas()` valida Status e PeriodoColeta
+  - `Encerrar()` muda status para Encerrado (irreversível)
+  - Perguntas só podem ser adicionadas se Status ≠ Encerrado
+- **Value Objects**: `PeriodoColeta` (DataInicio, DataFim com validação)
+- **Enum**: `StatusQuestionario` (Ativo, Encerrado)
+
+**⭐ Resposta (Aggregate Root)**
+- **Responsabilidade**: Armazena respostas anônimas de eleitores
+- **Regras de negócio**:
+  - `GarantirCompletude()` valida se todas perguntas obrigatórias foram respondidas
+  - `AdicionarItem()` impede responder a mesma pergunta 2x
+  - Anonimato garantido via hash SHA256 (IP + UserAgent)
+- **Value Object**: `OrigemResposta` (hash irreversível para detectar duplicatas)
+- **Dados demográficos opcionais**: Estado, Cidade, RegiaoGeografica
+
+**⭐ Usuario (Aggregate Root)**
+- **Responsabilidade**: Gerencia autenticação de analistas da startup
+- **Regras de negócio**:
+  - `SenhaHash` com BCrypt (hash + salt automático)
+  - `Ativo` flag (desabilitar sem deletar)
+  - `AtualizarRole()` para mudança de papéis (Admin, Visualizador)
+- **Value Object**: `Email` (validação de formato)
+- **Enum**: `UsuarioRole` (Analista, Admin, Visualizador)
 
 ---
 
@@ -910,10 +954,3 @@ Este projeto está sob a licença MIT. Veja [LICENSE](LICENSE) para detalhes.
 ---
 
 **Desenvolvido com ❤️ e rigor técnico para avaliação acadêmica do Instituto Infnet**
-**⭐ Usuario (Autenticação)**
-- **Responsabilidade**: Gerencia autenticação de analistas da startup
-- **Regras de negócio**:
-  - `ValidarSenha()` com BCrypt (hash + salt automático)
-  - `Ativo` flag (desabilitar sem deletar)
-  - `AlterarRole()` para mudança de papéis (Admin, Visualizador)
-- **Value Object**: `Email` (validação de formato)
