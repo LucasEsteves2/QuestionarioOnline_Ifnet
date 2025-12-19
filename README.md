@@ -1,4 +1,4 @@
-﻿﻿# 📋 Sistema de Questionários Online
+﻿﻿## 📋 Sistema de Questionários Online
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat&logo=dotnet)](https://dotnet.microsoft.com/)
 [![C#](https://img.shields.io/badge/C%23-12.0-239120?style=flat&logo=c-sharp)](https://docs.microsoft.com/en-us/dotnet/csharp/)
@@ -20,7 +20,15 @@ Uma startup precisa de um sistema de questionários online para pesquisas públi
 - ⏰ **Prazo crítico**: Eleições se aproximando (urgência de entrega)
 - 📈 Escala: Suportar **milhões de respostas** simultâneas
 
+<p align="center">
+  <strong>Demonstração da Aplicação</strong>
+</p>
+<p align="center">
+  <img src="https://i.imgur.com/LrCEp4L.gif" alt="Demonstração da aplicação" width="100%" />
+</p>
+
 ---
+
 
 ## 🚀 **Instalação e Configuração**
 
@@ -51,10 +59,6 @@ O projeto usa **RabbitMQ** como message broker para processamento assíncrono de
 docker-compose up -d
 ```
 
-**O que acontece:**
-- ✅ Baixa a imagem `rabbitmq:3.13-management-alpine` (primeira vez: ~2-5 min)
-- ✅ Cria e inicia o container `questionario-rabbitmq`
-- ✅ RabbitMQ fica pronto em ~15 segundos
 
 **Verificar status:**
 
@@ -134,7 +138,7 @@ Para testar os endpoints da API diretamente:
 Também é possível testar o sistema por meio da interface web, que consome a API via HTTP.
 
 1. Clone o repositório do frontend:
-
+https://github.com/LucasEsteves2/FLuminense_Front
 ```bash
 git clone https://github.com/LucasEsteves2/FLuminense_Front.git
 ```
