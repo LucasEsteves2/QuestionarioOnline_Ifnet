@@ -106,15 +106,38 @@ O projeto usa **SQL Server LocalDB** para desenvolvimento local (já vem com Vis
 - ✅ Swagger abre: https://localhost:7001/swagger
 
 
-### 🌐 5. Clonar e Executar o Frontend (Opcional)
 
-Caso queira utilizar a interface web do sistema, clone o projeto de frontend:
+### 🧪 Testes
 
-https://github.com/LucasEsteves2/FLuminense_Front
+Esta seção descreve **como testar o sistema**, tanto via ferramentas de API quanto pela interface web.
+
+---
+
+#### 1️⃣ Teste via Postman (API)
+
+Para testar os endpoints da API diretamente:
+
+1. Abra o **Postman**
+2. Importe a collection **`Api Questionario - LucasEsteves.postman_collection`**, localizada na **raiz do projeto**
+3. A collection já contém:
+   - Autenticação (Login / Register)
+   - Criação de questionários
+   - Envio de respostas
+   - Consulta de resultados
+4. Ajuste apenas a variável de ambiente (`baseUrl`) caso necessário
+
+
+---
+
+#### 2️⃣ Teste via Interface Web (Frontend)
+
+Também é possível testar o sistema por meio da interface web, que consome a API via HTTP.
+
+1. Clone o repositório do frontend:
+
 ```bash
 git clone https://github.com/LucasEsteves2/FLuminense_Front.git
 ```
-
 
 ---
 ## ✨ **Funcionalidades e Endpoints**
