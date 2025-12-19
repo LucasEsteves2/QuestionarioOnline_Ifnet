@@ -428,94 +428,120 @@ O sistema foi modelado seguindo **Domain-Driven Design (DDD)**, com **3 Aggregat
 
 ```mermaid
 classDiagram
-    class Questionario {
-        <<Aggregate Root>>
-        +Guid Id
-        +string Titulo
-        +string? Descricao
-        +StatusQuestionario Status
-        +PeriodoColeta PeriodoColeta
-        +Guid UsuarioId
-        +DateTime DataCriacao
-        +DateTime? DataEncerramento
-        +IReadOnlyCollection~Pergunta~ Perguntas
-        +Criar()$ Questionario
-        +AdicionarPergunta(pergunta)
-        +AdicionarPergunta(texto, ordem, obrigatoria, opcoes)
-        +RemoverPergunta(perguntaId)
-        +Encerrar()
-        +GarantirQuePodeReceberRespostas()
-    }
 
-    class Pergunta {
-        +Guid Id
-        +Guid QuestionarioId
-        +string Texto
-        +int Ordem
-        +bool Obrigatoria
-        +IReadOnlyCollection~OpcaoResposta~ Opcoes
-        +AdicionarOpcao(opcao)
-        +AdicionarOpcoes(opcoes)
-    }
+class Localizacao {
+    <<Value Object>>
+    +string? Estado
+    +string? Cidade
+    +string? RegiaoGeografica
+}
 
-    class OpcaoResposta {
-        +Guid Id
-        +Guid PerguntaId
-        +string Texto
-        +int Ordem
-    }
+class PeriodoColeta {
+    <<Value Object>>
+    +DateTime DataInicio
+    +DateTime DataFim
+    +Create(dataInicio, dataFim)
+    +EstaAtivo()
+}
 
-    class Resposta {
-        <<Aggregate Root>>
-        +Guid Id
-        +Guid QuestionarioId
-        +OrigemResposta OrigemResposta
-        +DateTime DataResposta
-        +string? Estado
-        +string? Cidade
-        +string? RegiaoGeografica
-        +string? DispositivoTipo
-        +string? NavegadorTipo
-        +IReadOnlyCollection~RespostaItem~ Itens
-        +Criar()$ Resposta
-        +AdicionarItem(item)
-        +GarantirCompletude(perguntas)
-    }
+class OrigemResposta {
+    <<Value Object>>
+    +string Ip
+    +string UserAgent
+    +string Hash
+    +Create(ip, userAgent)
+}
 
-    class RespostaItem {
-        +Guid Id
-        +Guid RespostaId
-        +Guid PerguntaId
-        +Guid OpcaoRespostaId
-    }
+class Questionario {
+    <<Aggregate Root>>
+    +Guid Id
+    +string Titulo
+    +string? Descricao
+    +StatusQuestionario Status
+    +PeriodoColeta PeriodoColeta
+    +Guid UsuarioId
+    +DateTime DataCriacao
+    +DateTime? DataEncerramento
+    +IReadOnlyCollection~Pergunta~ Perguntas
+    +Criar()$ Questionario
+    +AdicionarPergunta(pergunta)
+    +RemoverPergunta(perguntaId)
+    +Encerrar()
+}
 
-    class Usuario {
-        <<Aggregate Root>>
-        +Guid Id
-        +string Nome
-        +Email Email
-        +string SenhaHash
-        +UsuarioRole Role
-        +DateTime DataCriacao
-        +bool Ativo
-        +GarantirQueEstaAtivo()
-        +Desativar()
-        +Ativar()
-        +AtualizarNome(nome)
-        +AtualizarRole(role)
-    }
+class Pergunta {
+    +Guid Id
+    +Guid QuestionarioId
+    +string Texto
+    +int Ordem
+    +bool Obrigatoria
+    +IReadOnlyCollection~OpcaoResposta~ Opcoes
+    +AdicionarOpcao(opcao)
+    +AdicionarOpcoes(opcoes)
+}
 
-    Questionario "1" *-- "0..*" Pergunta
-    Pergunta "1" *-- "2..*" OpcaoResposta
-    Resposta "1" *-- "1..*" RespostaItem
-    Questionario --> Usuario
-    Resposta --> Questionario
-    RespostaItem --> Pergunta
-    RespostaItem --> OpcaoResposta
+class OpcaoResposta {
+    +Guid Id
+    +Guid PerguntaId
+    +string Texto
+    +int Ordem
+}
 
-    style Questionario fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
-    style Resposta fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
-    style Usuario fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
+class Resposta {
+    <<Aggregate Root>>
+    +Guid Id
+    +Guid QuestionarioId
+    +OrigemResposta OrigemResposta
+    +Localizacao Localizacao
+    +DateTime DataResposta
+    +string? DispositivoTipo
+    +IReadOnlyCollection~RespostaItem~ Itens
+    +Criar()$ Resposta
+    +AdicionarItem(item)
+    +GarantirCompletude(perguntas)
+}
+
+class RespostaItem {
+    +Guid Id
+    +Guid RespostaId
+    +Guid PerguntaId
+    +Guid OpcaoRespostaId
+}
+
+class Usuario {
+    <<Aggregate Root>>
+    +Guid Id
+    +string Nome
+    +Email Email
+    +string SenhaHash
+    +UsuarioRole Role
+    +DateTime DataCriacao
+    +bool Ativo
+    +GarantirQueEstaAtivo()
+    +Desativar()
+    +Ativar()
+    +AtualizarNome(nome)
+    +AtualizarRole(role)
+}
+
+Questionario "1" *-- "0..*" Pergunta
+Pergunta "1" *-- "2..*" OpcaoResposta
+Questionario o-- PeriodoColeta : owns
+Resposta "1" *-- "1..*" RespostaItem
+Resposta o-- Localizacao : owns
+Resposta o-- OrigemResposta : owns
+Questionario --> Usuario
+Resposta --> Questionario
+RespostaItem --> Pergunta
+RespostaItem --> OpcaoResposta
+
+style Questionario fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
+style Resposta fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
+style Usuario fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
+style Localizacao fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+style PeriodoColeta fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+style OrigemResposta fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000
+
 ```
 
 **⭐ Questionario (Aggregate Root)**
