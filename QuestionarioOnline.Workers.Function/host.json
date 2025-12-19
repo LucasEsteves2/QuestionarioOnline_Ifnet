@@ -7,6 +7,18 @@
                 "excludedTypes": "Request"
             },
             "enableLiveMetricsFilters": true
+        },
+        "logLevel": {
+            "default": "Information",
+            "Host.Results": "Information",
+            "Function": "Information",
+            "Host.Aggregator": "Information"
+        }
+    },
+    "extensions": {
+        "rabbitMQ": {
+            "maxConcurrency": 5,
+            "prefetchCount": 1
         }
     }
 }

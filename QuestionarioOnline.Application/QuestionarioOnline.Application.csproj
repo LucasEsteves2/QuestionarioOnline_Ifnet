@@ -10,6 +10,7 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="FluentValidation" Version="11.9.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
   </ItemGroup>
 
@@ -19,7 +20,10 @@
 
   <ItemGroup>
     <Folder Include="Enums\" />
+    <Folder Include="Handlers\" />
+    <Folder Include="Logging\" />
     <Folder Include="Mappers\" />
+    <Folder Include="UseCases\" />
   </ItemGroup>
 
 </Project>

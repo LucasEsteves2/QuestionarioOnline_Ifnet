@@ -4,7 +4,7 @@ public class Pergunta
 {
     public Guid Id { get; private set; }
     public Guid QuestionarioId { get; private set; }
-    public string Texto { get; private set; }
+    public string Texto { get; private set; } = string.Empty;
     public int Ordem { get; private set; }
     public bool Obrigatoria { get; private set; }
 
@@ -31,6 +31,19 @@ public class Pergunta
         Obrigatoria = obrigatoria;
     }
 
+    /// <summary>
+    /// Cria uma instância mínima de Pergunta apenas para validação
+    /// Usado pelo Worker ao processar mensagens da fila
+    /// </summary>
+    public static Pergunta CriarParaValidacao(Guid id, bool obrigatoria)
+    {
+        return new Pergunta
+        {
+            Id = id,
+            Obrigatoria = obrigatoria
+        };
+    }
+
     public void AdicionarOpcoes(IEnumerable<(string Texto, int Ordem)> opcoes)
     {
         foreach (var opcao in opcoes.OrderBy(o => o.Ordem))
@@ -38,7 +51,6 @@ public class Pergunta
             AdicionarOpcao(new OpcaoResposta(Id, opcao.Texto, opcao.Ordem));
         }
     }
-
 
     public void AdicionarOpcao(OpcaoResposta opcao)
     {

@@ -9,13 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.23.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="2.0.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues" Version="5.5.3" />
-    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.3.1" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.RabbitMQ" Version="2.1.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
@@ -25,6 +21,7 @@
     <ProjectReference Include="..\QuestionarioOnline.Application\QuestionarioOnline.Application.csproj" />
     <ProjectReference Include="..\QuestionarioOnline.Domain\QuestionarioOnline.Domain.csproj" />
     <ProjectReference Include="..\QuestionarioOnline.Infrastructure\QuestionarioOnline.Infrastructure.csproj" />
+    <ProjectReference Include="..\QuestionarioOnline.CrossCutting\QuestionarioOnline.CrossCutting.csproj" />
   </ItemGroup>
 
   <ItemGroup>

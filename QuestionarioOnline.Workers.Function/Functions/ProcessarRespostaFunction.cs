@@ -1,170 +1,59 @@
-using Azure.Storage.Queues;
-using Azure.Storage.Queues.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using QuestionarioOnline.Application.DTOs.Requests;
-using QuestionarioOnline.Domain.Entities;
-using QuestionarioOnline.Domain.Exceptions;
-using QuestionarioOnline.Domain.Interfaces;
+using QuestionarioOnline.Application.Interfaces;
 using System.Text.Json;
 
 namespace QuestionarioOnline.Workers.Function.Functions;
 
+/// <summary>
+/// Azure Function para processar respostas de questionários via RabbitMQ
+/// Assume que a mensagem já foi validada pela API antes de ser enfileirada
+/// </summary>
 public class ProcessarRespostaFunction
 {
+    private readonly IRespostaService _respostaService;
     private readonly ILogger<ProcessarRespostaFunction> _logger;
-    private readonly IRespostaRepository _respostaRepository;
-    private readonly IQuestionarioRepository _questionarioRepository;
-    private const int MaxRetryAttempts = 5;
 
     public ProcessarRespostaFunction(
-        ILogger<ProcessarRespostaFunction> logger,
-        IRespostaRepository respostaRepository,
-        IQuestionarioRepository questionarioRepository)
+        IRespostaService respostaService,
+        ILogger<ProcessarRespostaFunction> logger)
     {
+        _respostaService = respostaService;
         _logger = logger;
-        _respostaRepository = respostaRepository;
-        _questionarioRepository = questionarioRepository;
     }
 
     [Function(nameof(ProcessarRespostaFunction))]
     public async Task Run(
-        [QueueTrigger("respostas-questionario", Connection = "AzureWebJobsStorage")] 
-        QueueMessage message,
-        FunctionContext context)
+        [RabbitMQTrigger("respostas-questionario", ConnectionStringSetting = "RabbitMQConnection")] 
+        string message)
     {
-        var messageId = message.MessageId;
-        var dequeueCount = message.DequeueCount;
-
-        _logger.LogInformation(
-            "?? Processando resposta | MessageId: {MessageId} | DequeueCount: {DequeueCount}/{MaxRetries}",
-            messageId, dequeueCount, MaxRetryAttempts);
-
-        var base64 = message.MessageText;
-        var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(base64));
-        
-        MessageEnvelope<RespostaParaProcessamentoDto>? envelope = null;
-        RespostaParaProcessamentoDto? dto = null;
+        _logger.LogInformation("Mensagem recebida da fila RabbitMQ");
 
         try
         {
-            envelope = JsonSerializer.Deserialize<MessageEnvelope<RespostaParaProcessamentoDto>>(json);
-            dto = envelope?.Payload;
-        }
-        catch
-        {
-            dto = JsonSerializer.Deserialize<RespostaParaProcessamentoDto>(json);
-        }
+            var dto = JsonSerializer.Deserialize<RespostaParaProcessamentoDto>(message);
+            
+            var result = await _respostaService.ProcessarRespostaAsync(dto);
 
-        if (dto is null)
-        {
-            _logger.LogError("Mensagem inválida (não foi possível deserializar) | MessageId: {MessageId}", messageId);
-            await MoverParaDeadLetterAsync(message, "Mensagem inválida - erro de deserialização");
-            return;
-        }
-
-        try
-        {
-            var questionario = await _questionarioRepository.ObterPorIdComPerguntasAsync(
-                dto.QuestionarioId, 
-                CancellationToken.None);
-
-            if (questionario is null)
+            if (result.IsFailure)
             {
-                _logger.LogWarning(
-                    "Questionário não encontrado | MessageId: {MessageId} | QuestionarioId: {QuestionarioId}",
-                    messageId, dto.QuestionarioId);
-                await MoverParaDeadLetterAsync(message, $"Questionário {dto.QuestionarioId} não encontrado");
+                _logger.LogError("Erro ao processar resposta: {Error} | QuestionarioId: {QuestionarioId}", 
+                    result.Error, dto.QuestionarioId);
                 return;
             }
 
-            var resposta = Resposta.Criar(
-                dto.QuestionarioId,
-                "0.0.0.0",
-                "no-user-agent",
-                dto.Estado,
-                dto.Cidade,
-                dto.RegiaoGeografica,
-                null,
-                null
-            );
-
-            foreach (var item in dto.Respostas)
-            {
-                var respostaItem = new RespostaItem(resposta.Id, item.PerguntaId, item.OpcaoRespostaId);
-                resposta.AdicionarItem(respostaItem);
-            }
-
-            resposta.GarantirCompletude(questionario.Perguntas);
-            await _respostaRepository.AdicionarAsync(resposta, CancellationToken.None);
-
-            _logger.LogInformation(
-                "? Resposta processada com sucesso | MessageId: {MessageId} | RespostaId: {RespostaId} | Estado: {Estado} | Cidade: {Cidade}",
-                messageId, resposta.Id, dto.Estado ?? "N/A", dto.Cidade ?? "N/A");
+            _logger.LogInformation("Resposta processada com sucesso | RespostaId: {RespostaId}", result.Value.Id);
         }
-        catch (DomainException ex)
+        catch (JsonException ex)
         {
-            _logger.LogError(ex,
-                "? Erro de negócio | MessageId: {MessageId} | Error: {Error}",
-                messageId, ex.Message);
-            
-            await MoverParaDeadLetterAsync(message, $"Erro de negócio: {ex.Message}");
-        }
-        catch (Exception ex) when (dequeueCount >= MaxRetryAttempts)
-        {
-            _logger.LogCritical(ex,
-                "?? Máximo de tentativas atingido | MessageId: {MessageId} | Movendo para Dead Letter Queue",
-                messageId);
-            
-            await MoverParaDeadLetterAsync(message, $"Máximo de {MaxRetryAttempts} tentativas atingido: {ex.Message}");
-        }
-    }
-
-    private async Task MoverParaDeadLetterAsync(QueueMessage message, string reason)
-    {
-        var connectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
-        if (string.IsNullOrEmpty(connectionString))
-        {
-            _logger.LogError("? Connection string não encontrada para Dead Letter Queue");
+            _logger.LogError(ex, "JSON inválido");
             return;
         }
-
-        var deadLetterQueueName = "respostas-questionario-deadletter";
-        var deadLetterClient = new QueueClient(connectionString, deadLetterQueueName);
-        await deadLetterClient.CreateIfNotExistsAsync();
-
-        var deadLetterEnvelope = new DeadLetterMessage
+        catch (Exception ex)
         {
-            OriginalMessageId = message.MessageId,
-            OriginalMessageText = message.MessageText,
-            DequeueCount = message.DequeueCount,
-            Reason = reason,
-            Timestamp = DateTime.UtcNow,
-            ExpirationTime = message.ExpiresOn?.UtcDateTime
-        };
-
-        var json = JsonSerializer.Serialize(deadLetterEnvelope);
-        var base64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(json));
-
-        await deadLetterClient.SendMessageAsync(base64);
-
-        _logger.LogWarning(
-            "?? Mensagem movida para Dead Letter Queue | MessageId: {MessageId} | Reason: {Reason}",
-            message.MessageId, reason);
+            _logger.LogError(ex, "Erro inesperado ao processar mensagem");
+            throw;
+        }
     }
-}
-
-internal class DeadLetterMessage
-{
-    public string OriginalMessageId { get; set; } = string.Empty;
-    public string OriginalMessageText { get; set; } = string.Empty;
-    public long DequeueCount { get; set; }
-    public string Reason { get; set; } = string.Empty;
-    public DateTime Timestamp { get; set; }
-    public DateTime? ExpirationTime { get; set; }
-}
-
-internal class MessageEnvelope<T>
-{
-    public T? Payload { get; set; }
 }

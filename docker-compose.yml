@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: questionario-rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"    # AMQP protocol
+      - "15672:15672"  # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_logs:/var/log/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - questionario-network
+
+  # OPCIONAL: Descomentar para rodar API em container
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: QuestionarioOnline/Dockerfile
+  #   container_name: questionario-api
+  #   ports:
+  #     - "7001:8080"
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - RabbitMQ__HostName=rabbitmq
+  #   depends_on:
+  #     rabbitmq:
+  #       condition: service_healthy
+  #   networks:
+  #     - questionario-network
+
+  # OPCIONAL: Descomentar para rodar Workers em container
+  # workers:
+  #   build:
+  #     context: .
+  #     dockerfile: QuestionarioOnline.Workers.Function/Dockerfile
+  #   container_name: questionario-workers
+  #   environment:
+  #     - RabbitMQ__HostName=rabbitmq
+  #   depends_on:
+  #     rabbitmq:
+  #       condition: service_healthy
+  #   networks:
+  #     - questionario-network
+
+volumes:
+  rabbitmq_data:
+    driver: local
+  rabbitmq_logs:
+    driver: local
+
+networks:
+  questionario-network:
+    driver: bridge

@@ -7,15 +7,17 @@ using QuestionarioOnline.Infrastructure.Authentication;
 using QuestionarioOnline.Infrastructure.Persistence;
 using System.Text;
 
+Console.WriteLine("========================================");
+Console.WriteLine("  QuestionarioOnline API");
+Console.WriteLine("========================================");
+Console.WriteLine();
+
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-var storageConnectionString = builder.Configuration.GetConnectionString("AzureWebJobsStorage")
-    ?? throw new InvalidOperationException("Connection string 'AzureWebJobsStorage' not found.");
-
-builder.Services.AddQuestionarioOnlineServices(connectionString, storageConnectionString);
+builder.Services.AddQuestionarioOnlineServices(connectionString, builder.Configuration);
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>()
     ?? throw new InvalidOperationException("JWT Settings not found.");
