@@ -63,13 +63,13 @@ builder.Services.AddSwaggerGen(c =>
 **Projeto Acadêmico**
 - Pós-Graduação em Arquitetura de Software - Instituto Infnet
 - Autor: Lucas Esteves
-- Tecnologias: .NET 8, Clean Architecture, DDD, Azure Queue Storage
+- Tecnologias: .NET 8, Clean Architecture, DDD, RabbitMQ
 ",
         Contact = new Microsoft.OpenApi.Models.OpenApiContact
         {
             Name = "Lucas Esteves",
             Email = "lucas.esteves@infnet.edu.br",
-            Url = new Uri("https://github.com/seu-usuario/questionario-online")
+            Url = new Uri("https://github.com/LucasEsteves2/QuestionarioOnline_Ifnet")
         },
 
     });
@@ -117,7 +117,10 @@ if (app.Environment.IsDevelopment())
     using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<QuestionarioOnlineDbContext>();
-        await db.Database.EnsureCreatedAsync();
+        
+        Console.WriteLine("Aplicando migrations...");
+        await db.Database.MigrateAsync();
+        Console.WriteLine("Banco de dados atualizado com sucesso!");
     }
 
     app.UseSwagger();

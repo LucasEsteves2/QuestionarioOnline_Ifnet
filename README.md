@@ -78,13 +78,6 @@ docker ps | findstr rabbitmq
 
 O projeto usa **SQL Server LocalDB** para desenvolvimento local (já vem com Visual Studio).
 
-**Aplicar Migrations:**
-
-```powershell
-# Na raiz do projeto
-dotnet ef database update --project QuestionarioOnline.Infrastructure --startup-project QuestionarioOnline
-```
-
 **Connection String (já configurada em `appsettings.json`):**
 
 ```json
@@ -93,6 +86,17 @@ dotnet ef database update --project QuestionarioOnline.Infrastructure --startup-
     "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=QuestionarioOnlineDb;Trusted_Connection=True;MultipleActiveResultSets=true"
   }
 }
+```
+
+✅ **Migrations rodam automaticamente** na primeira execução!
+
+**Aplicar Migrations Manualmente (opcional):**
+
+Se preferir rodar migrations manualmente antes de iniciar a aplicação:
+
+```powershell
+# Na raiz do projeto
+dotnet ef database update --project QuestionarioOnline.Infrastructure --startup-project QuestionarioOnline
 ```
 
 ---
