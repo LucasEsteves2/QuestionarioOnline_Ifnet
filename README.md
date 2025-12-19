@@ -111,8 +111,8 @@ O projeto usa **SQL Server LocalDB** para desenvolvimento local (já vem com Vis
 Caso queira utilizar a interface web do sistema, clone o projeto de frontend:
 
 ```bash
-git clone <URL_DO_REPOSITORIO_FRONTEND>
-cd <nome-do-projeto-frontend>
+https://github.com/LucasEsteves2/FLuminense_Front
+git clone https://github.com/LucasEsteves2/FLuminense_Front.git
 ```
 
 
